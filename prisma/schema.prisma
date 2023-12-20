@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model MallaCurricular {
+  id                        String       @id @default(uuid())
+  modalidad                 Modalidad // inmutable si la malla esta en uso
+  tituloObtenido            String // probablemente desde la carrera
+  tipoDuracion              TipoDuracion
+  fechaAprobacion           DateTime
+  fechaLimiteVigencia       DateTime
+  // ??????????????????????????????????
+  niveles                   Int // inmutable si la malla esta en uso
+  maximoMateriasMatricula   Int
+  cantidadLibreOpcionEgreso Int
+  cantidadOptativasEgreso   Int
+  cantidadArrastres         Int
+  practicasLigadasMaterias  Boolean
+  horasPractica             Int
+  registroPracticasDesde    String
+  horasVinculacion          Int
+  registroVinculacionDesde  String
+  registroProyectosDesde    String
+  // ??????????????????????????????????
+  usaNivelacion             Boolean
+  plantillasSilabo          Boolean // ??????????????????????????????????
+  prefilEgreso              String
+  observaciones             String
+
+  // carreraId String [ref: > carrera.id]
+
+  @@map("mallas_curriculares")
+}
+
+// nota: faltan mas modalidades
+enum Modalidad {
+  VIRTUAL
+  PRESENCIAL
+
+  @@map("modalidad")
+}
+
+// nota: aun sin verificar que el enum sea correcto
+enum TipoDuracion {
+  HORAS
+  SEMANAS
+  MESES
+  ANOS
+
+  @@map("tipo_duracion")
+}
+
+model Institucion {
+  id        String          @id @default(uuid())
+  nombre    String
+  tipo      TipoInstitucion
+  pais      String
+  provincia String
+  canton    String
+  codigo    String
+
+  @@map("instituciones")
+}
+
+enum TipoInstitucion {
+  FISCAL
+  PARTICULAR
+
+  @@map("tipo_institucion")
+}
