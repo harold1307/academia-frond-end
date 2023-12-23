@@ -9,13 +9,12 @@ datasource db {
 
 model MallaCurricular {
   id                        String       @id @default(uuid())
-  modalidad                 Modalidad // inmutable si la malla esta en uso
-  tituloObtenido            String // probablemente desde la carrera
+  modalidad                 Modalidad
+  tituloObtenido            String
   tipoDuracion              TipoDuracion
   fechaAprobacion           DateTime
   fechaLimiteVigencia       DateTime
-  // ??????????????????????????????????
-  niveles                   Int // inmutable si la malla esta en uso
+  niveles                   Int
   maximoMateriasMatricula   Int
   cantidadLibreOpcionEgreso Int
   cantidadOptativasEgreso   Int
@@ -26,33 +25,13 @@ model MallaCurricular {
   horasVinculacion          Int
   registroVinculacionDesde  String
   registroProyectosDesde    String
-  // ??????????????????????????????????
   usaNivelacion             Boolean
-  plantillasSilabo          Boolean // ??????????????????????????????????
+  plantillasSilabo          Boolean
   prefilEgreso              String
   observaciones             String
-
-  // carreraId String [ref: > carrera.id]
+  createdAt                 DateTime     @default(now())
 
   @@map("mallas_curriculares")
-}
-
-// nota: faltan mas modalidades
-enum Modalidad {
-  VIRTUAL
-  PRESENCIAL
-
-  @@map("modalidad")
-}
-
-// nota: aun sin verificar que el enum sea correcto
-enum TipoDuracion {
-  HORAS
-  SEMANAS
-  MESES
-  ANOS
-
-  @@map("tipo_duracion")
 }
 
 model Institucion {
@@ -63,8 +42,25 @@ model Institucion {
   provincia String
   canton    String
   codigo    String
+  createdAt DateTime        @default(now())
 
   @@map("instituciones")
+}
+
+enum Modalidad {
+  VIRTUAL
+  PRESENCIAL
+
+  @@map("modalidad")
+}
+
+enum TipoDuracion {
+  HORAS
+  SEMANAS
+  MESES
+  ANOS
+
+  @@map("tipo_duracion")
 }
 
 enum TipoInstitucion {
