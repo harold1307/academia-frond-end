@@ -7,6 +7,14 @@ const modulos = [
 		label: "Institucion",
 		href: ROUTES.institucion,
 	},
+	{
+		label: "Malla",
+		href: ROUTES.malla,
+	},
+	{
+		label: "Asignatura",
+		href: ROUTES.asignatura,
+	},
 ];
 
 export default function Home() {

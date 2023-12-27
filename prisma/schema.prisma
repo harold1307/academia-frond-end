@@ -8,7 +8,7 @@ datasource db {
 }
 
 model MallaCurricular {
-  id                        String       @id @default(uuid())
+  id                        String              @id @default(uuid())
   modalidad                 Modalidad
   tituloObtenido            String
   tipoDuracion              TipoDuracion
@@ -21,15 +21,16 @@ model MallaCurricular {
   cantidadArrastres         Int
   practicasLigadasMaterias  Boolean
   horasPractica             Int
-  registroPracticasDesde    String
+  registroPracticasDesde    Int
   horasVinculacion          Int
-  registroVinculacionDesde  String
-  registroProyectosDesde    String
+  registroVinculacionDesde  Int
+  registroProyectosDesde    Int
   usaNivelacion             Boolean
   plantillasSilabo          Boolean
-  prefilEgreso              String
-  observaciones             String
-  createdAt                 DateTime     @default(now())
+  observaciones             String?
+  createdAt                 DateTime            @default(now())
+  perfilEgreso              String?
+  asignaturaEnMalla         AsignaturaEnMalla[]
 
   @@map("mallas_curriculares")
 }
@@ -45,6 +46,51 @@ model Institucion {
   createdAt DateTime        @default(now())
 
   @@map("instituciones")
+}
+
+model Asignatura {
+  id                String              @id @default(uuid())
+  nombre            String
+  codigo            String?
+  asignaturaEnMalla AsignaturaEnMalla[]
+
+  @@map("asignaturas")
+}
+
+model AsignaturaEnMalla {
+  ejeFormativo              String
+  nivel                     Int
+  areaConocimiento          String
+  campoFormacion            String
+  tipoAsignatura            String
+  identificacion            String
+  permiteMatriculacion      Boolean
+  validaCredito             Boolean
+  validaPromedio            Boolean
+  costoEnMatricula          Boolean
+  practicasPreProfesionales Boolean
+  requeridaEgreso           Boolean
+  cantidadMatriculas        Int
+  horasSemanales            Int
+  horasColaborativas        Int
+  horasAsistidasDocente     Int
+  horasAutonomas            Int
+  horasPracticas            Int
+  creditos                  Float
+  noValidaAsistencia        Boolean
+  materiaComun              Boolean
+  objetivos                 String
+  descripcion               String
+  resultadosAprendizaje     String
+  createdAt                 DateTime        @default(now())
+  asignaturaId              String
+  mallaId                   String
+  asignatura                Asignatura      @relation(fields: [asignaturaId], references: [id])
+  malla                     MallaCurricular @relation(fields: [mallaId], references: [id])
+
+  @@id([asignaturaId, mallaId])
+  @@index([mallaId], map: "asignaturas_en_mallas_mallaId_fkey")
+  @@map("asignaturas_en_mallas")
 }
 
 enum Modalidad {

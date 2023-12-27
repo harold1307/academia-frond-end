@@ -1,9 +1,10 @@
-import { Button } from "@/app/_components/ui/button";
-import { ROUTES } from "@/core/routes";
 import type { Institucion } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { Button } from "@/app/_components/ui/button";
+import { ROUTES } from "@/core/routes";
 
 export type InstitucionTableItem = Omit<Institucion, "createdAt"> & {
 	isUsed: boolean;

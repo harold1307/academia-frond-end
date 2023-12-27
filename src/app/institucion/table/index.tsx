@@ -8,12 +8,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import DeleteModal from "@/app/_components/modals/delete-modal";
+import ModalFallback from "@/app/_components/modals/modal-fallback";
 import { Button } from "@/app/_components/ui/button";
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
-	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -35,9 +35,9 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import { ROUTES } from "@/core/routes";
+import { INSTITUCION_KEYS } from "../query-keys";
 import { columns, type InstitucionTableItem } from "./columns";
 import { DataTable } from "./data-table";
-import { INSTITUCION_KEYS } from "../query-keys";
 
 export default function InstitucionTable() {
 	const { data, isLoading } = useQuery({
@@ -122,33 +122,10 @@ function UpdateInstitucionTableModal(props: {
 
 	if (!selectedInstitucion) {
 		return (
-			<Dialog
-				defaultOpen={true}
-				onOpenChange={open => {
-					if (isSubmitting) return;
-					if (!open) {
-						router.replace(ROUTES.institucion);
-						return;
-					}
-				}}
-			>
-				<DialogContent className='max-h-[80%] max-w-xs sm:max-w-[425px] md:max-w-2xl'>
-					<DialogHeader>
-						<DialogTitle>Actualizar institucion</DialogTitle>
-						<DialogDescription>
-							No se ha encontrado la institucion a actualizar, por favor intente
-							de nuevo.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter className='sm:justify-start'>
-						<DialogClose asChild>
-							<Button type='button' variant='info'>
-								Ok
-							</Button>
-						</DialogClose>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+			<ModalFallback
+				action='update'
+				redirectTo={() => router.replace(ROUTES.institucion)}
+			/>
 		);
 	}
 
@@ -337,75 +314,30 @@ function DeleteInstitucionModal(props: {
 
 	if (!selectedInstitucion) {
 		return (
-			<Dialog
-				defaultOpen={true}
-				onOpenChange={open => {
-					if (!open) {
-						router.replace(ROUTES.institucion);
-						return;
-					}
-				}}
-			>
-				<DialogContent className='max-h-[80%] max-w-xs sm:max-w-[425px] md:max-w-2xl'>
-					<DialogHeader>
-						<DialogTitle>Eliminar institucion</DialogTitle>
-						<DialogDescription>
-							No se ha encontrado la institucion a eliminar, por favor intente
-							de nuevo.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter className='sm:justify-start'>
-						<DialogClose asChild>
-							<Button type='button' variant='info'>
-								Ok
-							</Button>
-						</DialogClose>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+			<ModalFallback
+				action='delete'
+				redirectTo={() => router.replace(ROUTES.institucion)}
+			/>
 		);
 	}
 
 	return (
-		<Dialog
-			defaultOpen={true}
-			onOpenChange={open => {
-				if (isSubmitting) return;
-				if (!open) {
-					router.replace(ROUTES.institucion);
-					return;
-				}
+		<DeleteModal
+			description={`Estas seguro que deseas eliminar la institucion: ${selectedInstitucion.nombre}`}
+			title='Eliminar institucion'
+			onDelete={() => onSubmit(selectedInstitucion.id)}
+			disabled={isSubmitting}
+			onClose={() => router.replace(ROUTES.institucion)}
+			dialogProps={{
+				open: true,
+				onOpenChange: open => {
+					if (isSubmitting) return;
+					if (!open) {
+						router.replace(ROUTES.institucion);
+						return;
+					}
+				},
 			}}
-		>
-			<DialogContent className='max-h-[80%] max-w-xs sm:max-w-[425px] md:max-w-2xl'>
-				<DialogHeader>
-					<DialogTitle>Eliminar institucion</DialogTitle>
-					<DialogDescription>
-						Estas seguro que deseas eliminar la institucion:{" "}
-						{selectedInstitucion.nombre}
-					</DialogDescription>
-				</DialogHeader>
-				<DialogFooter>
-					<Button
-						type='button'
-						variant='destructive'
-						onClick={() => onSubmit(selectedInstitucion.id)}
-						disabled={isSubmitting}
-					>
-						Eliminar
-					</Button>
-					<DialogClose asChild>
-						<Button
-							variant='info'
-							type='button'
-							onClick={() => router.replace(ROUTES.institucion)}
-							disabled={isSubmitting}
-						>
-							Cancelar
-						</Button>
-					</DialogClose>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
+		/>
 	);
 }

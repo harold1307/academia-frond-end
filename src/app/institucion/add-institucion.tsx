@@ -1,6 +1,8 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TipoInstitucion } from "@prisma/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -28,8 +30,6 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React from "react";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
 import { INSTITUCION_KEYS } from "./query-keys";
@@ -66,6 +66,7 @@ export default function AddInstitucion() {
 	const form = useForm<Data>({
 		resolver: zodResolver(createInstitucionSchema),
 		disabled: isSubmitting,
+		shouldUnregister: true,
 	});
 
 	return (
