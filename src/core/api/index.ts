@@ -1,4 +1,5 @@
 import { AsignaturaClass } from "./asignaturas";
+import { CursoClass } from "./cursos";
 import { InstitucionClass } from "./institucion";
 import { MallaCurricularClass } from "./malla-curricular";
 
@@ -23,6 +24,10 @@ export class APIClass {
 
 	get asignaturas() {
 		return new AsignaturaClass(this.apiUrl);
+	}
+
+	get cursos() {
+		return new CursoClass(this.apiUrl);
 	}
 }
 

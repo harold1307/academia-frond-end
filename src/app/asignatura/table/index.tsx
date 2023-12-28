@@ -7,8 +7,9 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import DeleteModal from "@/app/_components/modals/delete-modal";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
-import UpdateModal from "@/app/_components/modals/update-modal";
+import MutateModal from "@/app/_components/modals/mutate-modal";
 import {
 	FormControl,
 	FormField,
@@ -23,7 +24,6 @@ import type { CreateAsignatura } from "../add-asignatura";
 import { ASIGNATURA_KEYS } from "../query-keys";
 import { columns, type AsignaturaTableItem } from "./columns";
 import { DataTable } from "./data-table";
-import DeleteModal from "@/app/_components/modals/delete-modal";
 
 export default function AsignaturaTable() {
 	const { data, isLoading } = useQuery({
@@ -130,7 +130,7 @@ function UpdateAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
 	}
 
 	return (
-		<UpdateModal
+		<MutateModal
 			form={form}
 			title='Actualizar asignatura'
 			disabled={isSubmitting}
@@ -183,7 +183,7 @@ function UpdateAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
 					</FormItem>
 				)}
 			/>
-		</UpdateModal>
+		</MutateModal>
 	);
 }
 

@@ -7,32 +7,52 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
+	DialogTrigger,
 } from "@/app/_components/ui/dialog";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
 
-type UpdateModalProps = {
-	onSubmit: React.FormEventHandler<HTMLFormElement>;
-	form: UseFormReturn<any>;
-	dialogProps: Parameters<typeof Dialog>[0];
-	disabled: boolean;
-	title: string;
-};
+type MutateModalProps =
+	| {
+			onSubmit: React.FormEventHandler<HTMLFormElement>;
+			form: UseFormReturn<any>;
+			dialogProps: Parameters<typeof Dialog>[0];
+			disabled: boolean;
+			title: string;
+			withTrigger?: false;
+			triggerLabel?: undefined;
+	  }
+	| {
+			onSubmit: React.FormEventHandler<HTMLFormElement>;
+			form: UseFormReturn<any>;
+			dialogProps: Parameters<typeof Dialog>[0];
+			disabled: boolean;
+			title: string;
+			withTrigger: true;
+			triggerLabel: string | React.ReactNode;
+	  };
 
 /**
  *
  * @param children FormFields
  */
-export default function UpdateModal({
+export default function MutateModal({
 	onSubmit,
 	dialogProps,
 	form,
 	disabled,
 	children,
 	title,
-}: React.PropsWithChildren<UpdateModalProps>) {
+	triggerLabel,
+	withTrigger,
+}: React.PropsWithChildren<MutateModalProps>) {
 	return (
 		<Dialog {...dialogProps}>
+			{withTrigger && (
+				<DialogTrigger asChild>
+					<Button variant='success'>{triggerLabel}</Button>
+				</DialogTrigger>
+			)}
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-auto sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>

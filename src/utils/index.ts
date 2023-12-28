@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 type GetParamNameParams = {
-	module: "Asignatura" | "Institucion" | "Malla";
+	module: "Asignatura" | "Institucion" | "Malla" | "Curso";
 	action: "actualizar" | "eliminar";
 };
 

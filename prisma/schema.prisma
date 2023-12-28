@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -44,6 +45,7 @@ model Institucion {
   canton    String
   codigo    String
   createdAt DateTime        @default(now())
+  titulos   Titulo[]
 
   @@map("instituciones")
 }
@@ -91,6 +93,45 @@ model AsignaturaEnMalla {
   @@id([asignaturaId, mallaId])
   @@index([mallaId], map: "asignaturas_en_mallas_mallaId_fkey")
   @@map("asignaturas_en_mallas")
+}
+
+model Titulo {
+  id            String       @id @default(uuid())
+  nombre        String
+  institucionId String?
+  institucion   Institucion? @relation(fields: [institucionId], references: [id])
+
+  @@index([institucionId], map: "titulos_institucionId_fkey")
+  @@map("titulos")
+}
+
+model Curso {
+  id          String          @id @default(uuid())
+  estado      Boolean         @default(true)
+  nombre      String
+  certificado String?
+  alias       String?
+  variantes   VarianteCurso[]
+
+  @@map("cursos")
+}
+
+model VarianteCurso {
+  id              String  @id @default(uuid())
+  nombre          String
+  codigoBase      String
+  descripcion     String
+  registroExterno Boolean
+  registroInterno Boolean
+  verificarSesion Boolean
+  verificarEdad   Boolean
+  edadMinima      Int?
+  edadMaxima      Int?
+  cursoId         String
+  curso           Curso   @relation(fields: [cursoId], references: [id])
+
+  @@index([cursoId], map: "variantes_de_cursos_cursoId_fkey")
+  @@map("variantes_de_cursos")
 }
 
 enum Modalidad {

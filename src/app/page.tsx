@@ -15,6 +15,10 @@ const modulos = [
 		label: "Asignatura",
 		href: ROUTES.asignatura,
 	},
+	{
+		label: "Curso",
+		href: ROUTES.curso,
+	},
 ];
 
 export default function Home() {

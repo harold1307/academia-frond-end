@@ -16,6 +16,7 @@ type DeleteModalProps = {
 	description: string;
 	onDelete: () => void;
 	onClose: () => void;
+	deleteButtonLabel?: string;
 };
 
 export default function DeleteModal({
@@ -25,6 +26,7 @@ export default function DeleteModal({
 	onDelete,
 	title,
 	description,
+	deleteButtonLabel,
 }: DeleteModalProps) {
 	return (
 		<Dialog {...dialogProps}>
@@ -40,7 +42,11 @@ export default function DeleteModal({
 						onClick={onDelete}
 						disabled={disabled}
 					>
-						Eliminar
+						{deleteButtonLabel
+							? deleteButtonLabel
+							: disabled
+								? "Eliminando..."
+								: "Eliminar"}
 					</Button>
 					<DialogClose asChild>
 						<Button

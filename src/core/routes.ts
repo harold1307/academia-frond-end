@@ -3,4 +3,5 @@ export const ROUTES = {
 	institucion: "/institucion",
 	malla: "/malla",
 	asignatura: "/asignatura",
+	curso: "/curso",
 } as const;
