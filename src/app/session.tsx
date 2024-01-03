@@ -40,7 +40,7 @@ export default function UserSession() {
 				<Button
 					onClick={() =>
 						instance.loginRedirect({
-							scopes: ["User.Read"],
+							scopes: ["User.Read", "GroupMember.Read.All"],
 						})
 					}
 				>

@@ -1,7 +1,11 @@
 export const ROUTES = {
 	home: "/",
 	institucion: "/institucion",
-	malla: "/malla",
+	malla: {
+		path: "/malla",
+		asignaturasEnMalla: (mallaId: string) =>
+			ROUTES.malla.path + `/${mallaId}/asignaturas`,
+	},
 	asignatura: "/asignatura",
 	curso: "/curso",
 } as const;

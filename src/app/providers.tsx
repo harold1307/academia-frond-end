@@ -35,6 +35,7 @@ export default function Providers({ children }: React.PropsWithChildren) {
 				event.payload
 			) {
 				const account = (event.payload as AuthenticationResult).account;
+				console.log(account);
 				msalInstance.setActiveAccount(account);
 			}
 

@@ -60,11 +60,12 @@ model Asignatura {
 }
 
 model AsignaturaEnMalla {
+  id                        String          @id @default(uuid())
   ejeFormativo              String
   nivel                     Int
   areaConocimiento          String
   campoFormacion            String
-  tipoAsignatura            String
+  tipoAsignatura            TipoAsignatura
   identificacion            String
   permiteMatriculacion      Boolean
   validaCredito             Boolean
@@ -89,8 +90,9 @@ model AsignaturaEnMalla {
   mallaId                   String
   asignatura                Asignatura      @relation(fields: [asignaturaId], references: [id])
   malla                     MallaCurricular @relation(fields: [mallaId], references: [id])
+  competenciaGenerica       Competencia?
 
-  @@id([asignaturaId, mallaId])
+  @@index([asignaturaId], map: "asignaturas_en_mallas_asignaturaId_fkey")
   @@index([mallaId], map: "asignaturas_en_mallas_mallaId_fkey")
   @@map("asignaturas_en_mallas")
 }
@@ -134,6 +136,71 @@ model VarianteCurso {
   @@map("variantes_de_cursos")
 }
 
+model Competencia {
+  id                  String             @id @default(uuid())
+  tipo                TipoCompetencia
+  nombre              String
+  asignaturaEnMallaId String?            @unique
+  asignaturaEnMalla   AsignaturaEnMalla? @relation(fields: [asignaturaEnMallaId], references: [id], onUpdate: SetNull)
+
+  @@map("competencias")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  expires_in        Int?
+  ext_expires_in    Int?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId], map: "accounts_userId_fkey")
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "sessions_userId_fkey")
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
 enum Modalidad {
   VIRTUAL
   PRESENCIAL
@@ -155,4 +222,17 @@ enum TipoInstitucion {
   PARTICULAR
 
   @@map("tipo_institucion")
+}
+
+enum TipoCompetencia {
+  ESPECIFICA
+  GENERICA
+
+  @@map("tipo_competencia")
+}
+
+enum TipoAsignatura {
+  PRACTICA
+
+  @@map("tipo_asignatura")
 }

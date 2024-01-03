@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ROUTES } from "@/core/routes";
+import { getServerAuthSession } from "@/server/auth";
 
 const modulos = [
 	{
@@ -9,7 +10,7 @@ const modulos = [
 	},
 	{
 		label: "Malla",
-		href: ROUTES.malla,
+		href: ROUTES.malla.path,
 	},
 	{
 		label: "Asignatura",
@@ -21,7 +22,9 @@ const modulos = [
 	},
 ];
 
-export default function Home() {
+export default async function Home() {
+	const session = await getServerAuthSession();
+	console.log(session);
 	return (
 		<>
 			<section className='mt-2'>

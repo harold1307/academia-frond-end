@@ -1,27 +1,31 @@
-import type { MallaCurricular } from "@prisma/client";
+import type {
+	$Enums,
+	Asignatura,
+	AsignaturaEnMalla,
+	MallaCurricular,
+} from "@prisma/client";
 
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { ReplaceDateToString } from "@/utils/types";
 
-type MallaCurricularFromAPI = Omit<
-	MallaCurricular,
-	"fechaAprobacion" | "fechaLimiteVigencia" | "createdAt"
-> & {
-	fechaAprobacion: string;
-	fechaLimiteVigencia: string;
-	createdAt: string;
+type AsignaturaEnMallaFromAPI = ReplaceDateToString<AsignaturaEnMalla>;
+
+type MallaCurricularFromAPI = ReplaceDateToString<MallaCurricular>;
+
+type MallaCurricularWithAsignaturasFromAPI = MallaCurricularFromAPI & {
+	asignaturasEnMalla: (AsignaturaEnMallaFromAPI & {
+		asignatura: Asignatura;
+	})[];
 };
+
+export type UpdateMallaData = Partial<MallaCurricularFromAPI>;
 
 export class MallaCurricularClass {
 	constructor(private apiUrl: string) {}
 
 	async update(params: {
 		id: string;
-		mallaCurricular: Partial<
-			Omit<MallaCurricularFromAPI, "id" | "createdAt"> & {
-				fechaAprobacion: string;
-				fechaLimiteVigencia: string;
-			}
-		>;
+		mallaCurricular: UpdateMallaData;
 	}): Promise<APIResponse<MallaCurricularFromAPI>> {
 		const res = await fetch(
 			this.apiUrl + `/api/mallas-curriculares/${params.id}`,
@@ -64,7 +68,9 @@ export class MallaCurricularClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<MallaCurricularFromAPI[]>> {
+	async getMany(
+		_: void,
+	): Promise<APIResponse<MallaCurricularWithAsignaturasFromAPI[]>> {
 		const res = await fetch(this.apiUrl + "/api/mallas-curriculares");
 
 		if (!res.ok) {
@@ -100,4 +106,80 @@ export class MallaCurricularClass {
 
 		return res.json();
 	}
+
+	async createAsignaturaEnMalla({
+		asignaturaId,
+		data,
+		mallaId,
+	}: CreateAsignaturaEnMallaParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl +
+				`/api/mallas-curriculares/${mallaId}/asignaturas/${asignaturaId}`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			console.error("Error al crear la asigantura en malla.", await res.json());
+			throw new APIError("Error al crear la asigantura en malla.");
+		}
+
+		return res.json();
+	}
+
+	async getMallaWithAsignaturasByMallaId(
+		id: string,
+	): Promise<APIResponse<MallaCurricularWithAsignaturasFromAPI>> {
+		const res = await fetch(
+			this.apiUrl + `/api/mallas-curriculares/${id}/asignaturas`,
+		);
+
+		if (!res.ok) {
+			console.error(
+				"Error al obtener mallas con asignaturas.",
+				await res.json(),
+			);
+			throw new APIError("Error al obtener mallas con asignaturas.");
+		}
+
+		return res.json();
+	}
 }
+
+export type CreateAsignaturaEnMallaParams = {
+	mallaId: string;
+	asignaturaId: string;
+	data: {
+		ejeFormativo: string;
+		nivel: number;
+		areaConocimiento: string;
+		campoFormacion: string;
+		tipoAsignatura: $Enums.TipoAsignatura;
+		identificacion: string;
+		permiteMatriculacion: boolean;
+		validaCredito: boolean;
+		validaPromedio: boolean;
+		costoEnMatricula: boolean;
+		practicasPreProfesionales: boolean;
+		requeridaEgreso: boolean;
+		cantidadMatriculas: number;
+		horasSemanales: number;
+		horasColaborativas: number;
+		horasAsistidasDocente: number;
+		horasAutonomas: number;
+		horasPracticas: number;
+		creditos: number;
+		noValidaAsistencia: boolean;
+		materiaComun: boolean;
+		objetivos: string | null;
+		descripcion: string | null;
+		resultadosAprendizaje: string | null;
+
+		competenciaGenerica: string | null;
+	};
+};

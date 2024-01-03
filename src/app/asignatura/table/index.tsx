@@ -39,7 +39,7 @@ export default function AsignaturaTable() {
 				a =>
 					({
 						...a,
-						isUsed: true,
+						isUsed: a.enUso,
 					}) satisfies AsignaturaTableItem,
 			) || [],
 		[data],

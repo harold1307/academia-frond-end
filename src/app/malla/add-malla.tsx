@@ -44,7 +44,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { API } from "@/core/api-client";
 import { MALLA_KEYS } from "./query-keys";
 
-const IDK = [
+export const IDK = [
 	"1ER",
 	"2DO",
 	"3ER",
@@ -56,6 +56,10 @@ const IDK = [
 	"9NO",
 	"10MO",
 ] as const;
+
+export const mallaParams = {
+	update: "actualizarMalla",
+};
 
 type CreateMallaCurricularInput = Omit<
 	MallaCurricular,
@@ -354,8 +358,7 @@ export type Field<K> =
 
 type FieldDefault<K> = {
 	name: K;
-	inputType: React.HTMLInputTypeAttribute;
-	options?: undefined;
+	inputType: Exclude<React.HTMLInputTypeAttribute, object>;
 	placeholder?: string;
 	label: string;
 };
@@ -363,7 +366,6 @@ type FieldDefault<K> = {
 type FieldDate<K> = {
 	name: K;
 	inputType: "custom-date";
-	options?: undefined;
 	placeholder?: string;
 	label: string;
 };
@@ -371,7 +373,7 @@ type FieldDate<K> = {
 type FieldSelect<K> = {
 	name: K;
 	inputType: "custom-select";
-	options: string[] | { label: string; value: string }[] | K;
+	options: string[] | { label: string; value: string }[] | K | "custom";
 	placeholder?: string;
 	label: string;
 };
@@ -385,7 +387,6 @@ type FieldSelect<K> = {
 type FieldTextArea<K> = {
 	name: K;
 	inputType: "custom-text-area";
-	options?: undefined;
 	placeholder?: string;
 	label: string;
 };

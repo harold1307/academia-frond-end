@@ -1,7 +1,17 @@
-import { Button } from "@/app/_components/ui/button";
 import type { MallaCurricular } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { FileSignature, GripHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { Button } from "@/app/_components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/app/_components/ui/dropdown-menu";
+import { ROUTES } from "@/core/routes";
 
 export type MallaCurricularTableItem = Omit<
 	MallaCurricular,
@@ -90,6 +100,38 @@ export const columns = [
 	}),
 	helper.display({
 		id: "actions",
-		cell: () => <Button>Acciones</Button>,
+		cell: ({ row }) => {
+			const id = row.getValue("id") as string;
+
+			return <Actions mallaId={id} />;
+		},
 	}),
 ];
+
+function Actions(props: { mallaId: string }) {
+	const router = useRouter();
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button>Acciones</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent className='w-56'>
+				<DropdownMenuItem
+				// onClick={() => onClick(cursosParams.update, props.cursoId)}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						router.push(ROUTES.malla.asignaturasEnMalla(props.mallaId))
+					}
+				>
+					<GripHorizontal className='mr-2 h-4 w-4' />
+					<span>Asignaturas</span>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}

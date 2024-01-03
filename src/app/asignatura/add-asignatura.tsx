@@ -1,8 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import React from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -21,9 +18,11 @@ import {
 	FormLabel,
 } from "@/app/_components/ui/form";
 import { API } from "@/core/api-client";
+import { useMutateModule } from "@/hooks/use-mutate-module";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
 import type { Field } from "../malla/add-malla";
+import { ASIGNATURA_KEYS } from "./query-keys";
 
 const schema = z.object({
 	nombre: z.string(),
@@ -37,26 +36,28 @@ const schema = z.object({
 export type CreateAsignatura = z.infer<typeof schema>;
 
 export default function AddAsignatura() {
-	const [open, setOpen] = React.useState(false);
-
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: CreateAsignatura) => {
-			return API.asignaturas.create(data);
+	const { form, mutation, open, setOpen } = useMutateModule({
+		schema,
+		invalidateQueryKey: ASIGNATURA_KEYS.lists(),
+		mutationFn: async data => {
+			return API.asignaturas.create({
+				...data,
+				codigo: data.codigo || null,
+			});
 		},
 
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			setOpen(false);
 		},
-	});
-	const form = useForm<CreateAsignatura>({
-		resolver: zodResolver(schema),
-		disabled: isSubmitting,
-		defaultValues: {
-			codigo: "",
+
+		hookFormProps: {
+			resolver: zodResolver(schema),
+			defaultValues: {
+				codigo: "",
+			},
+			shouldUnregister: true,
 		},
-		shouldUnregister: true,
 	});
 
 	return (
@@ -65,7 +66,7 @@ export default function AddAsignatura() {
 			<Dialog
 				open={open}
 				onOpenChange={state => {
-					if (isSubmitting) return;
+					if (mutation.isPending) return;
 					setOpen(state);
 				}}
 			>
@@ -78,7 +79,7 @@ export default function AddAsignatura() {
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 							className='space-y-8'
 						>
 							{fields.map(f => (
@@ -104,11 +105,15 @@ export default function AddAsignatura() {
 								/>
 							))}
 							<DialogFooter>
-								<Button disabled={isSubmitting} type='submit' variant='success'>
+								<Button
+									disabled={mutation.isPending}
+									type='submit'
+									variant='success'
+								>
 									Guardar
 								</Button>
 								<Button
-									disabled={isSubmitting}
+									disabled={mutation.isPending}
 									variant='destructive'
 									type='button'
 									onClick={() => setOpen(false)}

@@ -2,6 +2,10 @@ import type { Asignatura } from "@prisma/client";
 
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
+export type AsignaturaWithIsUsed = Asignatura & {
+	enUso: boolean;
+};
+
 export class AsignaturaClass {
 	constructor(private apiUrl: string) {}
 
@@ -44,7 +48,7 @@ export class AsignaturaClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<Asignatura[]>> {
+	async getMany(_: void): Promise<APIResponse<AsignaturaWithIsUsed[]>> {
 		const res = await fetch(this.apiUrl + "/api/asignaturas");
 
 		if (!res.ok) {
