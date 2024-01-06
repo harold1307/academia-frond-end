@@ -354,7 +354,8 @@ export type Field<K> =
 	| FieldDefault<K>
 	| FieldSelect<K>
 	| FieldDate<K>
-	| FieldTextArea<K>;
+	| FieldTextArea<K>
+	| FieldReference;
 
 type FieldDefault<K> = {
 	name: K;
@@ -374,6 +375,13 @@ type FieldSelect<K> = {
 	name: K;
 	inputType: "custom-select";
 	options: string[] | { label: string; value: string }[] | K | "custom";
+	placeholder?: string;
+	label: string;
+};
+
+type FieldReference = {
+	name: `reference-${string}`;
+	inputType: Exclude<React.HTMLInputTypeAttribute, object>;
 	placeholder?: string;
 	label: string;
 };

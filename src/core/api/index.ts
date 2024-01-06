@@ -1,5 +1,8 @@
+import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
+import { CampoFormacionClass } from "./campos-formacion";
 import { CursoClass } from "./cursos";
+import { EjeFormativoClass } from "./ejes-formativos";
 import { InstitucionClass } from "./institucion";
 import { MallaCurricularClass } from "./malla-curricular";
 
@@ -28,6 +31,18 @@ export class APIClass {
 
 	get cursos() {
 		return new CursoClass(this.apiUrl);
+	}
+
+	get ejesFormativos() {
+		return new EjeFormativoClass(this.apiUrl);
+	}
+
+	get camposFormacion() {
+		return new CampoFormacionClass(this.apiUrl);
+	}
+
+	get areasConocimiento() {
+		return new AreaConocimientoClass(this.apiUrl);
 	}
 }
 

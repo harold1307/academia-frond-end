@@ -1,18 +1,27 @@
 import type {
 	$Enums,
+	AreaConocimiento,
 	Asignatura,
 	AsignaturaEnMalla,
+	CampoFormacion,
+	EjeFormativo,
 	MallaCurricular,
 } from "@prisma/client";
 
-import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { ReplaceDateToString } from "@/utils/types";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
-type AsignaturaEnMallaFromAPI = ReplaceDateToString<AsignaturaEnMalla>;
+export type AsignaturaEnMallaFromAPI = ReplaceDateToString<
+	AsignaturaEnMalla & {
+		ejeFormativo: EjeFormativo | null;
+		areaConocimiento: AreaConocimiento | null;
+		campoFormacion: CampoFormacion | null;
+	}
+>;
 
-type MallaCurricularFromAPI = ReplaceDateToString<MallaCurricular>;
+export type MallaCurricularFromAPI = ReplaceDateToString<MallaCurricular>;
 
-type MallaCurricularWithAsignaturasFromAPI = MallaCurricularFromAPI & {
+export type MallaCurricularWithAsignaturasFromAPI = MallaCurricularFromAPI & {
 	asignaturasEnMalla: (AsignaturaEnMallaFromAPI & {
 		asignatura: Asignatura;
 	})[];
@@ -155,10 +164,8 @@ export type CreateAsignaturaEnMallaParams = {
 	mallaId: string;
 	asignaturaId: string;
 	data: {
-		ejeFormativo: string;
+		esAnexo: boolean;
 		nivel: number;
-		areaConocimiento: string;
-		campoFormacion: string;
 		tipoAsignatura: $Enums.TipoAsignatura;
 		identificacion: string;
 		permiteMatriculacion: boolean;
@@ -181,5 +188,8 @@ export type CreateAsignaturaEnMallaParams = {
 		resultadosAprendizaje: string | null;
 
 		competenciaGenerica: string | null;
+		ejeFormativoId: string;
+		areaConocimientoId: string;
+		campoFormacionId: string;
 	};
 };

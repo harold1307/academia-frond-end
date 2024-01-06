@@ -30,12 +30,23 @@ export default function MallaCurricularTable() {
 		return data?.map(malla => {
 			const obj = {
 				credits: 0,
-				totalHours: 0,
+				totalHours: 0 + malla.horasPractica + malla.horasVinculacion,
+				coursesHours: 0,
 			};
 
-			malla.asignaturasEnMalla.forEach(a => {
+			const asignaturas = malla.asignaturasEnMalla.filter(a => !a.esAnexo);
+			const modulos = malla.asignaturasEnMalla.filter(a => a.esAnexo);
+
+			asignaturas.forEach(a => {
 				obj.credits += a.creditos;
 				obj.totalHours +=
+					a.horasAsistidasDocente +
+					a.horasAutonomas +
+					a.horasColaborativas +
+					a.horasPracticas +
+					a.horasSemanales;
+
+				obj.coursesHours +=
 					a.horasAsistidasDocente +
 					a.horasAutonomas +
 					a.horasColaborativas +
@@ -46,16 +57,15 @@ export default function MallaCurricularTable() {
 			return {
 				...malla,
 				...obj,
-				coursesCount: malla.asignaturasEnMalla.length,
-				coursesHours: 0,
+				coursesCount: asignaturas.length,
 				approved: {
 					fechaAprobacion: new Date(malla.fechaAprobacion),
 					fechaLimiteVigencia: new Date(malla.fechaLimiteVigencia),
 				},
 				isCurrent:
 					new Date(malla.fechaLimiteVigencia).valueOf() > new Date().valueOf(),
-				isUsed: !!malla.asignaturasEnMalla.length,
-				modulesCount: 0,
+				isUsed: false, // si hay alumnos dentro
+				modulesCount: modulos.length,
 				onlineCoursesCount: 0,
 				studentsUsingCount: 0,
 			} satisfies MallaCurricularTableItem;

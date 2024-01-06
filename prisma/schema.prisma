@@ -21,9 +21,9 @@ model MallaCurricular {
   cantidadOptativasEgreso   Int
   cantidadArrastres         Int
   practicasLigadasMaterias  Boolean
-  horasPractica             Int
+  horasPractica             Float
   registroPracticasDesde    Int
-  horasVinculacion          Int
+  horasVinculacion          Float
   registroVinculacionDesde  Int
   registroProyectosDesde    Int
   usaNivelacion             Boolean
@@ -31,7 +31,7 @@ model MallaCurricular {
   observaciones             String?
   createdAt                 DateTime            @default(now())
   perfilEgreso              String?
-  asignaturaEnMalla         AsignaturaEnMalla[]
+  asignaturasEnMalla        AsignaturaEnMalla[]
 
   @@map("mallas_curriculares")
 }
@@ -51,20 +51,17 @@ model Institucion {
 }
 
 model Asignatura {
-  id                String              @id @default(uuid())
-  nombre            String
-  codigo            String?
-  asignaturaEnMalla AsignaturaEnMalla[]
+  id                 String              @id @default(uuid())
+  nombre             String
+  codigo             String?
+  asignaturasEnMalla AsignaturaEnMalla[]
 
   @@map("asignaturas")
 }
 
 model AsignaturaEnMalla {
-  id                        String          @id @default(uuid())
-  ejeFormativo              String
+  id                        String            @id @default(uuid())
   nivel                     Int
-  areaConocimiento          String
-  campoFormacion            String
   tipoAsignatura            TipoAsignatura
   identificacion            String
   permiteMatriculacion      Boolean
@@ -74,25 +71,35 @@ model AsignaturaEnMalla {
   practicasPreProfesionales Boolean
   requeridaEgreso           Boolean
   cantidadMatriculas        Int
-  horasSemanales            Int
-  horasColaborativas        Int
-  horasAsistidasDocente     Int
-  horasAutonomas            Int
-  horasPracticas            Int
+  horasSemanales            Float
+  horasColaborativas        Float
+  horasAsistidasDocente     Float
+  horasAutonomas            Float
+  horasPracticas            Float
   creditos                  Float
   noValidaAsistencia        Boolean
   materiaComun              Boolean
-  objetivos                 String
-  descripcion               String
-  resultadosAprendizaje     String
-  createdAt                 DateTime        @default(now())
+  objetivos                 String?
+  descripcion               String?
+  resultadosAprendizaje     String?
+  createdAt                 DateTime          @default(now())
   asignaturaId              String
   mallaId                   String
-  asignatura                Asignatura      @relation(fields: [asignaturaId], references: [id])
-  malla                     MallaCurricular @relation(fields: [mallaId], references: [id])
+  areaConocimientoId        String?
+  campoFormacionId          String?
+  ejeFormativoId            String?
+  esAnexo                   Boolean           @default(false)
+  areaConocimiento          AreaConocimiento? @relation(fields: [areaConocimientoId], references: [id])
+  asignatura                Asignatura        @relation(fields: [asignaturaId], references: [id])
+  campoFormacion            CampoFormacion?   @relation(fields: [campoFormacionId], references: [id])
+  ejeFormativo              EjeFormativo?     @relation(fields: [ejeFormativoId], references: [id])
+  malla                     MallaCurricular   @relation(fields: [mallaId], references: [id])
   competenciaGenerica       Competencia?
 
+  @@index([areaConocimientoId], map: "asignaturas_en_mallas_areaConocimientoId_fkey")
   @@index([asignaturaId], map: "asignaturas_en_mallas_asignaturaId_fkey")
+  @@index([campoFormacionId], map: "asignaturas_en_mallas_campoFormacionId_fkey")
+  @@index([ejeFormativoId], map: "asignaturas_en_mallas_ejeFormativoId_fkey")
   @@index([mallaId], map: "asignaturas_en_mallas_mallaId_fkey")
   @@map("asignaturas_en_mallas")
 }
@@ -146,8 +153,33 @@ model Competencia {
   @@map("competencias")
 }
 
+model EjeFormativo {
+  id                 String              @id @default(uuid())
+  nombre             String
+  asignaturasEnMalla AsignaturaEnMalla[]
+
+  @@map("ejes_formativos")
+}
+
+model AreaConocimiento {
+  id                 String              @id @default(uuid())
+  nombre             String
+  codigo             String?
+  asignaturasEnMalla AsignaturaEnMalla[]
+
+  @@map("areas_de_conocimiento")
+}
+
+model CampoFormacion {
+  id                 String              @id @default(uuid())
+  nombre             String
+  asignaturasEnMalla AsignaturaEnMalla[]
+
+  @@map("campos_de_formacion")
+}
+
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id @default(uuid())
   userId            String
   type              String
   provider          String
@@ -169,7 +201,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
@@ -180,7 +212,7 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
@@ -204,14 +236,17 @@ model VerificationToken {
 enum Modalidad {
   VIRTUAL
   PRESENCIAL
+  DUAL
+  EN_LINEA
+  SEMIPRESENCIAL
 
   @@map("modalidad")
 }
 
 enum TipoDuracion {
   HORAS
-  SEMANAS
-  MESES
+  SEMESTRES
+  CREDITOS
   ANOS
 
   @@map("tipo_duracion")
@@ -233,6 +268,8 @@ enum TipoCompetencia {
 
 enum TipoAsignatura {
   PRACTICA
+  TEORICA
+  TEORICA_PRACTICA
 
   @@map("tipo_asignatura")
 }
