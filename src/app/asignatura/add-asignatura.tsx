@@ -21,8 +21,8 @@ import { API } from "@/core/api-client";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
-import type { Field } from "../malla/add-malla";
 import { ASIGNATURA_KEYS } from "./query-keys";
+import type { Field } from "@/utils/forms";
 
 const schema = z.object({
 	nombre: z.string(),

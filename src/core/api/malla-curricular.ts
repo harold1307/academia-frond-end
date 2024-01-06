@@ -143,9 +143,19 @@ export class MallaCurricularClass {
 
 	async getMallaWithAsignaturasByMallaId(
 		id: string,
+		filters?: {
+			asignaturas_esAnexo?: boolean;
+		},
 	): Promise<APIResponse<MallaCurricularWithAsignaturasFromAPI>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(filters || {}).forEach(([f, v]) => {
+			searchParams.set(f, `${v}`);
+		});
+
 		const res = await fetch(
-			this.apiUrl + `/api/mallas-curriculares/${id}/asignaturas`,
+			this.apiUrl +
+				`/api/mallas-curriculares/${id}/asignaturas?${searchParams.toString()}`,
 		);
 
 		if (!res.ok) {

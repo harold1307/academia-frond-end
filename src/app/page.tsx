@@ -18,7 +18,7 @@ const modulos = [
 	},
 	{
 		label: "Curso",
-		href: ROUTES.curso,
+		href: ROUTES.curso.path,
 	},
 ];
 

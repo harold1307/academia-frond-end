@@ -1,6 +1,9 @@
+import { notFound } from "next/navigation";
+import React from "react";
+
 import { APIserver } from "@/core/api-server";
 import AddAsignaturaEnMalla from "./add-asignatura-en-malla";
-import AsignaturaEnMallaTable from "./table";
+import AsignaturaEnMallaTableServer from "./table/server";
 
 type Context = {
 	params: {
@@ -14,10 +17,9 @@ export default async function AsignaturasEnMallaPage({ params }: Context) {
 	const asignaturas = await APIserver.asignaturas.getMany();
 	const malla = await APIserver.mallas.getById(params.mallaId);
 
-	console.log(asignaturas);
-
 	if (!malla) {
 		console.log("Malla no existe");
+		return notFound();
 	}
 
 	return (
@@ -28,7 +30,9 @@ export default async function AsignaturasEnMallaPage({ params }: Context) {
 					mallaNiveles={malla.data?.niveles}
 					asignaturas={asignaturas.data}
 				/>
-				<AsignaturaEnMallaTable mallaId={params.mallaId} />
+				<React.Suspense fallback={"Cargando tabla..."}>
+					<AsignaturaEnMallaTableServer mallaId={params.mallaId} />
+				</React.Suspense>
 			</div>
 		</>
 	);

@@ -1,34 +1,30 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
-import { ASIGNATURA_EN_MALLA_KEYS } from "../query-keys";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/app/_components/ui/card";
+import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/malla-curricular";
+import { NIVELES_PREFIXES } from "@/utils/forms";
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { columns, type AsignaturaEnMallaTableItem, helper } from "./columns";
-import { API } from "@/core/api-client";
-import { IDK } from "@/app/malla/add-malla";
 
 export default function AsignaturaEnMallaTable({
-	mallaId,
+	tableRows,
+	malla,
 }: {
-	mallaId: string;
+	tableRows: any;
+	malla: MallaCurricularWithAsignaturasFromAPI;
 }) {
 	const [cols, setCols] = React.useState(columns);
-	const { isLoading, data } = useQuery({
-		queryKey: ASIGNATURA_EN_MALLA_KEYS.list(JSON.stringify({ mallaId })),
-		queryFn: async () => {
-			const data = await API.mallas.getMallaWithAsignaturasByMallaId(mallaId);
 
-			return data.data;
-		},
-	});
+	React.useEffect(() => {
+		const totalNiveles = malla.niveles;
 
-	const mallas = React.useMemo(() => {
-		if (!data) return;
-
-		const totalNiveles = data?.niveles;
-
-		const nivelesPrefixes = IDK.slice(0, totalNiveles);
+		const nivelesPrefixes = NIVELES_PREFIXES.slice(0, totalNiveles);
 
 		setCols([
 			...columns,
@@ -36,115 +32,60 @@ export default function AsignaturaEnMallaTable({
 				accessorKey: prefix + " NIVEL",
 				id: prefix + " NIVEL",
 				header: prefix + " NIVEL",
+				// @ts-expect-error not well typed because dynamic columns
+				cell: ({ getValue }) =>
+					(
+						getValue() as MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"]
+					).map(a => <AsignaturaEnMalla asignaturaEnMalla={a} key={a.id} />),
 			})),
-		]);
-
-		const groupByEje = data?.asignaturasEnMalla.reduce(
-			(acc, curr) => {
-				const key = curr.ejeFormativo;
-				const currentNivel = nivelesPrefixes.at(curr.nivel - 1);
-
-				if (!currentNivel) return acc;
-
-				const newAcc = {
-					...acc,
-				} as Record<
-					string,
-					Array<{
-						nivel: (typeof nivelesPrefixes)[number];
-						asignaturas: string[];
-					}>
-				>;
-
-				if (!newAcc[key as keyof object]) {
-					newAcc[key as keyof object] = [
-						{
-							nivel: currentNivel,
-							asignaturas: [],
-						},
-					];
-				}
-
-				const existsNivel = newAcc[key as keyof object]?.find(
-					c => c.nivel === currentNivel,
-				);
-
-				if (!existsNivel) {
-					newAcc[key as keyof object]?.push({
-						nivel: currentNivel,
-						asignaturas: [],
-					});
-				}
-
-				const securedInsideArrIdx = newAcc[key as keyof object]!.findIndex(
-					o => o.nivel === currentNivel,
-				)!;
-
-				newAcc[key as keyof object]!.at(securedInsideArrIdx)!.asignaturas.push(
-					curr.asignatura.nombre,
-				);
-
-				return newAcc;
+			{
+				accessorKey: "total",
+				id: "total",
+				header: "TOTAL",
 			},
-			{} as Record<
-				string,
-				Array<{
-					nivel: (typeof nivelesPrefixes)[number];
-					asignaturas: string[];
-				}>
-			>,
-		);
-
-		console.log({ groupByEje });
-
-		return Object.entries(groupByEje || {}).map(([eje, asignaturas], idx) => {
-			const groupByNivel = asignaturas.reduce(
-				(acc, curr) => {
-					const key = curr.nivel;
-
-					const newAcc = {
-						...acc,
-					} as Record<(typeof nivelesPrefixes)[number], Array<string>>;
-
-					if (!newAcc[key]) {
-						newAcc[key] = curr.asignaturas;
-					}
-
-					return newAcc;
-				},
-				{} as Record<(typeof nivelesPrefixes)[number], Array<string>>,
-			);
-
-			const res = {
-				id: idx,
-				ejeFormativo: eje,
-			};
-
-			Object.entries(groupByNivel).forEach(([nivel, asignaturas]) => {
-				// @ts-expect-error idk
-				res[(nivel + " NIVEL") as keyof object] = asignaturas;
-			});
-
-			return res;
-		});
-	}, [data]);
-
-	console.log(mallas);
-
-	if (isLoading) {
-		return "Cargando tabla...";
-	}
-
-	if (isLoading && !mallas) {
-		return "WTF";
-	}
-
-	if (!mallas) return "Ha ocurrido un error en el fetch";
+		]);
+	}, [malla]);
 
 	return (
 		<section>
 			<h1 className='text-2xl font-semibold'>Tabla</h1>
-			<DataTable columns={cols as any} data={mallas} />
+			<DataTable columns={cols as any} data={tableRows} />
 		</section>
+	);
+}
+
+type AsignaturaEnMallaProps = {
+	asignaturaEnMalla: MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"][number];
+};
+
+function AsignaturaEnMalla({ asignaturaEnMalla }: AsignaturaEnMallaProps) {
+	const {
+		identificacion,
+		asignatura,
+		horasAsistidasDocente,
+		horasAutonomas,
+		horasColaborativas,
+		horasPracticas,
+		horasSemanales,
+		creditos,
+	} = asignaturaEnMalla;
+
+	const horasTotales =
+		horasAsistidasDocente +
+		horasAutonomas +
+		horasColaborativas +
+		horasPracticas;
+
+	return (
+		<Card className='w-fit'>
+			<CardHeader className='p-4'>
+				<CardTitle className='text-sm'>
+					{identificacion + " - " + asignatura.nombre}
+				</CardTitle>
+				<CardDescription>
+					Hrs: {horasTotales} Cred: {creditos} H.Sem: {horasSemanales}
+				</CardDescription>
+			</CardHeader>
+		</Card>
 	);
 }

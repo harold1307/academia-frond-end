@@ -1,6 +1,9 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Modalidad, TipoDuracion, type MallaCurricular } from "@prisma/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,9 +30,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/app/_components/ui/select";
+import { API } from "@/core/api-client";
 import { cn } from "@/utils";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
 import { Checkbox } from "../_components/ui/checkbox";
@@ -40,22 +43,7 @@ import {
 	PopoverTrigger,
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { API } from "@/core/api-client";
 import { MALLA_KEYS } from "./query-keys";
-
-export const IDK = [
-	"1ER",
-	"2DO",
-	"3ER",
-	"4TO",
-	"5TO",
-	"6TO",
-	"7MO",
-	"8VO",
-	"9NO",
-	"10MO",
-] as const;
 
 export const mallaParams = {
 	update: "actualizarMalla",
@@ -69,9 +57,9 @@ type CreateMallaCurricularInput = Omit<
 	| "registroVinculacionDesde"
 	| "registroProyectosDesde"
 > & {
-	registroPracticasDesde: (typeof IDK)[number];
-	registroVinculacionDesde: (typeof IDK)[number];
-	registroProyectosDesde: (typeof IDK)[number];
+	registroPracticasDesde: (typeof NIVELES_PREFIXES)[number];
+	registroVinculacionDesde: (typeof NIVELES_PREFIXES)[number];
+	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
 };
 
 type CreateMallaCurricularOutput = Omit<
@@ -100,15 +88,15 @@ const createMallaSchema: z.ZodType<
 	practicasLigadasMaterias: z.boolean(),
 	horasPractica: z.number(),
 	registroPracticasDesde: z
-		.enum(IDK)
-		.transform(v => IDK.findIndex(i => i === v) + 1),
+		.enum(NIVELES_PREFIXES)
+		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
 	horasVinculacion: z.number(),
 	registroVinculacionDesde: z
-		.enum(IDK)
-		.transform(v => IDK.findIndex(i => i === v) + 1),
+		.enum(NIVELES_PREFIXES)
+		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
 	registroProyectosDesde: z
-		.enum(IDK)
-		.transform(v => IDK.findIndex(i => i === v) + 1),
+		.enum(NIVELES_PREFIXES)
+		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
 	usaNivelacion: z.boolean(),
 	plantillasSilabo: z.boolean(),
 	perfilEgreso: z.string(),
@@ -223,12 +211,18 @@ export default function AddMalla() {
 											case "custom-select": {
 												const options =
 													f.options === "niveles"
-														? IDK.slice(0, form.getValues().niveles).map(
+														? NIVELES_PREFIXES.slice(
+																0,
+																form.getValues().niveles,
+															).map(
 																v =>
 																	({
 																		value: v,
 																		label: `${v} NIVEL`,
-																	}) satisfies { label: string; value: string },
+																	}) satisfies {
+																		label: string;
+																		value: string;
+																	},
 															)
 														: f.options;
 
@@ -349,55 +343,6 @@ export default function AddMalla() {
 		</section>
 	);
 }
-
-export type Field<K> =
-	| FieldDefault<K>
-	| FieldSelect<K>
-	| FieldDate<K>
-	| FieldTextArea<K>
-	| FieldReference;
-
-type FieldDefault<K> = {
-	name: K;
-	inputType: Exclude<React.HTMLInputTypeAttribute, object>;
-	placeholder?: string;
-	label: string;
-};
-
-type FieldDate<K> = {
-	name: K;
-	inputType: "custom-date";
-	placeholder?: string;
-	label: string;
-};
-
-type FieldSelect<K> = {
-	name: K;
-	inputType: "custom-select";
-	options: string[] | { label: string; value: string }[] | K | "custom";
-	placeholder?: string;
-	label: string;
-};
-
-type FieldReference = {
-	name: `reference-${string}`;
-	inputType: Exclude<React.HTMLInputTypeAttribute, object>;
-	placeholder?: string;
-	label: string;
-};
-
-// const CUSTOM_FIELDS = [
-// 	"custom-date",
-// 	"custom-select",
-// 	"custom-text-area",
-// ] as const;
-
-type FieldTextArea<K> = {
-	name: K;
-	inputType: "custom-text-area";
-	placeholder?: string;
-	label: string;
-};
 
 const fields = [
 	{

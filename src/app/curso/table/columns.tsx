@@ -1,6 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -9,6 +8,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
+import { ROUTES } from "@/core/routes";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { cursosParams } from "../add-curso";
 
 export type CursoTableItem = {
@@ -51,16 +52,7 @@ export const columns = [
 ];
 
 function Actions(props: { cursoId: string; showDelete: boolean }) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const pathname = usePathname();
-
-	const onClick = (param: string, value: string) => {
-		const newParams = new URLSearchParams(searchParams);
-		newParams.set(param, value);
-
-		router.replace(pathname + "?" + newParams.toString());
-	};
+	const { replaceSet, router } = useMutateSearchParams();
 
 	return (
 		<DropdownMenu>
@@ -69,17 +61,19 @@ function Actions(props: { cursoId: string; showDelete: boolean }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => onClick(cursosParams.update, props.cursoId)}
+					onClick={() => replaceSet(cursosParams.update, props.cursoId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
-				{/* <DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(ROUTES.curso.variantes(props.cursoId))}
+				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Variantes</span>
-				</DropdownMenuItem> */}
+				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => onClick(cursosParams.deactivate, props.cursoId)}
+					onClick={() => replaceSet(cursosParams.deactivate, props.cursoId)}
 				>
 					<Lock className='mr-2 h-4 w-4' />
 					<span>Desactivar</span>

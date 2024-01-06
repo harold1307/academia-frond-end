@@ -8,16 +8,16 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
-type UseMutateModuleProps<T extends object, R, P> = {
-	schema?: z.ZodType<T>;
-	hookFormProps?: Parameters<typeof useForm<T>>[0];
-	invalidateQueryKey: QueryKey;
-	mutationFn: (data: P extends undefined ? T : P) => Promise<R>;
+type UseMutateModuleProps<T extends z.ZodType, R, P> = {
+	schema?: T;
+	hookFormProps?: Parameters<typeof useForm<z.infer<T>>>[0];
+	invalidateQueryKey?: QueryKey;
+	mutationFn: (data: P extends undefined ? z.infer<T> : P) => Promise<R>;
 	onSuccess: (response: R) => void;
 	onError: (error: any) => void;
 };
 
-export function useMutateModule<T extends object, R, P = undefined>({
+export function useMutateModule<T extends z.ZodType, R, P = undefined>({
 	schema,
 	invalidateQueryKey,
 	mutationFn,
@@ -40,7 +40,7 @@ export function useMutateModule<T extends object, R, P = undefined>({
 		},
 	});
 
-	const form = useForm<T>({
+	const form = useForm<z.infer<T>>({
 		...hookFormProps,
 		resolver: schema ? zodResolver(schema) : undefined,
 		disabled: mutation.isPending,

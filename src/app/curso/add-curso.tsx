@@ -11,7 +11,7 @@ import {
 	FormLabel,
 } from "../_components/ui/form";
 import { Input } from "../_components/ui/input";
-import type { Field } from "../malla/add-malla";
+import type { Field } from "@/utils/forms";
 import { CURSO_KEYS } from "./query-keys";
 
 export const cursosParams = {

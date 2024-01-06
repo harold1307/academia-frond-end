@@ -16,6 +16,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
+import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/malla-curricular";
+import type { NIVELES_PREFIXES } from "@/utils/forms";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -87,6 +89,70 @@ export function DataTable<TData, TValue>({
 							</TableCell>
 						</TableRow>
 					)}
+					{!!table.getRowModel().rows?.length &&
+						(() => {
+							const { rows } = table.getRowModel();
+							const totalNivelesConfig = {
+								horas: 0,
+								horasSem: 0,
+								credits: 0,
+							};
+							const niveles = columns
+								.filter(c => c.id?.includes("NIVEL"))
+								.map(c => c.id as `${(typeof NIVELES_PREFIXES)[number]} NIVEL`)
+								.map(nivel => {
+									const config = {
+										horas: 0,
+										horasSem: 0,
+										credits: 0,
+										name: nivel,
+									};
+
+									rows.forEach(r => {
+										const asignaturas = r.getValue(
+											nivel,
+										) as MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"];
+
+										asignaturas.forEach(asignatura => {
+											config.horasSem += asignatura.horasSemanales;
+											config.horas +=
+												asignatura.horasAsistidasDocente +
+												asignatura.horasAutonomas +
+												asignatura.horasColaborativas +
+												asignatura.horasPracticas;
+											config.credits += asignatura.creditos;
+										});
+									});
+
+									totalNivelesConfig.horasSem += config.horasSem;
+									totalNivelesConfig.horas += config.horas;
+									totalNivelesConfig.credits += config.credits;
+
+									return config;
+								});
+
+							console.log({ niveles });
+
+							return (
+								<TableRow>
+									<TableCell>TOTALES</TableCell>
+									{niveles.map(nivel => {
+										return (
+											<TableCell key={nivel.name}>
+												<div>Horas: {nivel.horas}</div>
+												<div>Horas Sem: {nivel.horasSem}</div>
+												<div>Creditos: {nivel.credits}</div>
+											</TableCell>
+										);
+									})}
+									<TableCell>
+										<div>Horas: {totalNivelesConfig.horas}</div>
+										<div>Horas Sem: {totalNivelesConfig.horasSem}</div>
+										<div>Creditos: {totalNivelesConfig.credits}</div>
+									</TableCell>
+								</TableRow>
+							);
+						})()}
 				</TableBody>
 			</Table>
 		</div>
