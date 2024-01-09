@@ -60,7 +60,7 @@ model Asignatura {
 }
 
 model AsignaturaEnMalla {
-  id                        String            @id @default(uuid())
+  id                        String           @id @default(uuid())
   nivel                     Int
   tipoAsignatura            TipoAsignatura
   identificacion            String
@@ -82,18 +82,19 @@ model AsignaturaEnMalla {
   objetivos                 String?
   descripcion               String?
   resultadosAprendizaje     String?
-  createdAt                 DateTime          @default(now())
+  createdAt                 DateTime         @default(now())
   asignaturaId              String
   mallaId                   String
-  areaConocimientoId        String?
-  campoFormacionId          String?
-  ejeFormativoId            String?
-  esAnexo                   Boolean           @default(false)
-  areaConocimiento          AreaConocimiento? @relation(fields: [areaConocimientoId], references: [id])
-  asignatura                Asignatura        @relation(fields: [asignaturaId], references: [id])
-  campoFormacion            CampoFormacion?   @relation(fields: [campoFormacionId], references: [id])
-  ejeFormativo              EjeFormativo?     @relation(fields: [ejeFormativoId], references: [id])
-  malla                     MallaCurricular   @relation(fields: [mallaId], references: [id])
+  areaConocimientoId        String
+  campoFormacionId          String
+  ejeFormativoId            String
+  esAnexo                   Boolean          @default(false)
+  sumaHoras                 Boolean
+  areaConocimiento          AreaConocimiento @relation(fields: [areaConocimientoId], references: [id])
+  asignatura                Asignatura       @relation(fields: [asignaturaId], references: [id])
+  campoFormacion            CampoFormacion   @relation(fields: [campoFormacionId], references: [id])
+  ejeFormativo              EjeFormativo     @relation(fields: [ejeFormativoId], references: [id])
+  malla                     MallaCurricular  @relation(fields: [mallaId], references: [id])
   competenciaGenerica       Competencia?
 
   @@index([areaConocimientoId], map: "asignaturas_en_mallas_areaConocimientoId_fkey")

@@ -190,6 +190,7 @@ export type CreateAsignaturaEnMallaParams = {
 		horasAsistidasDocente: number;
 		horasAutonomas: number;
 		horasPracticas: number;
+		sumaHoras: boolean;
 		creditos: number;
 		noValidaAsistencia: boolean;
 		materiaComun: boolean;

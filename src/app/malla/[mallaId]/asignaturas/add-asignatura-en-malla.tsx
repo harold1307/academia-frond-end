@@ -60,6 +60,7 @@ const schema = z.object<
 	horasAsistidasDocente: z.number(),
 	horasAutonomas: z.number(),
 	horasPracticas: z.number(),
+	sumaHoras: z.boolean(),
 	creditos: z.number(),
 	noValidaAsistencia: z.boolean(),
 	materiaComun: z.boolean(),
@@ -517,6 +518,7 @@ const fields = [
 	},
 	{ name: "horasAutonomas", label: "Horas autonomas", inputType: "number" },
 	{ name: "horasPracticas", label: "Horas practicas", inputType: "number" },
+	{ name: "sumaHoras", label: "Suma horas", inputType: "checkbox" },
 	{ name: "creditos", label: "Creditos", inputType: "number" },
 	{
 		name: "noValidaAsistencia",
