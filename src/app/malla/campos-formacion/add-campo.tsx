@@ -21,6 +21,11 @@ const schema = z.object<
 	nombre: z.string(),
 });
 
+export const camposParams = {
+	update: "actualizarCampo",
+	delete: "eliminarCampo",
+};
+
 export default function AddCampo() {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({

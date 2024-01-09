@@ -21,6 +21,11 @@ const schema = z.object<
 	nombre: z.string(),
 });
 
+export const ejesFormativosParams = {
+	update: "actualizarEje",
+	delete: "eliminarEje",
+};
+
 export default function AddEje() {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({

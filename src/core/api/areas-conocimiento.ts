@@ -73,4 +73,30 @@ export class AreaConocimientoClass {
 
 		return res.json();
 	}
+
+	async update(params: {
+		id: string;
+		areaConocimiento: Partial<Omit<AreaConocimientoFromAPI, "id" | "enUso">>;
+	}): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/areas-conocimiento/${params.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.areaConocimiento),
+			},
+		);
+
+		if (!res.ok) {
+			console.error(
+				"Error al actualizar el area de conocimiento.",
+				await res.json(),
+			);
+			throw new APIError("Error al actualizar el area de conocimiento.");
+		}
+
+		return res.json();
+	}
 }
