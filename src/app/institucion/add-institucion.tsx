@@ -45,6 +45,11 @@ const createInstitucionSchema = z.object({
 
 type Data = z.infer<typeof createInstitucionSchema>;
 
+export const institucionParams = {
+	update: "actualizarInstitucion",
+	delete: "eliminarInstitucion",
+};
+
 export default function AddInstitucion() {
 	const [open, setOpen] = React.useState(false);
 	const queryClient = useQueryClient();

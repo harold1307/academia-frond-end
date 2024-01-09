@@ -32,20 +32,22 @@ model MallaCurricular {
   createdAt                 DateTime            @default(now())
   perfilEgreso              String?
   asignaturasEnMalla        AsignaturaEnMalla[]
+  lugaresEjecucion          LugarEjecucion[]
 
   @@map("mallas_curriculares")
 }
 
 model Institucion {
-  id        String          @id @default(uuid())
-  nombre    String
-  tipo      TipoInstitucion
-  pais      String
-  provincia String
-  canton    String
-  codigo    String
-  createdAt DateTime        @default(now())
-  titulos   Titulo[]
+  id               String           @id @default(uuid())
+  nombre           String
+  tipo             TipoInstitucion
+  pais             String
+  provincia        String
+  canton           String
+  codigo           String
+  createdAt        DateTime         @default(now())
+  lugaresEjecucion LugarEjecucion[]
+  titulos          Titulo[]
 
   @@map("instituciones")
 }
@@ -103,6 +105,19 @@ model AsignaturaEnMalla {
   @@index([ejeFormativoId], map: "asignaturas_en_mallas_ejeFormativoId_fkey")
   @@index([mallaId], map: "asignaturas_en_mallas_mallaId_fkey")
   @@map("asignaturas_en_mallas")
+}
+
+model LugarEjecucion {
+  id            String          @id @default(uuid())
+  codigo        String?
+  mallaId       String
+  institucionId String
+  institucion   Institucion     @relation(fields: [institucionId], references: [id])
+  malla         MallaCurricular @relation(fields: [mallaId], references: [id])
+
+  @@index([institucionId], map: "lugares_ejecucion_institucionId_fkey")
+  @@index([mallaId], map: "lugares_ejecucion_mallaId_fkey")
+  @@map("lugares_ejecucion")
 }
 
 model Titulo {

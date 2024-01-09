@@ -5,17 +5,24 @@ import type {
 	AsignaturaEnMalla,
 	CampoFormacion,
 	EjeFormativo,
+	LugarEjecucion,
 	MallaCurricular,
 } from "@prisma/client";
 
 import type { ReplaceDateToString } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { InstitucionFromAPI } from "./institucion";
 
 export type AsignaturaEnMallaFromAPI = ReplaceDateToString<
 	AsignaturaEnMalla & {
 		ejeFormativo: EjeFormativo | null;
 		areaConocimiento: AreaConocimiento | null;
 		campoFormacion: CampoFormacion | null;
+	}
+>;
+export type LugarEjecucionFromAPI = ReplaceDateToString<
+	LugarEjecucion & {
+		institucion: InstitucionFromAPI;
 	}
 >;
 
@@ -25,6 +32,9 @@ export type MallaCurricularWithAsignaturasFromAPI = MallaCurricularFromAPI & {
 	asignaturasEnMalla: (AsignaturaEnMallaFromAPI & {
 		asignatura: Asignatura;
 	})[];
+};
+export type MallaCurricularWithLugaresEjecucion = MallaCurricularFromAPI & {
+	lugaresEjecucion: LugarEjecucionFromAPI[];
 };
 
 export type UpdateMallaData = Partial<MallaCurricularFromAPI>;
@@ -134,8 +144,8 @@ export class MallaCurricularClass {
 		);
 
 		if (!res.ok) {
-			console.error("Error al crear la asigantura en malla.", await res.json());
-			throw new APIError("Error al crear la asigantura en malla.");
+			console.error("Error al crear la asignatura en malla.", await res.json());
+			throw new APIError("Error al crear la asignatura en malla.");
 		}
 
 		return res.json();
@@ -164,6 +174,47 @@ export class MallaCurricularClass {
 				await res.json(),
 			);
 			throw new APIError("Error al obtener mallas con asignaturas.");
+		}
+
+		return res.json();
+	}
+
+	async createLugarEjecucion({
+		data,
+		mallaId,
+	}: CreateLugarEjecucionParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/mallas-curriculares/${mallaId}/lugares-ejecucion`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			console.error("Error al crear el lugar de ejecucion.", await res.json());
+			throw new APIError("Error al crear el lugar de ejecucion.");
+		}
+
+		return res.json();
+	}
+
+	async getMallaWithLugaresEjecucionByMallaId(
+		id: string,
+	): Promise<APIResponse<MallaCurricularWithLugaresEjecucion | null>> {
+		const res = await fetch(
+			this.apiUrl + `/api/mallas-curriculares/${id}/lugares-ejecucion`,
+		);
+
+		if (!res.ok) {
+			console.error(
+				"Error al obtener mallas con lugares de ejecucion.",
+				await res.json(),
+			);
+			throw new APIError("Error al obtener mallas con lugares de ejecucion.");
 		}
 
 		return res.json();
@@ -203,4 +254,9 @@ export type CreateAsignaturaEnMallaParams = {
 		areaConocimientoId: string;
 		campoFormacionId: string;
 	};
+};
+
+export type CreateLugarEjecucionParams = {
+	mallaId: string;
+	data: Omit<LugarEjecucion, "id" | "mallaId">;
 };

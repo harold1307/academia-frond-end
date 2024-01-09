@@ -1,13 +1,23 @@
 import type { Institucion } from "@prisma/client";
-import { APIError, type SimpleAPIResponse, type APIResponse } from ".";
+
+import type { ReplaceDateToString } from "@/utils/types";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+
+export type InstitucionFromAPI = ReplaceDateToString<
+	Institucion & {
+		enUso: boolean;
+	}
+>;
 
 export class InstitucionClass {
 	constructor(private apiUrl: string) {}
 
 	async update(params: {
 		id: string;
-		institucion: Partial<Omit<Institucion, "id" | "createdAt">>;
-	}): Promise<APIResponse<Institucion>> {
+		institucion: Partial<
+			Omit<InstitucionFromAPI, "id" | "createdAt" | "enUso">
+		>;
+	}): Promise<APIResponse<InstitucionFromAPI>> {
 		const res = await fetch(this.apiUrl + `/api/instituciones/${params.id}`, {
 			method: "PATCH",
 			headers: {
@@ -25,7 +35,7 @@ export class InstitucionClass {
 	}
 
 	async create(
-		institucion: Omit<Institucion, "id" | "createdAt">,
+		institucion: Omit<InstitucionFromAPI, "id" | "createdAt" | "enUso">,
 	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/instituciones`, {
 			method: "POST",
@@ -43,7 +53,7 @@ export class InstitucionClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<Institucion[]>> {
+	async getMany(_: void): Promise<APIResponse<InstitucionFromAPI[]>> {
 		const res = await fetch(this.apiUrl + "/api/instituciones");
 
 		if (!res.ok) {
@@ -54,7 +64,7 @@ export class InstitucionClass {
 		return res.json();
 	}
 
-	async getById(id: string): Promise<APIResponse<Institucion | null>> {
+	async getById(id: string): Promise<APIResponse<InstitucionFromAPI | null>> {
 		const res = await fetch(this.apiUrl + `/api/instituciones/${id}`);
 
 		if (!res.ok) {
