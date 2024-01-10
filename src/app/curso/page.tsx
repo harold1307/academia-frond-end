@@ -20,7 +20,6 @@ export default function CursoPage() {
 							<LupaIcon/>
 						</div>
 					</div>
-					{/* searchBar */}
 				</div>
 				<CursoTable />
 			</div>
