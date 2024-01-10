@@ -50,7 +50,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 				padding: '1.5rem',
 				boxSizing: 'border-box'
 			}}>
-				<TableHeader className='rounded-md'
+				<TableHeader className='rounded-md text-white-500 text-lg'
 				style={{
 					// marginTop: '5rem',
 					boxShadow: '0 0 25px 0 rgba(67, 84, 234, .7)'
@@ -60,7 +60,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 							{headerGroup.headers.map((header, index) => {
 								return (
 									<TableHead key={header.id}
-									 className={`text-center ${index === 0 ? 'border-l-2 rounded-l-md' : ''} border-t-2 border-b-2 ${index === headerGroup.headers.length - 1 ? ' border-r-2 rounded-r-md' : ''}`}
+									 className={`h-16 text-white-500 text-center ${index === 0 ? 'border-l-2 rounded-l-md' : ''} border-t-2 border-b-2 ${index === headerGroup.headers.length - 1 ? ' border-r-2 rounded-r-md' : ''}`}
 									>
 										{header.isPlaceholder
 											? null
@@ -83,7 +83,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 							<TableRow
 								key={row.id}
 								data-state={row.getIsSelected() && "selected"}
-								className="rounded-md"
+								className="rounded-md text-white-500"
 								style={{
 									boxShadow: '-10px 10px 7px rgba(67, 84, 234, .3)'
 								}}
