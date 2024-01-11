@@ -118,44 +118,41 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 						),
 					)}
 				</div>
-				<div className='flex w-full flex-wrap items-center justify-between gap-8 px-8'>
-					{fields.map(f =>
-						f.inputType === "checkbox" ? (
-							<FormField
-								control={form.control}
-								name={f.name}
-								key={f.name}
-								render={({ field }) => {
-									return (
-										<FormItem
-											className='flex h-16 w-60 items-center justify-between gap-4 space-y-0 rounded-2xl border-2 p-4'
-											style={{
-												boxShadow: "0 0 20px rgba(67, 84, 234, .7)",
-											}}
-										>
-											<FormLabel className='col-span-3 text-start'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
-													type={f.inputType}
-													className='col-span-9 h-8 w-8'
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}}
-							/>
-						) : (
-							<></>
-						),
-					)}
+				<div className='flex items-center justify-between gap-8 flex-wrap w-full px-8'>
+					{fields.map(f => (
+						f.inputType === 'checkbox' ?
+						<FormField
+							control={form.control}
+							name={f.name}
+							key={f.name}
+							render={({ field }) => {
+								return(
+								<FormItem
+								 className='flex justify-between items-center gap-4 space-y-0 border-2 rounded-2xl w-60 h-16 p-4'
+								 style={{
+									boxShadow: '0 0 20px rgba(67, 84, 234, .7)'
+								 }}
+								>
+									<FormLabel className='col-span-3 text-start'>
+										{f.label}
+									</FormLabel>
+									<FormControl>
+										<Input
+											{...field}
+											value={
+												typeof field.value === "boolean"
+													? undefined
+													: field.value || undefined
+											}
+											type={f.inputType}
+										/>
+									</FormControl>
+								</FormItem>
+								)
+							}}
+						/>
+						: <></>
+					))}
 				</div>
 				{/* {fields.map(f => (
 					<FormField

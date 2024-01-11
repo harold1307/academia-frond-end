@@ -8,7 +8,6 @@ export default function CursoPage() {
 	return (
 		<>
 			<div className='flex flex-col gap-4 justify-center align-center'>
-				<h1 className={` ${fontPlay.className} antialiased w-100 text-center text-4xl`}>Configuración de Cursos</h1>
 				<div className='pl-6 pr-6 flex items-center justify-between'>
 					<AddCurso />
 					<div className='w-3/12 h-12 relative flex items-center'>
