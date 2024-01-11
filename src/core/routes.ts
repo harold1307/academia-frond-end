@@ -7,6 +7,7 @@ export const ROUTES = {
 			ROUTES.malla.path + `/${mallaId}/asignaturas`,
 		lugaresEjecucion: (mallaId: string) =>
 			ROUTES.malla.path + `/${mallaId}/sedes`,
+		modulos: (mallaId: string) => ROUTES.malla.path + `/${mallaId}/modulos`,
 	},
 	asignatura: "/asignatura",
 	curso: {

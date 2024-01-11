@@ -139,6 +139,12 @@ function Actions(props: { mallaId: string }) {
 					<GripHorizontal className='mr-2 h-4 w-4' />
 					<span>Lugares de ejecucion</span>
 				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(ROUTES.malla.modulos(props.mallaId))}
+				>
+					<GripHorizontal className='mr-2 h-4 w-4' />
+					<span>Modulos</span>
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

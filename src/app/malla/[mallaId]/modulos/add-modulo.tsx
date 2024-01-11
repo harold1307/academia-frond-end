@@ -1,6 +1,7 @@
 "use client";
 import { $Enums } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import MutateModal from "@/app/_components/modals/mutate-modal";
@@ -23,13 +24,8 @@ import { Textarea } from "@/app/_components/ui/textarea";
 import { API } from "@/core/api-client";
 import type { CreateAsignaturaEnMallaParams } from "@/core/api/malla-curricular";
 import { useMutateModule } from "@/hooks/use-mutate-module";
-import {
-	NIVELES_PREFIXES,
-	assertReferenceInput,
-	type Field,
-} from "@/utils/forms";
+import { assertReferenceInput, type Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
-import { ASIGNATURA_EN_MALLA_KEYS } from "./query-keys";
 
 const schema = z.object<
 	ZodInferSchema<
@@ -40,6 +36,8 @@ const schema = z.object<
 			| "competenciaGenerica"
 			| "objetivos"
 			| "esAnexo"
+			| "nivel"
+			| "ejeFormativoId"
 		> & {
 			asignaturaId: string;
 			descripcion?: string;
@@ -49,7 +47,6 @@ const schema = z.object<
 		}
 	>
 >({
-	nivel: z.number({ coerce: true }),
 	tipoAsignatura: z.nativeEnum($Enums.TipoAsignatura),
 	identificacion: z.string(),
 	permiteMatriculacion: z.boolean(),
@@ -74,27 +71,23 @@ const schema = z.object<
 	asignaturaId: z.string(),
 
 	competenciaGenerica: z.string().optional(),
-	ejeFormativoId: z.string(),
 	areaConocimientoId: z.string(),
 	campoFormacionId: z.string(),
 });
 
-export default function AddAsignaturaEnMalla({
-	mallaId,
-	asignaturas,
-	mallaNiveles,
-}: {
+type AddModuloProps = {
 	mallaId: string;
 	asignaturas: {
 		id: string;
 		nombre: string;
 		codigo: string | null;
 	}[];
-	mallaNiveles: number | undefined;
-}) {
+};
+
+export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
+	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
-		invalidateQueryKey: ASIGNATURA_EN_MALLA_KEYS.lists(),
 		hookFormProps: {
 			defaultValues: {
 				permiteMatriculacion: false,
@@ -121,13 +114,16 @@ export default function AddAsignaturaEnMalla({
 					resultadosAprendizaje: data.resultadosAprendizaje || null,
 					competenciaGenerica: data.competenciaGenerica || null,
 					objetivos: data.objetivos || null,
-					esAnexo: false,
+					esAnexo: true,
+					ejeFormativoId: null,
+					nivel: 0,
 				},
 			});
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
+			router.refresh();
 		},
 	});
 	const {
@@ -138,17 +134,6 @@ export default function AddAsignaturaEnMalla({
 		queryKey: ["camposEnAsignaturaEnMalla"],
 		queryFn: async () => {
 			return API.camposFormacion.getMany();
-		},
-		enabled: false,
-	});
-	const {
-		data: ejesFormativos,
-		isLoading: ejesAreLoading,
-		refetch: fetchEjes,
-	} = useQuery({
-		queryKey: ["ejesEnAsignaturaEnMalla"],
-		queryFn: async () => {
-			return API.ejesFormativos.getMany();
 		},
 		enabled: false,
 	});
@@ -173,7 +158,7 @@ export default function AddAsignaturaEnMalla({
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar asignatura en malla</h1>
+			<h1 className='text-2xl font-semibold'>Adicionar modulo</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -182,7 +167,7 @@ export default function AddAsignaturaEnMalla({
 				disabled={mutation.isPending}
 				form={form}
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
-				title='Adicionar asignatura en malla curricular'
+				title='Adicionar modulo'
 				withTrigger
 				triggerLabel='Adicionar'
 			>
@@ -235,25 +220,6 @@ export default function AddAsignaturaEnMalla({
 													);
 													break;
 												}
-												case "nivel": {
-													options = NIVELES_PREFIXES.slice(0, mallaNiveles).map(
-														(v, idx) =>
-															({
-																value: `${idx + 1}`,
-																label: `${v} NIVEL`,
-															}) satisfies { label: string; value: string },
-													);
-													break;
-												}
-												case "ejeFormativoId": {
-													options = ejesFormativos?.data.map(e => ({
-														label: e.nombre,
-														value: e.id,
-													}));
-
-													loading = ejesAreLoading;
-													break;
-												}
 												case "campoFormacionId": {
 													options = camposFormacion?.data.map(c => ({
 														label: c.nombre,
@@ -287,12 +253,6 @@ export default function AddAsignaturaEnMalla({
 													defaultValue={field.value as string}
 													disabled={field.disabled}
 													onOpenChange={() => {
-														if (
-															f.name === "ejeFormativoId" &&
-															!ejesFormativos
-														) {
-															fetchEjes();
-														}
 														if (
 															f.name === "campoFormacionId" &&
 															!camposFormacion
@@ -405,20 +365,6 @@ export default function AddAsignaturaEnMalla({
 }
 
 const fields = [
-	{
-		name: "ejeFormativoId",
-		inputType: "custom-select",
-		label: "Eje formativo",
-		options: "custom",
-		placeholder: "-----------------",
-	},
-	{
-		name: "nivel",
-		inputType: "custom-select",
-		label: "Nivel",
-		options: "custom",
-		placeholder: "-----------------",
-	},
 	{
 		name: "asignaturaId",
 		inputType: "custom-select",
@@ -547,5 +493,10 @@ const fields = [
 		inputType: "custom-text-area",
 	},
 ] satisfies Field<
-	keyof (CreateAsignaturaEnMallaParams["data"] & { asignaturaId: string })
+	keyof (Omit<
+		CreateAsignaturaEnMallaParams["data"],
+		"ejeFormativoId" | "nivel"
+	> & {
+		asignaturaId: string;
+	})
 >[];

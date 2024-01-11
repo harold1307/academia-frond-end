@@ -250,7 +250,7 @@ export type CreateAsignaturaEnMallaParams = {
 		resultadosAprendizaje: string | null;
 
 		competenciaGenerica: string | null;
-		ejeFormativoId: string;
+		ejeFormativoId: string | null;
 		areaConocimientoId: string;
 		campoFormacionId: string;
 	};
