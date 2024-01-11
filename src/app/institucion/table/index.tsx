@@ -1,5 +1,4 @@
 "use client";
-import { API } from "@/core/api-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TipoInstitucion } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,7 +33,9 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/app/_components/ui/select";
+import { API } from "@/core/api-client";
 import { ROUTES } from "@/core/routes";
+import { institucionParams } from "../add-institucion";
 import { INSTITUCION_KEYS } from "../query-keys";
 import { columns, type InstitucionTableItem } from "./columns";
 import { DataTable } from "./data-table";
@@ -47,7 +48,6 @@ export default function InstitucionTable() {
 
 			return data.data.map(({ createdAt: _, ...rest }) => ({
 				...rest,
-				isUsed: Math.random() >= 0.5,
 			}));
 		},
 	});
@@ -65,7 +65,7 @@ export default function InstitucionTable() {
 	return (
 		<section>
 			<h1 className='text-2xl font-semibold'>Tabla</h1>
-			<DataTable columns={columns as any} data={data} />
+			<DataTable columns={columns} data={data} />
 			<UpdateInstitucionTableModal instituciones={data} />
 			<DeleteInstitucionModal instituciones={data} />
 		</section>
@@ -110,7 +110,7 @@ function UpdateInstitucionTableModal(props: {
 	});
 
 	const paramInstitucionId = React.useMemo(
-		() => searchParams.get("actualizarInstitucion"),
+		() => searchParams.get(institucionParams.update),
 		[searchParams],
 	);
 

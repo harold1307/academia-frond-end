@@ -6,7 +6,12 @@ export type CursoWithVariantes = Curso & {
 	variantes: VarianteCurso[];
 };
 
-export type CreateVarianteCurso = Omit<VarianteCurso, "cursoId" | "id">;
+export type CreateVarianteCurso = Omit<
+	VarianteCurso,
+	"cursoId" | "id" | "fechaAprobacion"
+> & {
+	fechaAprobacion: string;
+};
 
 export class CursoClass {
 	constructor(private apiUrl: string) {}

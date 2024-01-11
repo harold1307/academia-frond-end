@@ -114,13 +114,15 @@ export function DataTable<TData, TValue>({
 										) as MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"];
 
 										asignaturas.forEach(asignatura => {
-											config.horasSem += asignatura.horasSemanales;
-											config.horas +=
-												asignatura.horasAsistidasDocente +
-												asignatura.horasAutonomas +
-												asignatura.horasColaborativas +
-												asignatura.horasPracticas;
-											config.credits += asignatura.creditos;
+											if (asignatura.sumaHoras) {
+												config.horasSem += asignatura.horasSemanales;
+												config.horas +=
+													asignatura.horasAsistidasDocente +
+													asignatura.horasAutonomas +
+													asignatura.horasColaborativas +
+													asignatura.horasPracticas;
+												config.credits += asignatura.creditos;
+											}
 										});
 									});
 

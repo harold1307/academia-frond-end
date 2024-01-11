@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Modalidad, TipoDuracion, type MallaCurricular } from "@prisma/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
@@ -33,6 +33,7 @@ import {
 import { API } from "@/core/api-client";
 import { cn } from "@/utils";
 import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
+import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
 import { Checkbox } from "../_components/ui/checkbox";
@@ -43,7 +44,6 @@ import {
 	PopoverTrigger,
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
-import { MALLA_KEYS } from "./query-keys";
 
 export const mallaParams = {
 	update: "actualizarMalla",
@@ -104,8 +104,8 @@ const createMallaSchema: z.ZodType<
 });
 
 export default function AddMalla() {
+	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
-	const queryClient = useQueryClient();
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async (data: CreateMallaCurricularOutput) => {
@@ -114,10 +114,8 @@ export default function AddMalla() {
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			queryClient.invalidateQueries({
-				queryKey: MALLA_KEYS.lists(),
-			});
 			setOpen(false);
+			router.refresh();
 		},
 	});
 

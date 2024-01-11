@@ -59,3 +59,9 @@ type FieldTextArea<K> = {
 	placeholder?: string;
 	label: string;
 };
+
+export function assertReferenceInput(
+	name: string,
+): name is `reference-${string}` {
+	return name.includes("reference-");
+}

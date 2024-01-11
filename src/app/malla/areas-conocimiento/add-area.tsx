@@ -24,6 +24,11 @@ const schema = z.object<
 	codigo: z.string().optional(),
 });
 
+export const areasConocimientoParams = {
+	update: "actualizarArea",
+	delete: "eliminarArea",
+};
+
 export default function AddArea() {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({

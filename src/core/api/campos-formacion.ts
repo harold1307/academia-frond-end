@@ -67,4 +67,27 @@ export class CampoFormacionClass {
 
 		return res.json();
 	}
+
+	async update(params: {
+		id: string;
+		campoFormacion: Partial<Omit<CampoFormacionFromAPI, "id" | "enUso">>;
+	}): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/campos-formacion/${params.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.campoFormacion),
+			},
+		);
+
+		if (!res.ok) {
+			console.error("Error al crear la campo de formacion.", await res.json());
+			throw new APIError("Error al crear la campo de formacion.");
+		}
+
+		return res.json();
+	}
 }

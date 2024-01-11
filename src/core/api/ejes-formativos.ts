@@ -62,4 +62,24 @@ export class EjeFormativoClass {
 
 		return res.json();
 	}
+
+	async update(params: {
+		id: string;
+		ejeFormativo: Partial<Omit<EjeFormativoFromAPI, "id" | "enUso">>;
+	}): Promise<APIResponse<EjeFormativo>> {
+		const res = await fetch(this.apiUrl + `/api/ejes-formativos/${params.id}`, {
+			method: "PATCH",
+			headers: {
+				"Context-Type": "application/json",
+			},
+			body: JSON.stringify(params.ejeFormativo),
+		});
+
+		if (!res.ok) {
+			console.error("Error al actualizar la eje formativo.", await res.json());
+			throw new APIError("Error al actualizar la eje formativo.");
+		}
+
+		return res.json();
+	}
 }

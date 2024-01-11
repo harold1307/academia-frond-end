@@ -1,13 +1,12 @@
 import type { Institucion } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 
-import { Button } from "@/app/_components/ui/button";
-import { ROUTES } from "@/core/routes";
+import BaseTableActions from "@/app/_components/table-actions";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { institucionParams } from "../add-institucion";
 
 export type InstitucionTableItem = Omit<Institucion, "createdAt"> & {
-	isUsed: boolean;
+	enUso: boolean;
 };
 
 const columnHelper = createColumnHelper<InstitucionTableItem>();
@@ -33,51 +32,33 @@ export const columns = [
 		header: "Codigo",
 	}),
 	// TODO: esto debe ser dependiendo si la institucion esta en uso - como una institucion esta en uso??
-	columnHelper.accessor("isUsed", {
+	columnHelper.accessor("enUso", {
 		header: "En uso",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	columnHelper.display({
 		id: "actions",
-		cell: ({ row }) => {
+		cell: function Actions({ row }) {
+			const { replaceSet } = useMutateSearchParams();
 			const id = row.getValue("id") as string;
-			const isUsed = row.getValue("isUsed") as boolean;
-			return <Actions institucionId={id} showDelete={!isUsed} />;
+			const enUso = row.getValue("enUso") as boolean;
+
+			return (
+				<BaseTableActions
+					updateOptions={{
+						buttonProps: {
+							onClick: () => replaceSet(institucionParams.update, id),
+						},
+						show: !enUso,
+					}}
+					deleteOptions={{
+						buttonProps: {
+							onClick: () => replaceSet(institucionParams.delete, id),
+						},
+						show: !enUso,
+					}}
+				/>
+			);
 		},
 	}),
 ];
-
-function Actions(props: { institucionId: string; showDelete: boolean }) {
-	const router = useRouter();
-	return (
-		<>
-			<Button
-				size='icon'
-				variant='info'
-				className='mr-2'
-				onClick={() =>
-					router.replace(
-						ROUTES.institucion +
-							`?actualizarInstitucion=${props.institucionId}`,
-					)
-				}
-			>
-				<FileSignature className='h-4 w-4' />
-			</Button>
-			{props.showDelete && (
-				<Button
-					size='icon'
-					variant='destructive'
-					onClick={() =>
-						router.replace(
-							ROUTES.institucion +
-								`?eliminarInstitucion=${props.institucionId}`,
-						)
-					}
-				>
-					<X className='h-4 w-4' />
-				</Button>
-			)}
-		</>
-	);
-}

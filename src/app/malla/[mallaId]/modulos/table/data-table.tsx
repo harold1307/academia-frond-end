@@ -16,11 +16,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { CamposFormacionTableItem, columns } from "./columns";
+import type { ModuloTableItem, columns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: CamposFormacionTableItem[];
+	data: ModuloTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
