@@ -89,13 +89,13 @@ model AsignaturaEnMalla {
   mallaId                   String
   areaConocimientoId        String
   campoFormacionId          String
-  ejeFormativoId            String
+  ejeFormativoId            String?
   esAnexo                   Boolean          @default(false)
   sumaHoras                 Boolean
   areaConocimiento          AreaConocimiento @relation(fields: [areaConocimientoId], references: [id])
   asignatura                Asignatura       @relation(fields: [asignaturaId], references: [id])
   campoFormacion            CampoFormacion   @relation(fields: [campoFormacionId], references: [id])
-  ejeFormativo              EjeFormativo     @relation(fields: [ejeFormativoId], references: [id])
+  ejeFormativo              EjeFormativo?    @relation(fields: [ejeFormativoId], references: [id])
   malla                     MallaCurricular  @relation(fields: [mallaId], references: [id])
   competenciaGenerica       Competencia?
 
@@ -142,18 +142,24 @@ model Curso {
 }
 
 model VarianteCurso {
-  id              String  @id @default(uuid())
-  nombre          String
-  codigoBase      String
-  descripcion     String
-  registroExterno Boolean
-  registroInterno Boolean
-  verificarSesion Boolean
-  verificarEdad   Boolean
-  edadMinima      Int?
-  edadMaxima      Int?
-  cursoId         String
-  curso           Curso   @relation(fields: [cursoId], references: [id])
+  id                    String   @id @default(uuid())
+  nombre                String
+  codigoBase            String
+  descripcion           String
+  registroExterno       Boolean
+  registroInterno       Boolean
+  verificarSesion       Boolean
+  verificarEdad         Boolean
+  edadMinima            Int?
+  edadMaxima            Int?
+  cursoId               String
+  aprobarCursoPrevio    Boolean
+  costoPorMateria       Boolean
+  cumpleRequisitosMalla Boolean
+  fechaAprobacion       DateTime
+  pasarRecord           Boolean
+  registroDesdeOtraSede Boolean
+  curso                 Curso    @relation(fields: [cursoId], references: [id])
 
   @@index([cursoId], map: "variantes_de_cursos_cursoId_fkey")
   @@map("variantes_de_cursos")
