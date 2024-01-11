@@ -80,7 +80,76 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				withTrigger
 				triggerLabel='Adicionar variante de curso'
 			>
-				{fields.map(f => (
+				<div className='flex items-center justify-center flex-col gap-6 mb-10 px-8'>
+					{fields.map(f => (
+						f.inputType === 'text' ?
+						<FormField
+							control={form.control}
+							name={f.name}
+							key={f.name}
+							render={({ field }) => {
+								return(
+								<FormItem className='flex justify-start items-center gap-2 w-full'>
+									<FormLabel className='col-span-3 text-start text-md w-[12%]'>
+										{f.label}
+									</FormLabel>
+									<FormControl>
+										<Input
+											{...field}
+											value={
+												typeof field.value === "boolean"
+													? undefined
+													: field.value || undefined
+											}
+											type={f.inputType}
+											// className={`${f.name === 'fechaAprobacion' ? 'w-[12%]' : 'w-[88%]'} col-span-9 h-6`}
+										/>
+									</FormControl>
+								</FormItem>
+								)
+							}}
+						/>
+						: <></>
+					))}
+				</div>
+				<div className='flex items-center justify-between gap-8 flex-wrap w-full px-8'>
+					{fields.map(f => (
+						f.inputType === 'checkbox' ?
+						<FormField
+							control={form.control}
+							name={f.name}
+							key={f.name}
+							render={({ field }) => {
+								return(
+								<FormItem
+								 className='flex justify-between items-center gap-4 space-y-0 border-2 rounded-2xl w-60 h-16 p-4'
+								 style={{
+									boxShadow: '0 0 20px rgba(67, 84, 234, .7)'
+								 }}
+								>
+									<FormLabel className='col-span-3 text-start'>
+										{f.label}
+									</FormLabel>
+									<FormControl>
+										<Input
+											{...field}
+											value={
+												typeof field.value === "boolean"
+													? undefined
+													: field.value || undefined
+											}
+											type={f.inputType}
+											className='col-span-9 w-8 h-8'
+										/>
+									</FormControl>
+								</FormItem>
+								)
+							}}
+						/>
+						: <></>
+					))}
+				</div>
+				{/* {fields.map(f => (
 					<FormField
 						control={form.control}
 						name={f.name}
@@ -91,25 +160,25 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 						}
 						render={({ field }) => {
 							switch (f.inputType) {
-								case "custom-text-area": {
-									return (
-										<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-											<FormLabel className='col-span-3 text-end'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Textarea
-													className='col-span-9 resize-none'
-													{...field}
-													value={field.value as string}
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}
+								 case "custom-text-area": {
+								 	return (
+								 		<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
+								 			<FormLabel className='col-span-3 text-end'>
+								 				{f.label}
+								 			</FormLabel>
+								 			<FormControl>
+								 				<Textarea
+								 					className='col-span-9 resize-none'
+								 					{...field}
+								 					value={field.value as string}
+								 				/>
+								 			</FormControl>
+								 		</FormItem>
+								 	);
+								 }
 								case "checkbox": {
 									return (
-										<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+										<FormItem className='border-2 border-red-500 w-4/12 grid grid-cols-12 items-center gap-4 space-y-0'>
 											<FormLabel className='col-span-3 text-end'>
 												{f.label}
 											</FormLabel>
@@ -171,7 +240,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 							}
 						}}
 					/>
-				))}
+				))} */}
 			</MutateModal>
 		</section>
 	);
@@ -188,22 +257,52 @@ const fields = [
 		inputType: "text",
 		label: "Codigo Base",
 	},
+	// {
+	// 	name: "fechaAprobacion",
+	// 	inputType: "text",
+	// 	label: "Fecha Aprobación"
+	// },
 	{
 		name: "registroExterno",
 		inputType: "checkbox",
-		label: "Permite registro externo",
+		label: "Registro Externo",
 	},
 	{
 		name: "registroInterno",
 		inputType: "checkbox",
-		label: "Permite registro interno",
+		label: "Registro Interno",
 	},
-	{ name: "verificarSesion", inputType: "checkbox", label: "Verifica sesion" },
+	// {
+	// 	name: "registroDesdeOtraSede",
+	// 	inputType: "checkbox",
+	// 	label: "Registro desde otra Sede"
+	// },
+	// {
+	// 	name: "costoPorMateria",
+	// 	inputType: "checkbox",
+	// 	label: "Costo por Materia"
+	// },
+	{ name: "verificarSesion", inputType: "checkbox", label: "Verifica Sesion" },
 	{
 		name: "verificarEdad",
 		inputType: "checkbox",
-		label: "Verifica rango de edad",
+		label: "Verifica rango de Edad",
 	},
+	// {
+	// 	name: "cumpleRequisitosMalla",
+	// 	inputType: "checkbox",
+	// 	label: "Cumple requisitos de Malla"
+	// },
+	// {
+	// 	name: "pasarRecord",
+	// 	inputType: "checkbox",
+	// 	label: "Pasar el Record"
+	// },
+	// {
+	// 	name: "aprobarCursoPrevio",
+	// 	inputType: "checkbox",
+	// 	label: "Aprobar curso Previo"
+	// },
 	{
 		name: "edadMinima",
 		inputType: "number",
@@ -214,9 +313,9 @@ const fields = [
 		inputType: "number",
 		label: "Edad maxima",
 	},
-	{
-		name: "descripcion",
-		inputType: "custom-text-area",
-		label: "Descripcion",
-	},
+	// {
+	// 	name: "descripcion",
+	// 	inputType: "custom-text-area",
+	// 	label: "Descripcion",
+	// },
 ] satisfies Field<keyof CreateVarianteCursoSchema>[];

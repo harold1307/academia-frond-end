@@ -52,8 +52,8 @@ export default function CursoTable() {
 	if (!cursos) return "Ha ocurrido un error en el fetch";
 
 	return (
-		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
+		<section className=''>
+			{/* <h1 className='text-2xl font-semibold'>Tabla</h1> */}
 			<DataTable columns={columns} data={cursos} />
 			<UpdateCursoModal cursos={cursos} />
 			<DeactivateCursoModal cursos={cursos} />

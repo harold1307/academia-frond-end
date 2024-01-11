@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import UserSession from "./session";
+import Logo from "./_components/ui/icons/logo";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +23,12 @@ export default function RootLayout({
 			<body className={inter.className + " dark"}>
 				<Providers>
 					<main className='p-6'>
-						<UserSession />
+						<div className='pl-6 pr-6 w-100 h-16 flex justify-between items-center'>
+							<Link href="/">
+								<Logo />
+							</Link>
+							<UserSession />
+						</div>
 						{children}
 					</main>
 				</Providers>

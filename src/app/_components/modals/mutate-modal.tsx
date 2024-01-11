@@ -47,13 +47,13 @@ export default function MutateModal({
 	withTrigger,
 }: React.PropsWithChildren<MutateModalProps>) {
 	return (
-		<Dialog {...dialogProps}>
+		<Dialog {...dialogProps} >
 			{withTrigger && (
 				<DialogTrigger asChild>
 					<Button variant='success'>{triggerLabel}</Button>
 				</DialogTrigger>
 			)}
-			<DialogContent className='max-h-[80%] max-w-xs overflow-y-auto sm:max-w-[425px] md:max-w-2xl'>
+			<DialogContent className='max-h-[80%] max-w-max overflow-y-auto sm:max-w-[425px] md:max-w-5xl'>
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 				</DialogHeader>

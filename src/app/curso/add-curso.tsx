@@ -46,7 +46,7 @@ export default function AddCurso() {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar curso</h1>
+			{/* <h1 className='text-2xl font-semibold'>Adicionar curso</h1> */}
 			<MutateModal
 				dialogProps={{
 					open,
