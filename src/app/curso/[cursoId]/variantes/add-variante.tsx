@@ -139,7 +139,6 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 													: field.value || undefined
 											}
 											type={f.inputType}
-											className='col-span-9 w-8 h-8'
 										/>
 									</FormControl>
 								</FormItem>

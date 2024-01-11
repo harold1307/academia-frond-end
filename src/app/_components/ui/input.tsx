@@ -1,4 +1,5 @@
 import * as React from "react"
+import styles from './input.module.css';
 
 import { cn } from "@/utils"
 
@@ -6,7 +7,27 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, id, ...props }, ref) => {
+
+    if(type === "checkbox") {
+      return(
+        <div
+         className={styles.divInput}
+        >
+          <input 
+           type={type}
+           ref={ref}
+           {...props}
+           className={styles.input}
+           id={id}
+          />
+          <label
+           htmlFor={id}
+           className={styles.labelInput}
+          ></label>
+        </div>
+      )
+    }
     return (
       <input
         type={type}
