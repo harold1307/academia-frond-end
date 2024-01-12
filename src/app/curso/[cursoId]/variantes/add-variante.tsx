@@ -71,7 +71,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 	console.log(form.formState.errors);
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar variante de curso</h1>
+			{/* <h1 className='text-2xl font-semibold'>Adicionar variante de curso</h1> */}
 			<MutateModal
 				dialogProps={{
 					open,

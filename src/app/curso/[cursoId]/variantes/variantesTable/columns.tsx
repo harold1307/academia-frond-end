@@ -1,4 +1,9 @@
+import { Button } from "@/app/_components/ui/button";
+import { ROUTES } from "@/core/routes";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/_components/ui/dropdown-menu";
 import { createColumnHelper } from "@tanstack/react-table";
+import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
 
 export type VariantesTableItem = {
 	id: string
@@ -19,6 +24,8 @@ export type VariantesTableItem = {
     nivelMinimo: boolean
     nivel: string | undefined
     fechaAprobacion: Date
+	enUso: boolean
+	activo: boolean
     descripcion: string
 };
 
@@ -27,10 +34,14 @@ const helper = createColumnHelper<VariantesTableItem>();
 export const variantesColumns = [
 	helper.accessor("id", {}),
 	helper.accessor("nombre", {
-		header: "Curso",
+		header: "Nombre",
 	}),
 	helper.accessor("codigoBase", {
-		header: "Código Base",
+		header: "Código",
+	}),
+	helper.accessor("fechaAprobacion", {
+		header: 'Aprobado',
+		cell: ({ getValue }) => (getValue().toDateString())
 	}),
 	helper.accessor("registroExterno", {
         header: 'Registro Externo',
@@ -41,15 +52,15 @@ export const variantesColumns = [
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("registroDesdeOtraSede", {
-        header: 'Registro desde otra Sede',
+        header: 'Registro otra Sede',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("costoPorMateria", {
-        header: 'Costo por Materia',
+        header: 'Costo x Materia',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("costoPorCantidadDeMateria", {
-        header: 'Costo por Cantidad de materia',
+        header: 'Costo x cant. materia',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("verificaSesion", {
@@ -57,7 +68,7 @@ export const variantesColumns = [
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("verificaRangoDeEdad", {
-        header: 'Verifica rango de Edad',
+        header: 'Rango de Edad',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("edadMinima", {
@@ -67,7 +78,7 @@ export const variantesColumns = [
 		header: 'Edad Máxima'
 	}),
 	helper.accessor("cumpleRequisitosDeMalla", {
-        header: 'Cumple req. de Malla',
+        header: 'Requisitos Malla',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("pasarAlRecord", {
@@ -75,19 +86,21 @@ export const variantesColumns = [
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("aprobarCursoPrevio", {
-        header: 'Aprobar Curso Previo',
+        header: 'Curso Previo',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	helper.accessor("nivelMinimo", {
         header: 'Nivel Mínimo',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("nivel", {
-        header: 'Nivel',
+	// helper.accessor("nivel", {}),
+	helper.accessor("enUso", {
+        header: 'En Uso',
+		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("fechaAprobacion", {
-        header: 'fecha de Aprobación',
-        cell: ({ getValue }) => (getValue().toDateString())
+	helper.accessor("activo", {
+        header: 'Activo',
+		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
 	// helper.accessor("descripcion", {
     //     header: 'Descripcion',
@@ -97,47 +110,58 @@ export const variantesColumns = [
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
 
-			return <VariantesActions
-            //   cursoId={id} 
-            //   showDelete={true} 
+			return <Actions
+              cursoId={id} 
+              showDelete={true} 
             />;
 		},
 	}),
 ];
 
-function VariantesActions() {
-    return (
-        <span>ola</span>
-    )
+const variantesParams = {
+	update: 'actualizarVariante',
+	deactivate: 'desactivarVariante'
 }
-// function Actions(props: { cursoId: string; showDelete: boolean }) {
-// 	const { replaceSet, router } = useMutateSearchParams();
+function Actions(props: { cursoId: string; showDelete: boolean }) {
+	const { replaceSet, router } = useMutateSearchParams();
 
-// 	return (
-// 		<DropdownMenu>
-// 			<DropdownMenuTrigger asChild>
-// 				<Button>Acciones</Button>
-// 			</DropdownMenuTrigger>
-// 			<DropdownMenuContent className='w-56'>
-// 				<DropdownMenuItem
-// 					onClick={() => replaceSet(cursosParams.update, props.cursoId)}
-// 				>
-// 					<FileSignature className='mr-2 h-4 w-4' />
-// 					<span>Editar</span>
-// 				</DropdownMenuItem>
-// 				<DropdownMenuItem
-// 					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
-// 				>
-// 					<StretchHorizontal className='mr-2 h-4 w-4' />
-// 					<span>Variantes</span>
-// 				</DropdownMenuItem>
-// 				<DropdownMenuItem
-// 					onClick={() => replaceSet(cursosParams.deactivate, props.cursoId)}
-// 				>
-// 					<Lock className='mr-2 h-4 w-4' />
-// 					<span>Desactivar</span>
-// 				</DropdownMenuItem>
-// 			</DropdownMenuContent>
-// 		</DropdownMenu>
-// 	);
-// }
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button>Acciones</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent className='w-56'>
+				<DropdownMenuItem
+					onClick={() => replaceSet(variantesParams.update, props.cursoId)}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>programas</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>Materias</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>Costos</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(variantesParams.deactivate, props.cursoId)}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Desactivar</span>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}

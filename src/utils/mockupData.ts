@@ -51,7 +51,9 @@ export const MUVariantes:VariantesTableItem[] = [
 		nivelMinimo: true,
 		nivel: 'Básico',
 		fechaAprobacion: new Date('10-10-2020'),
-		descripcion: 'Desc Var 1'
+		descripcion: 'Desc Var 1',
+		enUso: true,
+		activo: true
 	},
 	{
 		id: '2',
@@ -72,6 +74,54 @@ export const MUVariantes:VariantesTableItem[] = [
 		nivelMinimo: false,
 		nivel: undefined,
 		fechaAprobacion: new Date('05-05-2021'),
-		descripcion: 'Desc Var 2'
-	}
+		descripcion: 'Desc Var 2',
+		enUso: true,
+		activo: true
+	},
+	{
+		id: '2',
+		nombre: 'Variante2',
+		codigoBase: 'CodigoBaseVar2',
+		registroExterno: true,
+		registroInterno: true,
+		registroDesdeOtraSede: true,
+		costoPorMateria: true,
+		costoPorCantidadDeMateria: true,
+		verificaSesion: true,
+		verificaRangoDeEdad: false,
+		edadMinima: undefined,
+		edadMaxima: undefined,
+		cumpleRequisitosDeMalla: true,
+		pasarAlRecord: true,
+		aprobarCursoPrevio: true,
+		nivelMinimo: false,
+		nivel: undefined,
+		fechaAprobacion: new Date('05-05-2021'),
+		descripcion: 'Desc Var 2',
+		enUso: true,
+		activo: true
+	},
+	{
+		id: '2',
+		nombre: 'Variante2',
+		codigoBase: 'CodigoBaseVar2',
+		registroExterno: true,
+		registroInterno: true,
+		registroDesdeOtraSede: true,
+		costoPorMateria: true,
+		costoPorCantidadDeMateria: true,
+		verificaSesion: true,
+		verificaRangoDeEdad: false,
+		edadMinima: undefined,
+		edadMaxima: undefined,
+		cumpleRequisitosDeMalla: true,
+		pasarAlRecord: true,
+		aprobarCursoPrevio: true,
+		nivelMinimo: false,
+		nivel: undefined,
+		fechaAprobacion: new Date('05-05-2021'),
+		descripcion: 'Desc Var 2',
+		enUso: true,
+		activo: true
+	},
 ]
