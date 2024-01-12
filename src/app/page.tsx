@@ -17,8 +17,8 @@ const modulos = [
 		href: ROUTES.asignatura,
 	},
 	{
-		label: "Curso",
-		href: ROUTES.curso.path,
+		label: "Configuración de Cursos",
+		href: ROUTES.configCurso.path,
 	},
 ];
 
