@@ -1,4 +1,4 @@
-import { CursoTableItem } from "@/app/curso/table/columns";
+import { CursoTableItem } from "@/app/curso/cursosTable/columns";
 
 export const isLoading = false
 

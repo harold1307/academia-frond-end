@@ -22,15 +22,18 @@ import { columns, type CursoTableItem } from "./columns";
 import { DataTable } from "./data-table";
 import DeleteModal from "@/app/_components/modals/delete-modal";
 
-export default function CursoTable() {
-	const { isLoading, data } = useQuery({
-		queryKey: CURSO_KEYS.lists(),
-		queryFn: async () => {
-			const data = await API.cursos.getMany();
+//MockUp
+import { MUCursos as data, isLoading } from "@/utils/mockupData"; 
 
-			return data.data;
-		},
-	});
+export default function CursoTable() {
+	// const { isLoading, data } = useQuery({
+	// 	queryKey: CURSO_KEYS.lists(),
+	// 	queryFn: async () => {
+	// 		const data = await API.cursos.getMany();
+
+	// 		return data.data;
+	// 	},
+	// });
 
 	const cursos = React.useMemo(() => {
 		return data?.map(
