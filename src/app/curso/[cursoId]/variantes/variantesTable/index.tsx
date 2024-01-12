@@ -1,8 +1,20 @@
 "use client"
 import React from "react";
-import { VariantesTableItem, variantesColumns } from "./columns";
+import { VariantesTableItem, variantesColumns, variantesParams } from "./columns";
 
 import { DataTable } from "./data-table";
+
+import { useRouter } from "next/router";
+import { usePathname, useSearchParams } from "next/navigation";
+import { VarianteCurso } from "@prisma/client";
+import { useMutateModule } from "@/hooks/use-mutate-module";
+import { z } from "zod";
+import { API } from "@/core/api-client";
+import ModalFallback from "@/app/_components/modals/modal-fallback";
+import MutateModal from "@/app/_components/modals/mutate-modal";
+import { varianteCursoFields, varianteCursoSchema } from "../add-variante";
+import { FormControl, FormField, FormItem, FormLabel } from "@/app/_components/ui/form";
+import { Input } from "@/app/_components/ui/input";
 
 //MockUp
 import { MUVariantes as data, isLoading } from "@/utils/mockupData";
@@ -31,10 +43,7 @@ export default function VarianteTable() {
 
 	return (
 		<section className=''>
-			{/* <h1 className='text-2xl font-semibold'>Tabla</h1> */}
 			<DataTable columns={variantesColumns} data={variantes} />
-			{/* <UpdateCursoModal cursos={cursos} /> */}
-			{/* <DeactivateCursoModal cursos={cursos} /> */}
 		</section>
 	);
 }

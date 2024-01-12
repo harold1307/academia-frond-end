@@ -27,7 +27,7 @@ type CreateVarianteCursoSchema = Omit<
 	edadMaxima?: number;
 };
 
-const schema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
+export const varianteCursoSchema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
 	nombre: z.string(),
 	codigoBase: z.string(),
 	descripcion: z.string(),
@@ -47,7 +47,7 @@ const schema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
 
 export default function AddVariante({ cursoId }: AddVarianteProps) {
 	const { form, mutation, open, setOpen } = useMutateModule({
-		schema,
+		schema: varianteCursoSchema,
 		mutationFn: async data => {
 			return API.cursos.createVarianteCurso(cursoId, {
 				...data,
@@ -85,7 +85,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				triggerLabel='Adicionar variante de curso'
 			>
 				<div className='mb-10 flex flex-col items-center justify-center gap-6 px-8'>
-					{fields.map(f =>
+					{varianteCursoFields.map(f =>
 						f.inputType === "text" ? (
 							<FormField
 								control={form.control}
@@ -119,7 +119,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 					)}
 				</div>
 				<div className='flex items-center justify-between gap-8 flex-wrap w-full px-8'>
-					{fields.map(f => (
+					{varianteCursoFields.map(f => (
 						f.inputType === 'checkbox' ?
 						<FormField
 							control={form.control}
@@ -251,7 +251,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 	);
 }
 
-const fields = [
+export const varianteCursoFields = [
 	{
 		name: "nombre",
 		inputType: "text",

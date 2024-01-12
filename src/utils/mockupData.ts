@@ -36,13 +36,14 @@ export const MUVariantes:VariantesTableItem[] = [
 		id: '1',
 		nombre: 'Variante1',
 		codigoBase: 'CodigoBaseVar1',
+		descripcion: 'Desc Var 1',
 		registroExterno: true,
 		registroInterno: true,
+		verificaSesion: true,
+		verificaRangoDeEdad: true,
 		registroDesdeOtraSede: true,
 		costoPorMateria: true,
 		costoPorCantidadDeMateria: true,
-		verificaSesion: true,
-		verificaRangoDeEdad: true,
 		edadMinima: 10,
 		edadMaxima: 21,
 		cumpleRequisitosDeMalla: true,
@@ -51,9 +52,9 @@ export const MUVariantes:VariantesTableItem[] = [
 		nivelMinimo: true,
 		nivel: 'Básico',
 		fechaAprobacion: new Date('10-10-2020'),
-		descripcion: 'Desc Var 1',
 		enUso: true,
-		activo: true
+		activo: true,
+		cursoId: '1'
 	},
 	{
 		id: '2',
@@ -76,7 +77,8 @@ export const MUVariantes:VariantesTableItem[] = [
 		fechaAprobacion: new Date('05-05-2021'),
 		descripcion: 'Desc Var 2',
 		enUso: true,
-		activo: true
+		activo: true,
+		cursoId: '2'
 	},
 	{
 		id: '2',
@@ -99,7 +101,8 @@ export const MUVariantes:VariantesTableItem[] = [
 		fechaAprobacion: new Date('05-05-2021'),
 		descripcion: 'Desc Var 2',
 		enUso: true,
-		activo: true
+		activo: true,
+		cursoId: '1'
 	},
 	{
 		id: '2',
@@ -122,6 +125,7 @@ export const MUVariantes:VariantesTableItem[] = [
 		fechaAprobacion: new Date('05-05-2021'),
 		descripcion: 'Desc Var 2',
 		enUso: true,
-		activo: true
+		activo: true,
+		cursoId: '2'
 	},
 ]

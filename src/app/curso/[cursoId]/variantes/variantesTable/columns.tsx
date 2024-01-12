@@ -9,24 +9,25 @@ export type VariantesTableItem = {
 	id: string
 	nombre: string
     codigoBase: string
+    descripcion: string
     registroExterno: boolean
     registroInterno: boolean
-    registroDesdeOtraSede: boolean
-    costoPorMateria: boolean
-    costoPorCantidadDeMateria: boolean
-    verificaSesion: boolean
-    verificaRangoDeEdad: boolean
-    edadMinima: number | undefined
-    edadMaxima: number | undefined
-    cumpleRequisitosDeMalla: boolean
-    pasarAlRecord: boolean
+    verificarSesion: boolean
+    verificarEdad: boolean
+    edadMinima: number | null
+    edadMaxima: number | null
+	cursoId: string
     aprobarCursoPrevio: boolean
+    costoPorMateria: boolean
+    cumpleRequisitosDeMalla: boolean
+    fechaAprobacion: Date
+    pasarRecord: boolean
+    registroDesdeOtraSede: boolean
+    costoPorCantidadDeMateria: boolean
     nivelMinimo: boolean
     nivel: string | undefined
-    fechaAprobacion: Date
 	enUso: boolean
 	activo: boolean
-    descripcion: string
 };
 
 const helper = createColumnHelper<VariantesTableItem>();
@@ -63,11 +64,11 @@ export const variantesColumns = [
         header: 'Costo x cant. materia',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("verificaSesion", {
+	helper.accessor("verificarSesion", {
         header: 'Verifica Sesión',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("verificaRangoDeEdad", {
+	helper.accessor("verificarEdad", {
         header: 'Rango de Edad',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
@@ -81,7 +82,7 @@ export const variantesColumns = [
         header: 'Requisitos Malla',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("pasarAlRecord", {
+	helper.accessor("pasarRecord", {
         header: 'Pasar al Record',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
@@ -118,7 +119,7 @@ export const variantesColumns = [
 	}),
 ];
 
-const variantesParams = {
+export const variantesParams = {
 	update: 'actualizarVariante',
 	deactivate: 'desactivarVariante'
 }
