@@ -32,7 +32,7 @@ export default async function CursosVariantesPage({ params }: Context) {
 					</div>
 				</div>
 			</div>
-			<VarianteTable />
+			<VarianteTable cursoId={params.cursoId} />
 		</div>
 	);
 }

@@ -4,31 +4,33 @@ import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/_components/ui/dropdown-menu";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
+import { VarianteCurso } from "@prisma/client";
 
-export type VariantesTableItem = {
-	id: string
-	nombre: string
-    codigoBase: string
-    descripcion: string
-    registroExterno: boolean
-    registroInterno: boolean
-    verificarSesion: boolean
-    verificarEdad: boolean
-    edadMinima: number | null
-    edadMaxima: number | null
-	cursoId: string
-    aprobarCursoPrevio: boolean
-    costoPorMateria: boolean
-    cumpleRequisitosDeMalla: boolean
-    fechaAprobacion: Date
-    pasarRecord: boolean
-    registroDesdeOtraSede: boolean
-    costoPorCantidadDeMateria: boolean
-    nivelMinimo: boolean
-    nivel: string | undefined
-	enUso: boolean
-	activo: boolean
-};
+export type VariantesTableItem = VarianteCurso
+// export type VariantesTableItem = {
+// 	id: string
+// 	nombre: string
+//     codigoBase: string
+//     descripcion: string
+//     registroExterno: boolean
+//     registroInterno: boolean
+//     verificarSesion: boolean
+//     verificarEdad: boolean
+//     edadMinima: number | null
+//     edadMaxima: number | null
+// 	cursoId: string
+//     aprobarCursoPrevio: boolean
+//     costoPorMateria: boolean
+//     cumpleRequisitosDeMalla: boolean
+//     fechaAprobacion: Date
+//     pasarRecord: boolean
+//     registroDesdeOtraSede: boolean
+//     costoPorCantidadDeMateria: boolean
+//     nivelMinimo: boolean
+//     nivel: string | undefined
+// 	enUso: boolean
+// 	activo: boolean
+// };
 
 const helper = createColumnHelper<VariantesTableItem>();
 
@@ -42,7 +44,7 @@ export const variantesColumns = [
 	}),
 	helper.accessor("fechaAprobacion", {
 		header: 'Aprobado',
-		cell: ({ getValue }) => (getValue().toDateString())
+		// cell: ({ getValue }) => (getValue().toDateString())
 	}),
 	helper.accessor("registroExterno", {
         header: 'Registro Externo',
@@ -60,10 +62,10 @@ export const variantesColumns = [
         header: 'Costo x Materia',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("costoPorCantidadDeMateria", {
-        header: 'Costo x cant. materia',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
-	}),
+	// helper.accessor("costoPorCantidadDeMateria", {
+    //     header: 'Costo x cant. materia',
+	// 	cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+	// }),
 	helper.accessor("verificarSesion", {
         header: 'Verifica Sesión',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
@@ -78,10 +80,10 @@ export const variantesColumns = [
 	helper.accessor("edadMaxima", {
 		header: 'Edad Máxima'
 	}),
-	helper.accessor("cumpleRequisitosDeMalla", {
-        header: 'Requisitos Malla',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
-	}),
+	// helper.accessor("cumpleRequisitosDeMalla", {
+    //     header: 'Requisitos Malla',
+	// 	cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+	// }),
 	helper.accessor("pasarRecord", {
         header: 'Pasar al Record',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
@@ -90,19 +92,19 @@ export const variantesColumns = [
         header: 'Curso Previo',
 		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
 	}),
-	helper.accessor("nivelMinimo", {
-        header: 'Nivel Mínimo',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
-	}),
-	// helper.accessor("nivel", {}),
-	helper.accessor("enUso", {
-        header: 'En Uso',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
-	}),
-	helper.accessor("activo", {
-        header: 'Activo',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
-	}),
+	// helper.accessor("nivelMinimo", {
+    //     header: 'Nivel Mínimo',
+	// 	cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+	// }),
+	// // helper.accessor("nivel", {}),
+	// helper.accessor("enUso", {
+    //     header: 'En Uso',
+	// 	cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+	// }),
+	// helper.accessor("activo", {
+    //     header: 'Activo',
+	// 	cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+	// }),
 	// helper.accessor("descripcion", {
     //     header: 'Descripcion',
 	// }),

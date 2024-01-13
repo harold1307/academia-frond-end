@@ -18,12 +18,26 @@ import { Input } from "@/app/_components/ui/input";
 
 //MockUp
 import { MUVariantes as data, isLoading } from "@/utils/mockupData";
+import { useQuery } from "@tanstack/react-query";
+import { VARIANTES_KEYS } from "../query-keys";
 
-export default function VarianteTable() {
-	// fetch variantes
+interface VarianteTableProps {
+	cursoId: string
+}
+export default function VarianteTable({ cursoId }:VarianteTableProps) {
+
+	const { isLoading, data } = useQuery({
+		
+		queryKey: VARIANTES_KEYS.lists(),
+		queryFn: async () => {
+			const data = await API.cursos.getCursoWithVariantesByCursoId(cursoId);
+
+			return data.data;
+		},
+	});
 
 	const variantes = React.useMemo(() => {
-		return data?.map(
+		return data?.variantes?.map(
 			curso =>
 				({
 					...curso,
