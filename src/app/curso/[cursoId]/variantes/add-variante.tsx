@@ -81,8 +81,8 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				disabled={mutation.isPending}
 				form={form}
 				onSubmit={form.handleSubmit(data => 
-					console.log(data)
-					// mutation.mutate(data)
+					// console.log(data)
+					mutation.mutate(data)
 				)}
 				title='Adicionar variante de curso'
 				withTrigger
