@@ -80,14 +80,17 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				}}
 				disabled={mutation.isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
+				onSubmit={form.handleSubmit(data => 
+					console.log(data)
+					// mutation.mutate(data)
+				)}
 				title='Adicionar variante de curso'
 				withTrigger
 				triggerLabel='Adicionar variante de curso'
 			>
 				<div className='mb-10 flex flex-col items-center justify-center gap-6 px-8'>
 					{varianteCursoFields.map(f =>
-						f.inputType === "text" ? (
+						f.inputType === "text" || f.inputType === 'custom-text-area' ? (
 							f.name === 'fechaAprobacion' ? (
 								<FormField
 									control={form.control}
