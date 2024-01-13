@@ -111,10 +111,11 @@ export const variantesColumns = [
 	helper.display({
 		id: "actions",
 		cell: ({ row }) => {
-			const id = row.getValue("id") as string;
-
+			const varianteId = row.getValue("id") as string;
+			// const cursoId = row.getValue("cursoId") as string
 			return <Actions
-              cursoId={id} 
+            //   cursoId={cursoId} 
+			  varianteId={varianteId}
               showDelete={true} 
             />;
 		},
@@ -123,9 +124,10 @@ export const variantesColumns = [
 
 export const variantesParams = {
 	update: 'actualizarVariante',
-	deactivate: 'desactivarVariante'
+	deactivate: 'desactivarVariante',
+
 }
-function Actions(props: { cursoId: string; showDelete: boolean }) {
+function Actions(props: { varianteId: string, showDelete: boolean }) {
 	const { replaceSet, router } = useMutateSearchParams();
 
 	return (
@@ -135,31 +137,31 @@ function Actions(props: { cursoId: string; showDelete: boolean }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => replaceSet(variantesParams.update, props.cursoId)}
+					onClick={() => replaceSet(variantesParams.update, props.varianteId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
+					onClick={() => router.push(ROUTES.configCurso.programas(props.varianteId))}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>programas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
+					onClick={() => router.push(ROUTES.configCurso.variantes(props.varianteId))}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Materias</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
+					onClick={() => router.push(ROUTES.configCurso.variantes(props.varianteId))}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Costos</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => replaceSet(variantesParams.deactivate, props.cursoId)}
+					onClick={() => replaceSet(variantesParams.deactivate, props.varianteId)}
 				>
 					<Lock className='mr-2 h-4 w-4' />
 					<span>Desactivar</span>
