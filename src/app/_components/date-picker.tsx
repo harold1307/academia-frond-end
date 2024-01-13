@@ -1,15 +1,25 @@
 "use client";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { cn } from "@/utils";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { ControllerProps } from "react-hook-form";
 
-export function DatePickerDemo() {
-	const [date, setDate] = React.useState<Date>();
+interface DatePickerDemoProps {
+	value?: string
+	onChangeValue: (date:Date | undefined) => void
+}
+export function DatePickerDemo({ value = new Date().toString(), onChangeValue}:DatePickerDemoProps) {
+	const [date, setDate] = React.useState<Date | undefined>(new Date(value));
+
+	const updateDate = (day:Date | undefined) => {
+		setDate(day)
+		onChangeValue(day)
+	}
 
 	return (
 		<Popover>
@@ -29,7 +39,7 @@ export function DatePickerDemo() {
 				<Calendar
 					mode='single'
 					selected={date}
-					onSelect={setDate}
+					onSelect={((day) => updateDate(day))}
 					initialFocus
 				/>
 			</PopoverContent>

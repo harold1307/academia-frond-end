@@ -14,6 +14,7 @@ import type { CreateVarianteCurso } from "@/core/api/cursos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
+import { DatePickerDemo } from "@/app/_components/date-picker";
 
 type AddVarianteProps = {
 	cursoId: string;
@@ -68,10 +69,10 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 			},
 		},
 	});
+	const seeData= () => console.log('DATA: ', mutation.data)
 	console.log(form.formState.errors);
 	return (
 		<section>
-			{/* <h1 className='text-2xl font-semibold'>Adicionar variante de curso</h1> */}
 			<MutateModal
 				dialogProps={{
 					open,
@@ -87,35 +88,52 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				<div className='mb-10 flex flex-col items-center justify-center gap-6 px-8'>
 					{varianteCursoFields.map(f =>
 						f.inputType === "text" ? (
-							<FormField
-								control={form.control}
-								name={f.name}
-								key={f.name}
-								render={({ field }) => {
-									return (
-										<FormItem className='flex w-full items-center justify-start gap-2'>
-											<FormLabel className='text-md col-span-3 w-[12%] text-start'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
-													type={f.inputType}
-													// className={`${f.name === 'fechaAprobacion' ? 'w-[12%]' : 'w-[88%]'} col-span-9 h-6`}
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}}
-							/>
-						) : (
-							<></>
-						),
+							f.name === 'fechaAprobacion' ? (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									render={({ field }) => {
+										return (
+											<FormItem className='flex w-full items-center justify-start gap-2'>
+												<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+													{f.label}
+												</FormLabel>
+												<FormControl>
+													<DatePickerDemo onChangeValue={field.onChange} />
+												</FormControl>
+											</FormItem>
+										);
+									}}
+								/>
+							) : (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									render={({ field }) => {
+										return (
+											<FormItem className='flex w-full items-center justify-start gap-2'>
+												<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+													{f.label}
+												</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={
+															typeof field.value === "boolean"
+																? undefined
+																: field.value || undefined
+														}
+														type={f.inputType}
+													/>
+												</FormControl>
+											</FormItem>
+										);
+									}}
+								/>
+							) 
+						) : null
 					)}
 				</div>
 				<div className='flex items-center justify-between gap-8 flex-wrap w-full px-8'>
@@ -151,7 +169,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 								)
 							}}
 						/>
-						: <></>
+						: null
 					))}
 				</div>
 			</MutateModal>
