@@ -138,6 +138,43 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 							) 
 						) : null
 					)}
+					{
+						form.getValues('verificarEdad') === true ? (
+							varianteCursoFields.filter(el => {
+								return el.inputType === 'number'
+							}).map(f => (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									render={({ field }) => {
+										return(
+										<FormItem
+										className='flex w-full items-center justify-start gap-2'
+										>
+											<FormLabel className='col-span-3 text-start'>
+												{f.label}
+											</FormLabel>
+											<FormControl>
+												<Input
+													{...field}
+													value={
+														typeof field.value === "boolean"
+															? undefined
+															: field.value || undefined
+													}
+													type={f.inputType}
+												/>
+											</FormControl>
+										</FormItem>
+										)
+									}}
+								/>
+							))
+						) : (
+							null
+						)
+					}
 				</div>
 				<div className='flex items-center justify-between gap-8 flex-wrap w-full px-8'>
 					{varianteCursoFields.map(f => (
