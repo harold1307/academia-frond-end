@@ -13,5 +13,8 @@ export const ROUTES = {
 	curso: {
 		path: "/curso",
 		variantes: (cursoId: string) => ROUTES.curso.path + `/${cursoId}/variantes`,
+		asignaturasVariantes: (cursoId: string, varianteCursoId: string) =>
+			ROUTES.curso.path +
+			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
 	},
 } as const;

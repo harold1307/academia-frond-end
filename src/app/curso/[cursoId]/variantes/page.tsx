@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
+import React from "react";
 
-import AddVariante from "./add-variante";
 import { APIserver } from "@/core/api-server";
+import AddVariante from "./add-variante";
+import VarianteCursoTableServer from "./table/server";
 
 type Context = {
 	params: {
@@ -22,7 +24,9 @@ export default async function CursosVariantesPage({ params }: Context) {
 		<>
 			<div className='mt-4'>
 				<AddVariante cursoId={curso.data.id} />
-				{/* <CursoTable /> */}
+				<React.Suspense fallback={"Cargando tabla..."}>
+					<VarianteCursoTableServer cursoId={params.cursoId} />
+				</React.Suspense>
 			</div>
 		</>
 	);
