@@ -15,7 +15,7 @@ export const ROUTES = {
 		variantes: (cursoId: string) => ROUTES.curso.path + `/${cursoId}/variantes`,
 		programas: (varianteId: string) => `/${varianteId}/programas`,
 		materias: (varianteId: string) => `/${varianteId}/materias`,
-		costos: (varianteId: string) => `/${varianteId}/costos`
+		costos: (varianteId: string) => `/${varianteId}/costos`,
 		asignaturasVariantes: (cursoId: string, varianteCursoId: string) =>
 			ROUTES.curso.path +
 			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
