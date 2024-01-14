@@ -76,9 +76,9 @@ function UpdateVarianteModal({ variantes }: { variantes: VarianteCurso[] }) {
 		[searchParams],
 	);
 
+	const selectedVariante = variantes.find(i => i.id === varianteParamsId);
 	if (!varianteParamsId) return null;
 
-	const selectedVariante = variantes.find(i => i.id === varianteParamsId);
 
 	if (!selectedVariante) {
 		return <ModalFallback action='update' redirectTo={() => dismissModal()} />;
@@ -111,7 +111,7 @@ function UpdateVarianteModal({ variantes }: { variantes: VarianteCurso[] }) {
 						f.inputType === "text" ? (
 							f.name === 'fechaAprobacion' ? (
 								<FormField
-									// control={form.control}
+									control={form.control}
 									name={f.name}
 									key={f.name}
 									defaultValue={selectedVariante[f.name] || undefined}
@@ -130,7 +130,7 @@ function UpdateVarianteModal({ variantes }: { variantes: VarianteCurso[] }) {
 								/>
 							) : (
 								<FormField
-									// control={form.control}
+									control={form.control}
 									name={f.name}
 									key={f.name}
 									defaultValue={selectedVariante[f.name] || undefined}
@@ -200,7 +200,7 @@ function UpdateVarianteModal({ variantes }: { variantes: VarianteCurso[] }) {
 					{varianteCursoFields.map(f => (
 						f.inputType === 'checkbox' ?
 						<FormField
-							// control={form.control}
+							control={form.control}
 							name={f.name}
 							key={f.name}
 							defaultValue={selectedVariante[f.name] || undefined}
