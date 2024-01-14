@@ -1,7 +1,7 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
-import { GripHorizontal } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { GripHorizontal, StretchHorizontal } from "lucide-react";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -128,39 +128,28 @@ function Actions({ varianteCursoId }: { varianteCursoId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => replaceSet(variantesParams.update, props.varianteId)}
-				>
-					<FileSignature className='mr-2 h-4 w-4' />
-					<span>Editar</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
 					onClick={() => {
 						console.log(pathname)
-						router.push(pathname + ROUTES.curso.programas(props.varianteId))}
+						router.push(pathname + ROUTES.curso.programas(varianteCursoId))}
 					}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>programas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(pathname + ROUTES.curso.materias(props.varianteId))}
+					onClick={() => router.push(pathname + ROUTES.curso.materias(varianteCursoId))}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Materias</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(pathname + ROUTES.curso.costos(props.varianteId))}
+					onClick={() => router.push(pathname + ROUTES.curso.costos(varianteCursoId))}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Costos</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => replaceSet(variantesParams.deactivate, props.varianteId)}
-				>
-					<Lock className='mr-2 h-4 w-4' />
-					<span>Desactivar</span>
-				</DropdownMenuItem>
-				// onClick={() => onClick(cursosParams.update, props.cursoId)}
+				 //onClick={() => onClick(cursosParams.update, props.cursoId)}
 				>
 					<GripHorizontal className='mr-2 h-4 w-4' />
 					<span>Programas</span>
