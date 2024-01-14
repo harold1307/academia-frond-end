@@ -28,11 +28,8 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead 
    ref={ref} 
-   className={cn("[&_tr]:border-b rounded-md text-white-500 text-lg", className)}
+   className={cn("[&_tr]:border-b rounded-md text-white-500 text-lg shadow-primaryShadow", className)}
    {...props}  
-   style={{
-    boxShadow: '0 0 25px 0 rgba(67, 84, 234, .7)'
-   }}
   />
 ))
 TableHeader.displayName = "TableHeader"

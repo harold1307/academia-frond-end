@@ -13,6 +13,7 @@ import {
 import { Input } from "../_components/ui/input";
 import type { Field } from "@/utils/forms";
 import { CURSO_KEYS } from "./query-keys";
+import { useRouter } from "next/navigation";
 
 export const cursosParams = {
 	update: "actualizarCurso",
@@ -26,6 +27,7 @@ const schema = z.object({
 });
 
 export default function AddCurso() {
+	const router = useRouter()
 	const { form, mutation, open, setOpen } = useMutateModule({
 		invalidateQueryKey: CURSO_KEYS.lists(),
 		schema,
@@ -39,6 +41,7 @@ export default function AddCurso() {
 		},
 		onError: console.error,
 		onSuccess: response => {
+			router.refresh()
 			console.log({ response });
 		},
 		hookFormProps: {},

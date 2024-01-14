@@ -110,10 +110,17 @@ export const columns = [
 	}),
 ];
 
+export const variantesParams = {
+	update: 'actualizarVariante',
+	deactivate: 'desactivarVariante',
+
+}
+
 function Actions({ varianteCursoId }: { varianteCursoId: string }) {
 	const router = useRouter();
 	const { cursoId } = useParams<{ cursoId: string }>();
-
+  const pathname = usePathname()
+  
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -121,6 +128,38 @@ function Actions({ varianteCursoId }: { varianteCursoId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
+					onClick={() => replaceSet(variantesParams.update, props.varianteId)}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => {
+						console.log(pathname)
+						router.push(pathname + ROUTES.curso.programas(props.varianteId))}
+					}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>programas</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(pathname + ROUTES.curso.materias(props.varianteId))}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>Materias</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(pathname + ROUTES.curso.costos(props.varianteId))}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>Costos</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(variantesParams.deactivate, props.varianteId)}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Desactivar</span>
+				</DropdownMenuItem>
 				// onClick={() => onClick(cursosParams.update, props.cursoId)}
 				>
 					<GripHorizontal className='mr-2 h-4 w-4' />

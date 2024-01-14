@@ -20,7 +20,7 @@ export type CreateVarianteCurso = Omit<
 	VarianteCurso,
 	"cursoId" | "id" | "fechaAprobacion" | "estado"
 > & {
-	fechaAprobacion: string;
+	fechaAprobacion: string | Date;
 };
 
 export class CursoClass {

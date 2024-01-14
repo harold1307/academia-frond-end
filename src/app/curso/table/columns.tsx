@@ -67,7 +67,7 @@ function Actions(props: { cursoId: string; showDelete: boolean }) {
 					<span>Editar</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.curso.variantes(props.cursoId))}
+					onClick={() => router.push(ROUTES.configCurso.variantes(props.cursoId))}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Variantes</span>

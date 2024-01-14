@@ -14,6 +14,8 @@ import type { CreateVarianteCurso } from "@/core/api/cursos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
+import { DatePickerDemo } from "@/app/_components/date-picker";
+import { useRouter } from "next/navigation";
 
 type AddVarianteProps = {
 	cursoId: string;
@@ -27,7 +29,7 @@ type CreateVarianteCursoSchema = Omit<
 	edadMaxima?: number;
 };
 
-const schema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
+export const varianteCursoSchema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
 	nombre: z.string(),
 	codigoBase: z.string(),
 	descripcion: z.string(),
@@ -37,7 +39,7 @@ const schema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
 	verificarEdad: z.boolean(),
 	edadMinima: z.number().optional(),
 	edadMaxima: z.number().optional(),
-	fechaAprobacion: z.string().datetime(),
+	fechaAprobacion: z.date().transform(date => date.toISOString()),
 	registroDesdeOtraSede: z.boolean(),
 	costoPorMateria: z.boolean(),
 	cumpleRequisitosMalla: z.boolean(),
@@ -46,8 +48,9 @@ const schema = z.object<ZodInferSchema<CreateVarianteCursoSchema>>({
 });
 
 export default function AddVariante({ cursoId }: AddVarianteProps) {
+	const router = useRouter()
 	const { form, mutation, open, setOpen } = useMutateModule({
-		schema,
+		schema: varianteCursoSchema,
 		mutationFn: async data => {
 			return API.cursos.createVarianteCurso(cursoId, {
 				...data,
@@ -57,6 +60,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 		},
 		onError: console.error,
 		onSuccess: response => {
+			router.refresh()
 			console.log({ response });
 		},
 		hookFormProps: {
@@ -68,10 +72,10 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 			},
 		},
 	});
+	const seeData= () => console.log('DATA: ', mutation.data)
 	console.log(form.formState.errors);
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar variante de curso</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -79,52 +83,107 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				}}
 				disabled={mutation.isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
+				onSubmit={form.handleSubmit(data => 
+					// console.log(data)
+					mutation.mutate(data)
+				)}
 				title='Adicionar variante de curso'
 				withTrigger
 				triggerLabel='Adicionar variante de curso'
 			>
 				<div className='mb-10 flex flex-col items-center justify-center gap-6 px-8'>
-					{fields.map(f =>
-						f.inputType === "text" ? (
-							<FormField
-								control={form.control}
-								name={f.name}
-								key={f.name}
-								render={({ field }) => {
-									return (
-										<FormItem className='flex w-full items-center justify-start gap-2'>
-											<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+					{varianteCursoFields.map(f =>
+						f.inputType === "text" || f.inputType === 'custom-text-area' ? (
+							f.name === 'fechaAprobacion' ? (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									render={({ field }) => {
+										return (
+											<FormItem className='flex w-full items-center justify-start gap-2'>
+												<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+													{f.label}
+												</FormLabel>
+												<FormControl>
+													<DatePickerDemo onChangeValue={field.onChange} />
+												</FormControl>
+											</FormItem>
+										);
+									}}
+								/>
+							) : (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									render={({ field }) => {
+										return (
+											<FormItem className='flex w-full items-center justify-start gap-2'>
+												<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+													{f.label}
+												</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														value={
+															typeof field.value === "boolean"
+																? undefined
+																: field.value || undefined
+														}
+														type={f.inputType}
+													/>
+												</FormControl>
+											</FormItem>
+										);
+									}}
+								/>
+							) 
+						) : null
+					)}
+					{
+						form.getValues('verificarEdad') === true ? (
+							varianteCursoFields.filter(el => {
+								return el.inputType === 'number'
+							}).map(f => (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									render={({ field }) => {
+										return(
+										<FormItem
+										className='flex w-full items-center justify-start gap-2'
+										>
+											<FormLabel className='col-span-3 text-start'>
 												{f.label}
 											</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
+													value={ typeof field.value === 'number' ? field.value : undefined }
 													type={f.inputType}
-													// className={`${f.name === 'fechaAprobacion' ? 'w-[12%]' : 'w-[88%]'} col-span-9 h-6`}
+													onChange={e => field.onChange(+e.target.value)}
 												/>
 											</FormControl>
 										</FormItem>
-									);
-								}}
-							/>
+										)
+									}}
+								/>
+							))
 						) : (
-							<></>
-						),
-					)}
+							null
+						)
+					}
 				</div>
 				<div className='flex items-center justify-between gap-8 flex-wrap w-full px-8'>
-					{fields.map(f => (
+					{varianteCursoFields.map(f => (
 						f.inputType === 'checkbox' ?
 						<FormField
 							control={form.control}
 							name={f.name}
 							key={f.name}
+							defaultValue={false}
 							render={({ field }) => {
 								return(
 								<FormItem
@@ -151,107 +210,15 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 								)
 							}}
 						/>
-						: <></>
+						: null
 					))}
 				</div>
-				{/* {fields.map(f => (
-					<FormField
-						control={form.control}
-						name={f.name}
-						key={
-							f.name === "edadMinima" || f.name === "edadMaxima"
-								? f.name + form.watch().verificarEdad
-								: f.name
-						}
-						render={({ field }) => {
-							switch (f.inputType) {
-								 case "custom-text-area": {
-								 	return (
-								 		<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-								 			<FormLabel className='col-span-3 text-end'>
-								 				{f.label}
-								 			</FormLabel>
-								 			<FormControl>
-								 				<Textarea
-								 					className='col-span-9 resize-none'
-								 					{...field}
-								 					value={field.value as string}
-								 				/>
-								 			</FormControl>
-								 		</FormItem>
-								 	);
-								 }
-								case "checkbox": {
-									return (
-										<FormItem className='border-2 border-red-500 w-4/12 grid grid-cols-12 items-center gap-4 space-y-0'>
-											<FormLabel className='col-span-3 text-end'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Checkbox
-													checked={field.value as boolean}
-													onCheckedChange={field.onChange}
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}
-								case "number": {
-									return (
-										<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-											<FormLabel className='col-span-3 text-end'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
-													disabled={
-														field.disabled || !form.watch().verificarEdad
-													}
-													onChange={e => field.onChange(+e.target.value)}
-													type={f.inputType}
-													className='col-span-9'
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}
-								default: {
-									return (
-										<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-											<FormLabel className='col-span-3 text-end'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
-													type={f.inputType}
-													className='col-span-9'
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}
-							}
-						}}
-					/>
-				))} */}
 			</MutateModal>
 		</section>
 	);
 }
 
-const fields = [
+export const varianteCursoFields = [
 	{
 		name: "nombre",
 		inputType: "text",
