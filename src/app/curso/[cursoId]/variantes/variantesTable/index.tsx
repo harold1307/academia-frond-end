@@ -64,7 +64,7 @@ export default function VarianteTable({ cursoId }:VarianteTableProps) {
 		<section className=''>
 			<DataTable columns={variantesColumns} data={variantes} />
 			<UpdateVarianteModal variantes={variantes} />
-			<DeactivateVariatneModal variantes={variantes}/>
+			<DeactivateVarianteModal variantes={variantes}/>
 		</section>
 	);
 }
@@ -262,7 +262,7 @@ function UpdateVarianteModal({ variantes }: { variantes: VarianteCurso[] }) {
 }
 
 
-function DeactivateVariatneModal({ variantes }: { variantes: VarianteCurso[] }) {
+function DeactivateVarianteModal({ variantes }: { variantes: VarianteCurso[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
@@ -299,7 +299,7 @@ function DeactivateVariatneModal({ variantes }: { variantes: VarianteCurso[] }) 
 		return <ModalFallback action='delete' redirectTo={() => dismissModal()} />;
 	}
 	const faltaDesactivar = () => {
-		console.log('falta implementar desactivar')
+		console.log('falta implementar desactivar', varianteId)
 	}
 
 	return (

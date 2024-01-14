@@ -22,6 +22,14 @@ type AddProgramaProps = {
 	varianteId: string;
 };
 
+export type ProgramaSchema = {
+	id:string	
+	todosLosProgramas: boolean
+	programa: string
+	modalidad: string
+	malla: string
+	registroExterno: boolean
+}
 // export const varianteCursoSchema = z.object<ZodInferSchema<any>>
 
 export default function AddPrograma({ varianteId }: AddProgramaProps) {
@@ -54,7 +62,7 @@ export default function AddPrograma({ varianteId }: AddProgramaProps) {
 				triggerLabel='Adicionar programa en variante de curso'
 			>
 				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
-					{fields.map(f => (
+					{programaFields.map(f => (
 						f.inputType === 'checkbox' ?
 						<FormField
 							control={form.control}
@@ -140,7 +148,7 @@ export default function AddPrograma({ varianteId }: AddProgramaProps) {
 	);
 }
 
-export const fields = [
+export const programaFields = [
 	{
 		name: "todosLosProgramas",
 		inputType: "checkbox",
@@ -172,5 +180,4 @@ export const fields = [
 		inputType: "checkbox",
 		label: "Registro Externo",
 	},
-] 
-// satisfies Field<keyof z.infer<typeof schema>>[];
+] satisfies Field<keyof ProgramaSchema>[];

@@ -5,8 +5,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
 import { VarianteCurso } from "@prisma/client";
+import { ProgramaSchema } from "../add-programa";
 
-export type ProgramaTableItem = any
+export type ProgramaTableItem = ProgramaSchema
 
 
 const helper = createColumnHelper<ProgramaTableItem>();
@@ -35,11 +36,11 @@ export const programasColumns = [
 	helper.display({
 		id: "actions",
 		cell: ({ row }) => {
-			const varianteId = row.getValue("id") as string;
+			const programaId = row.getValue("id") as string;
 			// const cursoId = row.getValue("cursoId") as string
 			return <Actions
             //   cursoId={cursoId} 
-			  varianteId={varianteId}
+			  programaId={programaId}
               showDelete={true} 
             />;
 		},
@@ -51,7 +52,7 @@ export const programasParams = {
 	deactivate: 'desactivarVariante',
 
 }
-function Actions(props: { varianteId: string, showDelete: boolean }) {
+function Actions(props: { programaId: string, showDelete: boolean }) {
 	const { replaceSet, router } = useMutateSearchParams();
 
 	return (
@@ -61,31 +62,13 @@ function Actions(props: { varianteId: string, showDelete: boolean }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => replaceSet(programasParams.update, props.varianteId)}
+					onClick={() => replaceSet(programasParams.update, props.programaId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.configCurso.programas(props.varianteId))}
-				>
-					<StretchHorizontal className='mr-2 h-4 w-4' />
-					<span>programas</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.configCurso.variantes(props.varianteId))}
-				>
-					<StretchHorizontal className='mr-2 h-4 w-4' />
-					<span>Materias</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.configCurso.variantes(props.varianteId))}
-				>
-					<StretchHorizontal className='mr-2 h-4 w-4' />
-					<span>Costos</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => replaceSet(programasParams.deactivate, props.varianteId)}
+					onClick={() => replaceSet(programasParams.deactivate, props.programaId)}
 				>
 					<Lock className='mr-2 h-4 w-4' />
 					<span>Desactivar</span>
