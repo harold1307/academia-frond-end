@@ -1,10 +1,8 @@
-import { notFound } from "next/navigation";
-
 import AddVariante from "./add-variante";
-import { APIserver } from "@/core/api-server";
-import VarianteTable from "./variantesTable";
 import LupaIcon from "@/app/_components/ui/icons/lupa";
 import { Input } from "@/app/_components/ui/input";
+import VariantesTableServer from "./table/server";
+import React from "react";
 
 type Context = {
 	params: {
@@ -15,11 +13,6 @@ type Context = {
 export const dynamic = "force-dynamic";
 
 export default async function CursosVariantesPage({ params }: Context) {
-	// const curso = await APIserver.cursos.getCursoWithVariantesByCursoId(
-	// 	params.cursoId,
-	// );
-
-	// if (!curso) return notFound();
 
 	return (
 		<div className='flex flex-col gap-4 justify-center align-center'>
@@ -32,7 +25,9 @@ export default async function CursosVariantesPage({ params }: Context) {
 					</div>
 				</div>
 			</div>
-			<VarianteTable cursoId={params.cursoId} />
+			<React.Suspense fallback={<h1>Cargando tabla...</h1>} >
+				<VariantesTableServer cursoId={params.cursoId} />
+			</React.Suspense>
 		</div>
 	);
 }

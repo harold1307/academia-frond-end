@@ -1,5 +1,5 @@
-import { VariantesTableItem } from "@/app/curso/[cursoId]/variantes/variantesTable/columns";
-import { CursoTableItem } from "@/app/curso/cursosTable/columns";
+import { VariantesTableItem } from "@/app/curso/[cursoId]/variantes/table/columns";
+import { CursoTableItem } from "@/app/curso/table/columns";
 
 export const isLoading = false
 

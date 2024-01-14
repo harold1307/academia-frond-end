@@ -1,8 +1,10 @@
+import React from "react";
 import { fontPlay } from "../_components/ui/fonts";
 import LupaIcon from "../_components/ui/icons/lupa";
 import { Input } from "../_components/ui/input";
 import AddCurso from "./add-curso";
-import CursoTable from "./cursosTable";
+import CursoTable from "./table";
+import CursoTableServer from "./table/server";
 
 export default function CursoPage() {
 	return (
@@ -17,7 +19,9 @@ export default function CursoPage() {
 						</div>
 					</div>
 				</div>
-				<CursoTable />
+				<React.Suspense fallback={<h1>Cargando tabla...</h1>}>
+					<CursoTableServer />
+				</React.Suspense>
 			</div>
 		</>
 	);

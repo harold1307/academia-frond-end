@@ -6,56 +6,27 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import MutateModal from "@/app/_components/modals/mutate-modal";
-import { ProgramaSchema, programaFields } from "../add-programa";
 import { FormControl, FormField, FormItem, FormLabel } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 import DeleteModal from "@/app/_components/modals/delete-modal";
+import { ProgramaSchema, programaFields } from "../add-programa";
 
 interface ProgramasTableProps {
-	varianteId: string
-}
-interface MockUpDataI {
-	programas:ProgramaSchema[]
-}
-const isLoading = false
-const data:MockUpDataI = {
-	programas: [
-		{
-			id: '1',	
-			todosLosProgramas: false,
-			programa: 'programaA',
-			modalidad: 'PRESENCIAL',
-			malla: 'MallaB',
-			registroExterno: true
-		}
-	]
+	data: ProgramaSchema[]
 }
 
-export default function ProgramasTable({ varianteId }:ProgramasTableProps) {
 
-	// const { isLoading, data } = useQuery({
-	//	fetch programas
-	// });
+export default function ProgramasTable({ data }:ProgramasTableProps) {
 
 	const programas = React.useMemo(() => {
-		return data?.programas?.map(
+		return data?.map(
 			curso =>
 				({
 					...curso,
 				}) satisfies ProgramaTableItem,
 		);
 	}, [data]);
-
-	if (isLoading) {
-		return "Cargando tabla...";
-	}
-
-	if (isLoading && !programas) {
-		return "WTF";
-	}
-
-	if (!programas) return "Ha ocurrido un error en el fetch";
 
 	return (
 		<section className=''>

@@ -3,8 +3,10 @@
 // import AddCurso from "./add-curso";
 // import CursoTable from "./cursosTable";
 
-import AddPrograma from "../add-programa";
-import ProgramasTable from "../programasTable";
+import React from "react";
+import AddPrograma from "./add-programa";
+import ProgramasTable from "./table";
+import ProgramasTableServer from "./table/server";
 type Context = {
     params: {
         varianteId: string
@@ -23,7 +25,10 @@ export default function CursoPage({ params }: Context) {
 						</div>
 					</div> */}
 				</div>
-				<ProgramasTable varianteId={params.varianteId} />
+				<React.Suspense fallback={<h1>Cargando tabla...</h1>} >
+
+				</React.Suspense>
+				<ProgramasTableServer varianteId={params.varianteId} />
 			</div>
 		</>
 	);

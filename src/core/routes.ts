@@ -13,7 +13,7 @@ export const ROUTES = {
 	configCurso: {
 		path: "/curso",
 		variantes: (cursoId: string) => ROUTES.configCurso.path + `/${cursoId}/variantes`,
-		programas: (varianteId: string) => ROUTES.configCurso.path + `/programas/${varianteId}`,
+		programas: (varianteId: string) => `/${varianteId}/programas`,
 		materias: (cursoId: string, varianteId: string) => ROUTES.configCurso.path + `/${cursoId}/variantes/${varianteId}/materias`
 	},
 } as const;

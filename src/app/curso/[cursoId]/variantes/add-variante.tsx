@@ -15,6 +15,7 @@ import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
 import { DatePickerDemo } from "@/app/_components/date-picker";
+import { useRouter } from "next/navigation";
 
 type AddVarianteProps = {
 	cursoId: string;
@@ -38,7 +39,7 @@ export const varianteCursoSchema = z.object<ZodInferSchema<CreateVarianteCursoSc
 	verificarEdad: z.boolean(),
 	edadMinima: z.number().optional(),
 	edadMaxima: z.number().optional(),
-	fechaAprobacion: z.string().datetime(),
+	fechaAprobacion: z.date().transform(date => date.toISOString()),
 	registroDesdeOtraSede: z.boolean(),
 	costoPorMateria: z.boolean(),
 	cumpleRequisitosMalla: z.boolean(),
@@ -47,6 +48,7 @@ export const varianteCursoSchema = z.object<ZodInferSchema<CreateVarianteCursoSc
 });
 
 export default function AddVariante({ cursoId }: AddVarianteProps) {
+	const router = useRouter()
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema: varianteCursoSchema,
 		mutationFn: async data => {
@@ -58,6 +60,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 		},
 		onError: console.error,
 		onSuccess: response => {
+			router.refresh()
 			console.log({ response });
 		},
 		hookFormProps: {
@@ -158,12 +161,9 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 											<FormControl>
 												<Input
 													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
+													value={ typeof field.value === 'number' ? field.value : undefined }
 													type={f.inputType}
+													onChange={e => field.onChange(+e.target.value)}
 												/>
 											</FormControl>
 										</FormItem>
@@ -183,6 +183,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 							control={form.control}
 							name={f.name}
 							key={f.name}
+							defaultValue={false}
 							render={({ field }) => {
 								return(
 								<FormItem

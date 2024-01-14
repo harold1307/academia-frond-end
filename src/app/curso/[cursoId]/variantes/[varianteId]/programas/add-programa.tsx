@@ -68,6 +68,7 @@ export default function AddPrograma({ varianteId }: AddProgramaProps) {
 							control={form.control}
 							name={f.name}
 							key={f.name}
+							defaultValue={false}
 							render={({ field }) => {
 								return(
 								<FormItem

@@ -8,38 +8,21 @@ import { useRouter } from "next/navigation";
 import { usePathname, useSearchParams } from "next/navigation";
 import { VarianteCurso } from "@prisma/client";
 import { useMutateModule } from "@/hooks/use-mutate-module";
-import { z } from "zod";
-import { API } from "@/core/api-client";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import MutateModal from "@/app/_components/modals/mutate-modal";
-import { varianteCursoFields, varianteCursoSchema } from "../add-variante";
+import { varianteCursoFields } from "../add-variante";
 import { FormControl, FormField, FormItem, FormLabel } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 
-//MockUp
-import { MUVariantes as data, isLoading } from "@/utils/mockupData";
-import { useQuery } from "@tanstack/react-query";
-import { VARIANTES_KEYS } from "../query-keys";
 import { DatePickerDemo } from "@/app/_components/date-picker";
-import { CreateVarianteCurso } from "@/core/api/cursos";
-import { ZodInferSchema } from "@/utils/types";
-import { AnyNaptrRecord } from "dns";
 import DeleteModal from "@/app/_components/modals/delete-modal";
+import { CursoWithVariantes } from "@/core/api/cursos";
 
 interface VarianteTableProps {
-	cursoId: string
+	data: CursoWithVariantes
 }
-export default function VarianteTable({ cursoId }:VarianteTableProps) {
+export default function VarianteTable({ data }:VarianteTableProps) {
 
-	const { isLoading, data } = useQuery({
-		
-		queryKey: VARIANTES_KEYS.lists(),
-		queryFn: async () => {
-			const data = await API.cursos.getCursoWithVariantesByCursoId(cursoId);
-
-			return data.data;
-		},
-	});
 
 	const variantes = React.useMemo(() => {
 		return data?.variantes?.map(
@@ -49,16 +32,6 @@ export default function VarianteTable({ cursoId }:VarianteTableProps) {
 				}) satisfies VariantesTableItem,
 		);
 	}, [data]);
-
-	if (isLoading) {
-		return "Cargando tabla...";
-	}
-
-	if (isLoading && !variantes) {
-		return "WTF";
-	}
-
-	if (!variantes) return "Ha ocurrido un error en el fetch";
 
 	return (
 		<section className=''>

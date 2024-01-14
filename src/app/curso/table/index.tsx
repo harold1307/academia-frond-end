@@ -22,18 +22,11 @@ import { columns, type CursoTableItem } from "./columns";
 import { DataTable } from "./data-table";
 import DeleteModal from "@/app/_components/modals/delete-modal";
 
-//MockUp
-// import { MUCursos as data, isLoading } from "@/utils/mockupData"; 
+interface CursoTableProps {
+	data: Curso[]
+}
 
-export default function CursoTable() {
-	const { isLoading, data } = useQuery({
-		queryKey: CURSO_KEYS.lists(),
-		queryFn: async () => {
-			const data = await API.cursos.getMany();
-
-			return data.data;
-		},
-	});
+export default function CursoTable({ data }:CursoTableProps) {
 
 	const cursos = React.useMemo(() => {
 		return data?.map(
@@ -44,13 +37,6 @@ export default function CursoTable() {
 		);
 	}, [data]);
 
-	if (isLoading) {
-		return "Cargando tabla...";
-	}
-
-	if (isLoading && !cursos) {
-		return "WTF";
-	}
 
 	if (!cursos) return "Ha ocurrido un error en el fetch";
 
