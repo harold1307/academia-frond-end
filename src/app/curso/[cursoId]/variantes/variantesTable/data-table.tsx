@@ -54,11 +54,11 @@ export function DataTable({ columns, data }: DataTableProps) {
 									 className={
 										`${index === 0 ? 'border-l-2 rounded-l-md' : ''} 
 										${index === headerGroup.headers.length - 1 ? ' border-r-2 rounded-r-md' : ''} 
-										font-light px-0 py-0 h-72 w-2 relative`
+										font-light px-0 py-0 h-52 w-2 relative`
 									 }
 									>
 										<p 
-										 className={`${index > 2 && index < (headerGroup.headers.length - 1)? 'absolute h-full w-72 top-0 left-0 -rotate-90 text-left pl-4' : ' absolute bottom-0 w-full pb-2'}`}
+										 className={`${index > 2 && index < (headerGroup.headers.length - 1)? 'absolute h-full w-52 top-0 left-0 -rotate-90 text-left pl-4' : ' absolute bottom-0 w-full pb-2'}`}
 										>
 											{header.isPlaceholder
 												? null
