@@ -1,12 +1,9 @@
 'use client'
 import { Button } from "@/app/_components/ui/button";
-import { ROUTES } from "@/core/routes";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/_components/ui/dropdown-menu";
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
-import { VarianteCurso } from "@prisma/client";
-// import { ProgramaSchema } from "../add-programa";
+import { FileSignature, Lock } from "lucide-react";
 import { MateriaSchema } from "../add-materia";
 
 export type MateriaTableItem = MateriaSchema
@@ -51,9 +48,7 @@ export const materiasColumns = [
 		id: "actions",
 		cell: ({ row }) => {
 			const programaId = row.getValue("id") as string;
-			// const cursoId = row.getValue("cursoId") as string
 			return <Actions
-            //   cursoId={cursoId} 
 			  programaId={programaId}
               showDelete={true} 
             />;

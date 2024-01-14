@@ -1,6 +1,5 @@
 import React from "react";
 import AddCostos from "./add-costos";
-import ProgramasTableServer from "../programas/table/server";
 import CostosTableServer from "./table/server";
 type Context = {
     params: {

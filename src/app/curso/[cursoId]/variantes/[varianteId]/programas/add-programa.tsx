@@ -1,6 +1,4 @@
 "use client";
-import { z } from "zod";
-
 import MutateModal from "@/app/_components/modals/mutate-modal";
 import {
 	FormControl,
@@ -9,12 +7,8 @@ import {
 	FormLabel,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
-import { API } from "@/core/api-client";
-import type { CreateVarianteCurso } from "@/core/api/cursos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
-import type { ZodInferSchema } from "@/utils/types";
-import { DatePickerDemo } from "@/app/_components/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
 import { Modalidad } from "@prisma/client";
 
@@ -22,6 +16,7 @@ type AddProgramaProps = {
 	varianteId: string;
 };
 
+//Esquema de mockup hasta tener el schema en prisma
 export type ProgramaSchema = {
 	id:string	
 	todosLosProgramas: boolean

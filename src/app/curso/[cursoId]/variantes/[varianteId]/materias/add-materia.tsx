@@ -1,6 +1,4 @@
 "use client";
-import { z } from "zod";
-
 import MutateModal from "@/app/_components/modals/mutate-modal";
 import {
 	FormControl,
@@ -9,20 +7,15 @@ import {
 	FormLabel,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
-import { API } from "@/core/api-client";
-import type { CreateVarianteCurso } from "@/core/api/cursos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
-import type { ZodInferSchema } from "@/utils/types";
-import { DatePickerDemo } from "@/app/_components/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
-import { Modalidad } from "@prisma/client";
-import { useState } from "react";
 
 type AddMateriaProps = {
 	varianteId: string;
 };
 
+//Schema de Mockup hasta tener el esquema de Prisma
 export type MateriaSchema = {
 	id:string	
 	asginatura: string //select
@@ -48,30 +41,7 @@ export type MateriaSchema = {
     asistenciaAprobar: number
 }
 
-// export const MateriaSchema = z.object<ZodInferSchema<MateriaSchema>>({
-//     id:z.string(),
-// 	asginatura: z.string(),
-// 	lms: z.string(),
-//     plantillaLms: z.string(),
-//     validaParaCreditos: z.boolean(),
-//     validaParaPromedios: z.boolean(),
-//     horas: z.number(),
-//     horasDocencia: z.number(),
-//     horasColaborativas: z.number(),
-//     horasAsistidasPorDocente: z.number(),
-//     horasOrganizacionAprendizaje: z.number(),
-//     horasAutonomas:z.number(),
-//     horasPracticas:z.number(),
-//     creditos:z.number(),
-//     requeridaAprobar: z.boolean(),
-//     sumaHoras: z.boolean(),
-//     calificar: z.boolean(),
-//     modeloEvaluativo: z.string().optional(),
-//     notaMaxima: z.number().optional(),
-//     notaParaAprobar: z.number().optional(),
-//     cantidadDecimales: z.number().optional(),
-//     asistenciaAprobar: z.number()
-// });
+// export const MateriaSchema = z.object<ZodInferSchema<MateriaSchema>>()
 
 export default function AddMateria({ varianteId }: AddMateriaProps) {
 	const { form, mutation, open, setOpen } = useMutateModule({

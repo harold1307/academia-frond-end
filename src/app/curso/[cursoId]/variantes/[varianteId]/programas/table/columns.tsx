@@ -22,7 +22,6 @@ export const programasColumns = [
 	}),
 	helper.accessor("malla", {
 		header: 'Malla',
-		// cell: ({ getValue }) => (getValue().toDateString())
 	}),
 	helper.accessor("todosLosProgramas", {
         header: 'Todos Los Programas',
@@ -37,9 +36,7 @@ export const programasColumns = [
 		id: "actions",
 		cell: ({ row }) => {
 			const programaId = row.getValue("id") as string;
-			// const cursoId = row.getValue("cursoId") as string
 			return <Actions
-            //   cursoId={cursoId} 
 			  programaId={programaId}
               showDelete={true} 
             />;
@@ -53,7 +50,7 @@ export const programasParams = {
 
 }
 function Actions(props: { programaId: string, showDelete: boolean }) {
-	const { replaceSet, router } = useMutateSearchParams();
+	const { replaceSet } = useMutateSearchParams();
 
 	return (
 		<DropdownMenu>
