@@ -12,7 +12,7 @@ type Context = {
         varianteId: string
     }
 }
-export default function CursoPage({ params }: Context) {
+export default function ProgramaPage({ params }: Context) {
 	return (
 		<>
 			<div className='flex flex-col gap-4 justify-center align-center'>
@@ -26,9 +26,8 @@ export default function CursoPage({ params }: Context) {
 					</div> */}
 				</div>
 				<React.Suspense fallback={<h1>Cargando tabla...</h1>} >
-
+					<ProgramasTableServer varianteId={params.varianteId} />
 				</React.Suspense>
-				<ProgramasTableServer varianteId={params.varianteId} />
 			</div>
 		</>
 	);
