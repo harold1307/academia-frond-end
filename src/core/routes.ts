@@ -14,6 +14,7 @@ export const ROUTES = {
 		path: "/curso",
 		variantes: (cursoId: string) => ROUTES.configCurso.path + `/${cursoId}/variantes`,
 		programas: (varianteId: string) => `/${varianteId}/programas`,
-		materias: (varianteId: string) => `/${varianteId}/materias`
+		materias: (varianteId: string) => `/${varianteId}/materias`,
+		costos: (varianteId: string) => `/${varianteId}/costos`
 	},
 } as const;
