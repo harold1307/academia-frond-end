@@ -16,11 +16,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, VarianteCursoTableItem } from "./columns";
+import type { columns, AsignaturaEnVarianteCursoTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: VarianteCursoTableItem[];
+	data: AsignaturaEnVarianteCursoTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {

@@ -5,6 +5,7 @@ import { CursoClass } from "./cursos";
 import { EjeFormativoClass } from "./ejes-formativos";
 import { InstitucionClass } from "./institucion";
 import { MallaCurricularClass } from "./malla-curricular";
+import { VarianteCursoClass } from "./variantes-curso";
 
 export type APIResponse<D> = {
 	data: D;
@@ -15,34 +16,38 @@ export type SimpleAPIResponse = {
 };
 
 export class APIClass {
-	constructor(private apiUrl: string) {}
+	constructor(private _apiUrl: string) {}
 
 	get instituciones() {
-		return new InstitucionClass(this.apiUrl);
+		return new InstitucionClass(this._apiUrl);
 	}
 
 	get mallas() {
-		return new MallaCurricularClass(this.apiUrl);
+		return new MallaCurricularClass(this._apiUrl);
 	}
 
 	get asignaturas() {
-		return new AsignaturaClass(this.apiUrl);
+		return new AsignaturaClass(this._apiUrl);
 	}
 
 	get cursos() {
-		return new CursoClass(this.apiUrl);
+		return new CursoClass(this._apiUrl);
 	}
 
 	get ejesFormativos() {
-		return new EjeFormativoClass(this.apiUrl);
+		return new EjeFormativoClass(this._apiUrl);
 	}
 
 	get camposFormacion() {
-		return new CampoFormacionClass(this.apiUrl);
+		return new CampoFormacionClass(this._apiUrl);
 	}
 
 	get areasConocimiento() {
-		return new AreaConocimientoClass(this.apiUrl);
+		return new AreaConocimientoClass(this._apiUrl);
+	}
+
+	get variantesCurso() {
+		return new VarianteCursoClass(this._apiUrl);
 	}
 }
 

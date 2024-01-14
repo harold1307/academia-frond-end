@@ -10,11 +10,14 @@ export const ROUTES = {
 		modulos: (mallaId: string) => ROUTES.malla.path + `/${mallaId}/modulos`,
 	},
 	asignatura: "/asignatura",
-	configCurso: {
+	curso: {
 		path: "/curso",
-		variantes: (cursoId: string) => ROUTES.configCurso.path + `/${cursoId}/variantes`,
+		variantes: (cursoId: string) => ROUTES.curso.path + `/${cursoId}/variantes`,
 		programas: (varianteId: string) => `/${varianteId}/programas`,
 		materias: (varianteId: string) => `/${varianteId}/materias`,
 		costos: (varianteId: string) => `/${varianteId}/costos`
+		asignaturasVariantes: (cursoId: string, varianteCursoId: string) =>
+			ROUTES.curso.path +
+			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
 	},
 } as const;

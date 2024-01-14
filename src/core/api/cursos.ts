@@ -1,6 +1,16 @@
-import type { Curso, VarianteCurso } from "@prisma/client";
+import type {
+	Curso as PrismaCurso,
+	VarianteCurso as PrismaVarianteCurso,
+} from "@prisma/client";
 
+import type { ReplaceDateToString } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+
+export type Curso = ReplaceDateToString<PrismaCurso> & {
+	variantesCount: number;
+};
+
+export type VarianteCurso = ReplaceDateToString<PrismaVarianteCurso>;
 
 export type CursoWithVariantes = Curso & {
 	variantes: VarianteCurso[];
@@ -8,7 +18,7 @@ export type CursoWithVariantes = Curso & {
 
 export type CreateVarianteCurso = Omit<
 	VarianteCurso,
-	"cursoId" | "id" | "fechaAprobacion"
+	"cursoId" | "id" | "fechaAprobacion" | "estado"
 > & {
 	fechaAprobacion: string | Date;
 };
@@ -37,7 +47,7 @@ export class CursoClass {
 	}
 
 	async create(
-		curso: Omit<Curso, "id" | "createdAt">,
+		curso: Omit<Curso, "id" | "createdAt" | "variantesCount">,
 	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/cursos`, {
 			method: "POST",
