@@ -21,6 +21,8 @@ export const ROUTES = {
 			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
 	},
 	modelosEvaluativos: {
-		path: '/modelosevaluativos'
+		path: '/modelosevaluativos',
+		modeloCampos: (modeloEvaluativoId:string) => `/${modeloEvaluativoId}/campos`,
+		modelologica: (modeloEvaluativoId:string) => `/${modeloEvaluativoId}/logica`
 	}
 } as const;

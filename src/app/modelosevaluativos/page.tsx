@@ -1,3 +1,6 @@
+import React from "react";
+import AddModeloEvaluativo from "./modelos/add-modelo";
+import ModelosEvaluativosTableServer from "./modelos/table/server";
 
 
 type Context = {
@@ -7,11 +10,6 @@ type Context = {
 export default function ModelosEvaluativosPage({ searchParams }:Context) {
     const section = searchParams.section
 
-    if(section === '0') {
-        return(
-            <h1>section 1</h1>
-        )
-    }
     if(section === '1') {
         return(
             <h1>section 2</h1>
@@ -25,11 +23,16 @@ export default function ModelosEvaluativosPage({ searchParams }:Context) {
     if(section === '3') {
         return(
             <h1>section 4</h1>
-        )
-    }
-
-
+            )
+        }
+        
+        
     return(
-        <h1>section 1</h1>
+        <div>
+            <AddModeloEvaluativo />
+            <React.Suspense fallback={<h1>Cargando tabla...</h1>}>
+                <ModelosEvaluativosTableServer />
+            </React.Suspense>
+        </div>
     )
 }
