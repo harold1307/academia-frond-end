@@ -45,8 +45,8 @@ export const programasColumns = [
 ];
 
 export const programasParams = {
-	update: 'actualizarVariante',
-	deactivate: 'desactivarVariante',
+	update: 'actualizarprograma',
+	deactivate: 'desactivarprograma',
 
 }
 function Actions(props: { programaId: string, showDelete: boolean }) {

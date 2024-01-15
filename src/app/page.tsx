@@ -20,6 +20,10 @@ const modulos = [
 		label: "Configuración de Cursos",
 		href: ROUTES.curso.path,
 	},
+	{
+		label: "Modelos Evaluativos",
+		href: ROUTES.modelosEvaluativos.path + '?section=0',
+	},
 ];
 
 export const dynamic = "force-dynamic";
