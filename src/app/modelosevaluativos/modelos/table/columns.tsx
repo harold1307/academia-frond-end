@@ -69,7 +69,8 @@ export const modelosEvaluativosColumns = [
 export const modelosEvaluativosParams = {
 	update: 'actualizarmodeloevaluativo',
 	deactivate: 'desactivarmodeloevaluativo',
-    clone: 'clonemodeloevaluativo'
+    clone: 'clonemodeloevaluativo',
+	logic: 'logicamodeloevaluativo'
 }
 
 function Actions({ modeloEvaluativoId }: { modeloEvaluativoId: string }) {
@@ -101,7 +102,7 @@ function Actions({ modeloEvaluativoId }: { modeloEvaluativoId: string }) {
 				</DropdownMenuItem>
                 <DropdownMenuItem
 					onClick={() => {
-						router.push(pathname + ROUTES.modelosEvaluativos.modelologica(modeloEvaluativoId))}
+						replaceSet(modelosEvaluativosParams.logic, modeloEvaluativoId)}
 					}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />

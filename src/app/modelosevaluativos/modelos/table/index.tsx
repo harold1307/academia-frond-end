@@ -10,6 +10,7 @@ import MutateModal from "@/app/_components/modals/mutate-modal";
 import { FormControl, FormField, FormItem, FormLabel } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import DeleteModal from "@/app/_components/modals/delete-modal";
+import CamposModelosEvaluativosTableServer from "../../[modeloEvaluativoId]/campos/table/server";
 
 interface ModelosEvaluativosTableProps {
 	data: ModelosEvaluativoSchema[]
@@ -33,6 +34,7 @@ export default function ModeloEvaluativoTable({ data }:ModelosEvaluativosTablePr
 			<UpdateModeloEvaluativoModal modelosEvaluativos={modelosEvaluativos} />
 			<DeactivateModeloEvaluativo modelosEvaluativos={modelosEvaluativos}/>
             <CloneModeloEvaluativo modelosEvaluativos={modelosEvaluativos} />
+			<LogicaDeModeloEvaluativo modelosEvaluativos={modelosEvaluativos} />
 		</section>
 	);
 }
@@ -320,6 +322,106 @@ function CloneModeloEvaluativo({ modelosEvaluativos }: { modelosEvaluativos: Mod
                             )
                         }}
                     />
+				</div>
+			</MutateModal>
+		</section>
+    )
+}
+
+function LogicaDeModeloEvaluativo({ modelosEvaluativos }: { modelosEvaluativos: ModelosEvaluativoSchema[] }) {
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const pathname = usePathname();
+	const { form, mutation, } = useMutateModule({
+		// schema,
+		mutationFn: async (data) => {
+			//update logic
+            console.log('Falta implementar lógica', data)
+		},
+		onSuccess: (response) => {
+			console.log(response)
+		},
+		onError: (error) => {
+			console.log(error)
+		}
+
+	})
+
+	const dismissModal = () => {
+		const newParams = new URLSearchParams(searchParams);
+		newParams.delete(modelosEvaluativosParams.logic);
+
+		router.replace(pathname + "?" + newParams.toString());
+	};
+
+
+	const modeloEvaluativoParamsId = React.useMemo(
+		() => searchParams.get(modelosEvaluativosParams.logic),
+		[searchParams],
+	);
+
+	if (!modeloEvaluativoParamsId) return null;
+
+	const selectedModeloEvaluativo = modelosEvaluativos.find(i => i.id === modeloEvaluativoParamsId);
+
+	if (!selectedModeloEvaluativo) {
+		return <ModalFallback action='update' redirectTo={() => dismissModal()} />;
+	}
+    return(
+        <section>
+			<MutateModal
+				dialogProps={{
+					open: true,
+					onOpenChange: open => {
+						// if (mutation.isPending) return;
+						if (!open) {
+							dismissModal();
+							return;
+						}
+					},
+				}}
+				disabled={mutation.isPending}
+				form={form}
+				onSubmit={form.handleSubmit(data => 
+					// console.log('Falta implementar lógica', data)
+					mutation.mutate({data })
+				)}
+				title={`Lógica modelo evaluativo ${selectedModeloEvaluativo.nombre}`}
+				withTrigger
+				triggerLabel='logica modelo evaluativo'
+			>
+				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
+                    <div className="w-full flex flex-col items-start justify-start gap-4">
+						<span >Lógica</span>
+						<FormField
+                        control={form.control}
+                        name={'logic'}
+                        render={({ field }) => {
+                            return(
+                            <FormItem
+                             className='flex justify-between items-center gap-4 space-y-0 border-2 rounded-2xl w-full p-4'
+                             style={{
+                                boxShadow: '0 0 20px rgba(67, 84, 234, .7)'
+                             }}
+                            >
+                                <FormLabel className='col-span-3 text-start'>
+                                    lógica:
+                                </FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        type='custom-text-area'
+                                    />
+                                </FormControl>
+                            </FormItem>
+                            )
+                        }}
+                    />
+					</div>
+					<div className='w-full'>
+						<span>Campos</span>
+						<CamposModelosEvaluativosTableServer />
+					</div>
 				</div>
 			</MutateModal>
 		</section>
