@@ -12,7 +12,8 @@ export const env = createEnv({
     API_URL: z.string(),
     AZURE_AD_CLIENT_ID: z.string(),
     AZURE_AD_CLIENT_SECRET: z.string(),
-    AZURE_AD_TENANT_ID: z.string(),
+    NEXTAUTH_SECRET: z.string(),
+    NEXTAUTH_URL: z.string(),
   },
 
   /**
@@ -38,7 +39,8 @@ export const env = createEnv({
     API_URL: process.env.API_URL,
     AZURE_AD_CLIENT_ID: process.env.AZURE_AD_CLIENT_ID,
     AZURE_AD_CLIENT_SECRET: process.env.AZURE_AD_CLIENT_SECRET,
-    AZURE_AD_TENANT_ID: process.env.AZURE_AD_TENANT_ID,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
 
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID: process.env.NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID,

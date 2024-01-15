@@ -165,26 +165,26 @@ model Curso {
 }
 
 model VarianteCurso {
-  id                         String                      @id @default(uuid())
-  nombre                     String
-  codigoBase                 String
-  descripcion                String
-  registroExterno            Boolean
-  registroInterno            Boolean
-  verificarSesion            Boolean
-  verificarEdad              Boolean
-  edadMinima                 Int?
-  edadMaxima                 Int?
-  cursoId                    String
-  aprobarCursoPrevio         Boolean
-  costoPorMateria            Boolean
-  cumpleRequisitosMalla      Boolean
-  fechaAprobacion            DateTime
-  pasarRecord                Boolean
-  registroDesdeOtraSede      Boolean
-  estado                     Boolean                     @default(true)
-  asignaturasEnVarianteCurso AsignaturaEnVarianteCurso[]
-  curso                      Curso                       @relation(fields: [cursoId], references: [id])
+  id                    String                      @id @default(uuid())
+  nombre                String
+  codigoBase            String
+  descripcion           String
+  registroExterno       Boolean
+  registroInterno       Boolean
+  verificarSesion       Boolean
+  verificarEdad         Boolean
+  edadMinima            Int?
+  edadMaxima            Int?
+  cursoId               String
+  aprobarCursoPrevio    Boolean
+  costoPorMateria       Boolean
+  cumpleRequisitosMalla Boolean
+  fechaAprobacion       DateTime
+  pasarRecord           Boolean
+  registroDesdeOtraSede Boolean
+  estado                Boolean                     @default(true)
+  asignaturas           AsignaturaEnVarianteCurso[]
+  curso                 Curso                       @relation(fields: [cursoId], references: [id])
 
   @@index([cursoId], map: "variantes_de_cursos_cursoId_fkey")
   @@map("variantes_de_cursos")
@@ -263,7 +263,7 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
-  image         String?
+  image         String?   @db.Text
   accounts      Account[]
   sessions      Session[]
 
