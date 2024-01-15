@@ -20,4 +20,7 @@ export const ROUTES = {
 			ROUTES.curso.path +
 			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
 	},
+	modelosEvaluativos: {
+		path: '/modelosevaluativos'
+	}
 } as const;
