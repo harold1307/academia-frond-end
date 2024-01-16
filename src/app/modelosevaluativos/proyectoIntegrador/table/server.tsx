@@ -38,7 +38,7 @@ const proyectosIntegradores:ProyectoIntegradorSchema[] = [
 ]
 
 export default async function ProyectoIntegradorTableServer() {
-	//Fetch modelos evaluativos
+	//Fetch proyectos integradores
 
 	
 
