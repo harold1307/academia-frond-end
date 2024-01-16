@@ -31,13 +31,6 @@ export default function AddNivelacion() {
 		onSuccess: response => {
 			console.log({ response });
 		},
-        hookFormProps: {
-            defaultValues: {
-                examenComplexivo: false,
-                defineMaximos: false,
-                camposActualizanEstados: false
-            }
-        }
 	});
 	console.log(form.formState.errors);
 	return (

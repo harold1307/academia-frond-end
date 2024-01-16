@@ -11,16 +11,13 @@ import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 
 //Esquema de MockUp hasta tener el esquema de Prisma
-export type ProyectoIntegradorSchema = {
+export type AlternativasEvaluacionSchema = {
 	id:string	
 	nombre: string
-    notaMaxima: number
-    notaParaAprobar: number
-    decimalesNotaFinal: number
-    observaciones:string
+    codigo: string
 }
 
-export default function AddProyectoIntegrador() {
+export default function AddAlternativaEvaluacion() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		// schema: ModeloEvaluativoSchema,
 		mutationFn: async data => {
@@ -45,12 +42,12 @@ export default function AddProyectoIntegrador() {
 					console.log('Falta implementar lógica', data)
 					// mutation.mutate(data)
 				)}
-				title={`Adicionar Proyecto Integrador`}
+				title={`Adicionar Alternativa Evaluación`}
 				withTrigger
-				triggerLabel='Adicionar proyecto integrador'
+				triggerLabel='Adicionar alternativa evaluación'
 			>
 				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
-					{proyectoIntegradorFields.map(f => (
+					{alternativaEvaluacionFields.map(f => (
                         <FormField
                             control={form.control}
                             name={f.name}
@@ -83,30 +80,15 @@ export default function AddProyectoIntegrador() {
 	);
 }
 
-export const proyectoIntegradorFields = [
+export const alternativaEvaluacionFields = [
 	{
 		name: "nombre",
 		inputType: "text",
 		label: "Nombre",
 	},
 	{
-		name: "notaMaxima",
-		inputType: "number",
-		label: "Nota Máxima",
+		name: "codigo",
+		inputType: "text",
+		label: "Código",
 	},
-	{
-		name: "notaParaAprobar",
-		inputType: "number",
-		label: "Nota para Aprobar",
-	},
-	{
-		name: "decimalesNotaFinal",
-		inputType: "number",
-		label: "Decimales nota Final",
-	},
-	{
-		name: "observaciones",
-		inputType: "custom-text-area",
-		label: "Observaciones",
-	},
-] satisfies Field<keyof ProyectoIntegradorSchema>[];
+] satisfies Field<keyof AlternativasEvaluacionSchema>[];

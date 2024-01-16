@@ -5,6 +5,8 @@ import AddProyectoIntegrador from "./proyectoIntegrador/add-proyecto-integrador"
 import ProyectoIntegradorTableServer from "./proyectoIntegrador/table/server";
 import NivelacionTableServer from "./nivelacion/table/server";
 import AddNivelacion from "./nivelacion/add-nivelacion";
+import AddAlternativaEvaluacion from "./alternativasEvaluacion/add-alternativas-evaluacion";
+import AlternativaEvaluacionTableServer from "./alternativasEvaluacion/table/server";
 
 
 type Context = {
@@ -36,9 +38,14 @@ export default function ModelosEvaluativosPage({ searchParams }:Context) {
     }
     if(section === '3') {
         return(
-            <h1>section 4</h1>
-            )
-        }
+            <div>
+                <AddAlternativaEvaluacion />
+                <React.Suspense fallback={<h1>Cargando tabla...</h1>} >
+                    <AlternativaEvaluacionTableServer />
+                </React.Suspense>
+            </div>
+        )
+    }
         
         
     return(
