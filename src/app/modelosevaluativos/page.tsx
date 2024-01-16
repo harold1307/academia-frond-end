@@ -1,6 +1,8 @@
 import React from "react";
 import AddModeloEvaluativo from "./modelos/add-modelo";
 import ModelosEvaluativosTableServer from "./modelos/table/server";
+import AddProyectoIntegrador from "./proyectoIntegrador/add-proyecto-integrador";
+import ProyectoIntegradorTableServer from "./proyectoIntegrador/table/server";
 
 
 type Context = {
@@ -12,7 +14,12 @@ export default function ModelosEvaluativosPage({ searchParams }:Context) {
 
     if(section === '1') {
         return(
-            <h1>section 2</h1>
+            <div>
+                <AddProyectoIntegrador />
+                <React.Suspense fallback={<h1>Cargando Tabla....</h1>} >
+                    <ProyectoIntegradorTableServer />
+                </React.Suspense>
+            </div>
         )
     }
     if(section === '2') {
