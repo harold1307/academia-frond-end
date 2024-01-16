@@ -171,7 +171,7 @@ function DeactivateProyectorIntegrador({ proyectosIntegradores }: { proyectosInt
 
 	return (
 		<DeleteModal
-			description={`Estas seguro que deseas desactivar la variante: ${selectedProyectorIntegrador.nombre}`}
+			description={`Estas seguro que deseas desactivar el proyecto integrador: ${selectedProyectorIntegrador.nombre}`}
 			title='Desactivar Proyecto Integrador'
 			onDelete={() => console.log('falta implementar lógica de delete', selectedProyectorIntegrador)}
 			disabled={mutation.isPending}
