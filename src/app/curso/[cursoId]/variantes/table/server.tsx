@@ -25,7 +25,7 @@ export default async function VarianteCursoTableServer({
 				registroOtraSede: v.registroDesdeOtraSede,
 				costoPorMateria: v.costoPorMateria,
 				verificaSesion: v.verificarSesion,
-				rangoEdad: v.verificarEdad,
+				rangoEdad: !!(v.edadMaxima && v.edadMinima),
 				edadMinima: v.edadMinima,
 				edadMaxima: v.edadMaxima,
 				requisitosMalla: v.cumpleRequisitosMalla,

@@ -1,13 +1,12 @@
 "use client";
-import { Modalidad, TipoDuracion } from "@prisma/client";
+import { TipoDuracion } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { z } from "zod";
 
 import ModalFallback from "@/app/_components/modals/modal-fallback";
-import MutateModal from "@/app/_components/modals/mutate-modal";
 import { API } from "@/core/api-client";
-import { UpdateMallaData } from "@/core/api/malla-curricular";
+import type { UpdateMallaData } from "@/core/api/malla-curricular";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { mallaParams } from "../add-malla";
@@ -91,7 +90,7 @@ export default function MallaCurricularTable() {
 }
 
 const schema: z.ZodType<UpdateMallaData> = z.object({
-	modalidad: z.nativeEnum(Modalidad).optional(),
+	modalidad: z.string().optional(),
 	tituloObtenido: z.string().optional(),
 	tipoDuracion: z.nativeEnum(TipoDuracion).optional(),
 	fechaAprobacion: z.string().datetime().optional(),

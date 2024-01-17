@@ -36,7 +36,7 @@ const helper = createColumnHelper<MallaCurricularTableItem>();
 
 export const columns = [
 	helper.accessor("id", {}),
-	helper.accessor("modalidad", {
+	helper.accessor("modalidadId", {
 		header: "Modalidad",
 	}),
 	helper.accessor("tituloObtenido", {

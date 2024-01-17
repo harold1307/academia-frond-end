@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Modalidad, TipoDuracion, type MallaCurricular } from "@prisma/client";
+import { TipoDuracion, type MallaCurricular } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -75,7 +75,7 @@ const createMallaSchema: z.ZodType<
 	z.ZodTypeDef,
 	CreateMallaCurricularInput
 > = z.object({
-	modalidad: z.nativeEnum(Modalidad),
+	modalidadId: z.string(),
 	tituloObtenido: z.string(),
 	tipoDuracion: z.nativeEnum(TipoDuracion),
 	fechaAprobacion: z.date().transform(date => date.toISOString()),
@@ -344,9 +344,9 @@ export default function AddMalla() {
 
 const fields = [
 	{
-		name: "modalidad",
+		name: "modalidadId",
 		inputType: "custom-select",
-		options: Object.keys(Modalidad),
+		options: ["Modalidad1", "Modalidad2"],
 		placeholder: "------------",
 		label: "Modalidad",
 	},
