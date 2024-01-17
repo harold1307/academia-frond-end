@@ -193,6 +193,7 @@ model CursoEscuela {
 
 model Paralelo {
   nombre        String         @id
+  orden         Int
   cursoEscuelas CursoEscuela[]
 
   @@map("paralelos")

@@ -1,6 +1,7 @@
 import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
 import { CampoFormacionClass } from "./campos-formacion";
+import { CursoEscuelaClass } from "./curso-escuelas";
 import { CursoClass } from "./cursos";
 import { EjeFormativoClass } from "./ejes-formativos";
 import { InstitucionClass } from "./institucion";
@@ -58,6 +59,10 @@ export class APIClass {
 
 	get paralelos() {
 		return new ParaleloClass(this._apiUrl);
+	}
+
+	get cursoEscuelas() {
+		return new CursoEscuelaClass(this._apiUrl);
 	}
 }
 

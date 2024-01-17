@@ -3,7 +3,11 @@ import type { Paralelo } from "@prisma/client";
 import type { ReplaceDateToString } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
-export type ParaleloFromAPI = ReplaceDateToString<Paralelo>;
+export type ParaleloFromAPI = ReplaceDateToString<
+	Paralelo & {
+		enUso: boolean;
+	}
+>;
 
 // type UpdateParaleloParams = {
 // 	id: string;
@@ -34,7 +38,9 @@ export class ParaleloClass {
 	// 	return res.json();
 	// }
 
-	async create(data: ParaleloFromAPI): Promise<SimpleAPIResponse> {
+	async create(
+		data: Omit<ParaleloFromAPI, "enUso">,
+	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/paralelos`, {
 			method: "POST",
 			headers: {
