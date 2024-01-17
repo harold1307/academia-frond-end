@@ -6,6 +6,7 @@ import { EjeFormativoClass } from "./ejes-formativos";
 import { InstitucionClass } from "./institucion";
 import { MallaCurricularClass } from "./malla-curricular";
 import { ModalidadClass } from "./modalidades";
+import { ParaleloClass } from "./paralelos";
 import { VarianteCursoClass } from "./variantes-curso";
 
 export type APIResponse<D> = {
@@ -53,6 +54,10 @@ export class APIClass {
 
 	get modalidades() {
 		return new ModalidadClass(this._apiUrl);
+	}
+
+	get paralelos() {
+		return new ParaleloClass(this._apiUrl);
 	}
 }
 
