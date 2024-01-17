@@ -10,7 +10,6 @@ datasource db {
 
 model MallaCurricular {
   id                        String              @id @default(uuid())
-  modalidad                 Modalidad
   tituloObtenido            String
   tipoDuracion              TipoDuracion
   fechaAprobacion           DateTime
@@ -31,9 +30,12 @@ model MallaCurricular {
   observaciones             String?
   createdAt                 DateTime            @default(now())
   perfilEgreso              String?
+  modalidadId               String
   asignaturasEnMalla        AsignaturaEnMalla[]
   lugaresEjecucion          LugarEjecucion[]
+  modalidad                 Modalidad           @relation(fields: [modalidadId], references: [nombre])
 
+  @@index([modalidadId], map: "mallas_curriculares_modalidadId_fkey")
   @@map("mallas_curriculares")
 }
 
@@ -123,7 +125,7 @@ model AsignaturaEnVarianteCurso {
   asignaturaId          String
   varianteCursoId       String
   asignatura            Asignatura    @relation(fields: [asignaturaId], references: [id])
-  varianteCurso         VarianteCurso @relation(fields: [varianteCursoId], references: [id])
+  varianteCurso         VarianteCurso @relation(fields: [varianteCursoId], references: [id], onDelete: Cascade)
 
   @@index([asignaturaId], map: "asignaturas_en_variantes_curso_asignaturaId_fkey")
   @@index([varianteCursoId], map: "asignaturas_en_variantes_curso_varianteCursoId_fkey")
@@ -153,6 +155,49 @@ model Titulo {
   @@map("titulos")
 }
 
+model CursoEscuela {
+  id                    String         @id @default(uuid())
+  nombre                String
+  codigo                String?
+  paraleloId            String
+  tema                  String
+  observaciones         String?
+  departamento          String?
+  fechaInicio           DateTime
+  fechaFin              DateTime
+  fechaLimiteRegistro   DateTime
+  diasLimitePago        Int
+  nivel                 Int
+  plantillaId           String?
+  aprobarCursoPrevio    Boolean
+  costoPorMateria       Boolean
+  cumpleRequisitosMalla Boolean
+  cupos                 Int?
+  edadMaxima            Int?
+  edadMinima            Int?
+  evaluaProfesor        Boolean
+  legalizarMatriculas   Boolean
+  matriculaConDeuda     Boolean
+  pasarRecord           Boolean
+  registroDesdeOtraSede Boolean
+  registroExterno       Boolean
+  registroInterno       Boolean
+  verificarSesion       Boolean
+  paralelo              Paralelo       @relation(fields: [paraleloId], references: [nombre])
+  plantilla             VarianteCurso? @relation(fields: [plantillaId], references: [id])
+
+  @@index([paraleloId], map: "curso_escuelas_paraleloId_fkey")
+  @@index([plantillaId], map: "curso_escuelas_plantillaId_fkey")
+  @@map("curso_escuelas")
+}
+
+model Paralelo {
+  nombre        String         @id
+  cursoEscuelas CursoEscuela[]
+
+  @@map("paralelos")
+}
+
 model Curso {
   id          String          @id @default(uuid())
   estado      Boolean         @default(true)
@@ -172,7 +217,6 @@ model VarianteCurso {
   registroExterno       Boolean
   registroInterno       Boolean
   verificarSesion       Boolean
-  verificarEdad         Boolean
   edadMinima            Int?
   edadMaxima            Int?
   cursoId               String
@@ -182,9 +226,10 @@ model VarianteCurso {
   fechaAprobacion       DateTime
   pasarRecord           Boolean
   registroDesdeOtraSede Boolean
-  estado                Boolean                     @default(true)
+  estado                Boolean                     @default(false)
   asignaturas           AsignaturaEnVarianteCurso[]
-  curso                 Curso                       @relation(fields: [cursoId], references: [id])
+  cursoEscuelas         CursoEscuela[]
+  curso                 Curso                       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
 
   @@index([cursoId], map: "variantes_de_cursos_cursoId_fkey")
   @@map("variantes_de_cursos")
@@ -223,6 +268,31 @@ model CampoFormacion {
   asignaturasEnMalla AsignaturaEnMalla[]
 
   @@map("campos_de_formacion")
+}
+
+model ModeloContrato {
+  id             String  @id @default(uuid())
+  estado         Boolean
+  nombre         String
+  descripcion    String
+  paraProfesores Boolean
+  archivoUrl     String  @db.Text
+
+  @@map("modelos_contrato")
+}
+
+model Grupo {
+  nombre String @id
+
+  @@map("grupos")
+}
+
+model Modalidad {
+  nombre String            @id
+  alias  String?
+  mallas MallaCurricular[]
+
+  @@map("modalidades")
 }
 
 model Account {
@@ -278,16 +348,6 @@ model VerificationToken {
   @@id([identifier, token])
   @@unique([identifier, token])
   @@map("verification_tokens")
-}
-
-enum Modalidad {
-  VIRTUAL
-  PRESENCIAL
-  DUAL
-  EN_LINEA
-  SEMIPRESENCIAL
-
-  @@map("modalidad")
 }
 
 enum TipoDuracion {
