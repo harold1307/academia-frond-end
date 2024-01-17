@@ -5,6 +5,7 @@ import { CursoClass } from "./cursos";
 import { EjeFormativoClass } from "./ejes-formativos";
 import { InstitucionClass } from "./institucion";
 import { MallaCurricularClass } from "./malla-curricular";
+import { ModalidadClass } from "./modalidades";
 import { VarianteCursoClass } from "./variantes-curso";
 
 export type APIResponse<D> = {
@@ -48,6 +49,10 @@ export class APIClass {
 
 	get variantesCurso() {
 		return new VarianteCursoClass(this._apiUrl);
+	}
+
+	get modalidades() {
+		return new ModalidadClass(this._apiUrl);
 	}
 }
 
