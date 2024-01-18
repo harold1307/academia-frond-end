@@ -23,9 +23,6 @@ export const modelosEvaluativosColumns = [
 	helper.accessor("nombre", {
 		header: "Nombre",
 	}),
-	// helper.accessor("fecha", {
-	// 	header: "Codigo",
-	// }),
 	helper.accessor("notaParaAprobar", {
 		header: "Nota Aprobar",
 	}),
@@ -41,9 +38,6 @@ export const modelosEvaluativosColumns = [
 	helper.accessor("decimalesNotaFinal", {
 		header: "Decimales Nota Final",
 	}),
-	// helper.accessor("campos", {
-	// 	header: "Campos",
-	// }),
 	helper.accessor("examenComplexivo", {
 		header: "Examen",
         cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
