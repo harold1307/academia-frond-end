@@ -18,7 +18,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
            type={type}
            ref={ref}
            {...props}
-           className={styles.input}
+           className={`${styles.input} ${className}`}
            id={id}
           />
           <label

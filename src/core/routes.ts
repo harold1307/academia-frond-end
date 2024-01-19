@@ -25,7 +25,8 @@ export const ROUTES = {
 		modeloCampos: (modeloEvaluativoId:string) => `/${modeloEvaluativoId}/campos`,
 		modelologica: (modeloEvaluativoId:string) => `/${modeloEvaluativoId}/logica`
 	},
-	horarios : {
-		path: '/horarios'
+	proHorarios : {
+		path: '/horarios',
+		detalleHorario: (horarioId:string) => ROUTES.proHorarios.path + `/${horarioId}`
 	}
 } as const;
