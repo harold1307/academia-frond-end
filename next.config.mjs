@@ -7,6 +7,15 @@ await import("./src/env.mjs");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        // imagen de prueba para alumnos
+        protocol: 'https',
+        hostname: 'www.shutterstock.com'
+      }
+    ]
+  }
 }
 
 export default nextConfig;
