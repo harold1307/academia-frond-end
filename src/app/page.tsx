@@ -24,6 +24,18 @@ const modulos = [
 		label: "Modelos Evaluativos",
 		href: ROUTES.modelosEvaluativos.path + '?section=0',
 	},
+	{
+		label: "Mis Horarios (profesor)",
+		href: ROUTES.proHorarios.path
+	},
+	{
+		label: "Mis Horarios (admin)",
+		href: ROUTES.admHorarios.path
+	},
+	// {
+	// 	label: "Mis Horarios",
+	// 	href: ROUTES.horarios.path
+	// }
 ];
 
 export const dynamic = "force-dynamic";
