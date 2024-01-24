@@ -28,10 +28,10 @@ const modulos = [
 		label: "Mis Horarios (profesor)",
 		href: ROUTES.proHorarios.path
 	},
-	// {
-	// 	label: "Mis Horarios",
-	// 	href: ROUTES.horarios.path
-	// },
+	{
+		label: "Mis Horarios (admin)",
+		href: ROUTES.admHorarios.path
+	},
 	// {
 	// 	label: "Mis Horarios",
 	// 	href: ROUTES.horarios.path
