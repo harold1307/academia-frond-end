@@ -74,3 +74,13 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+.border-default {
+	border: 1px solid #888;
+	border-radius: 30px;
+	box-shadow: rgba(67, 84, 234, 0.3) 0 5px 10px 7px;
+}
+
+.shadow-default {
+	box-shadow: rgba(67, 84, 234, 0.3) 0 5px 10px 7px;
+}
