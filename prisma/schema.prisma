@@ -10,6 +10,8 @@ datasource db {
 
 model MallaCurricular {
   id                        String              @id @default(uuid())
+  modalidadId               String
+  modalidad                 Modalidad           @relation(fields: [modalidadId], references: [nombre])
   tituloObtenido            String
   tipoDuracion              TipoDuracion
   fechaAprobacion           DateTime
@@ -30,12 +32,9 @@ model MallaCurricular {
   observaciones             String?
   createdAt                 DateTime            @default(now())
   perfilEgreso              String?
-  modalidadId               String
   asignaturasEnMalla        AsignaturaEnMalla[]
   lugaresEjecucion          LugarEjecucion[]
-  modalidad                 Modalidad           @relation(fields: [modalidadId], references: [nombre])
 
-  @@index([modalidadId], map: "mallas_curriculares_modalidadId_fkey")
   @@map("mallas_curriculares")
 }
 
@@ -50,6 +49,7 @@ model Institucion {
   createdAt        DateTime         @default(now())
   lugaresEjecucion LugarEjecucion[]
   titulos          Titulo[]
+  sesiones         Sesion[]
 
   @@map("instituciones")
 }
@@ -60,6 +60,7 @@ model Asignatura {
   codigo                     String?
   asignaturasEnMalla         AsignaturaEnMalla[]
   asignaturasEnVarianteCurso AsignaturaEnVarianteCurso[]
+  asignaturasEnCursoEscuela  AsignaturaEnCursoEscuela[]
 
   @@map("asignaturas")
 }
@@ -111,7 +112,7 @@ model AsignaturaEnMalla {
 }
 
 model AsignaturaEnVarianteCurso {
-  id                    String        @id @default(uuid())
+  id                    String  @id @default(uuid())
   validaCredito         Boolean
   validaPromedio        Boolean
   horasColaborativas    Float
@@ -122,10 +123,13 @@ model AsignaturaEnVarianteCurso {
   creditos              Float
   requeridoAprobar      Boolean
   asistenciaAprobar     Int
-  asignaturaId          String
-  varianteCursoId       String
-  asignatura            Asignatura    @relation(fields: [asignaturaId], references: [id])
-  varianteCurso         VarianteCurso @relation(fields: [varianteCursoId], references: [id], onDelete: Cascade)
+
+  asignaturaId       String
+  varianteCursoId    String
+  asignatura         Asignatura        @relation(fields: [asignaturaId], references: [id])
+  varianteCurso      VarianteCurso     @relation(fields: [varianteCursoId], references: [id], onDelete: Cascade)
+  modeloEvaluativoId String?
+  modeloEvaluativo   ModeloEvaluativo? @relation(fields: [modeloEvaluativoId], references: [id])
 
   @@index([asignaturaId], map: "asignaturas_en_variantes_curso_asignaturaId_fkey")
   @@index([varianteCursoId], map: "asignaturas_en_variantes_curso_varianteCursoId_fkey")
@@ -156,44 +160,77 @@ model Titulo {
 }
 
 model CursoEscuela {
-  id                    String         @id @default(uuid())
-  nombre                String
-  codigo                String?
-  paraleloId            String
-  tema                  String
-  observaciones         String?
-  departamento          String?
-  fechaInicio           DateTime
-  fechaFin              DateTime
-  fechaLimiteRegistro   DateTime
-  diasLimitePago        Int
-  nivel                 Int
-  plantillaId           String?
-  aprobarCursoPrevio    Boolean
-  costoPorMateria       Boolean
-  cumpleRequisitosMalla Boolean
-  cupos                 Int?
-  edadMaxima            Int?
-  edadMinima            Int?
-  evaluaProfesor        Boolean
-  legalizarMatriculas   Boolean
-  matriculaConDeuda     Boolean
-  pasarRecord           Boolean
-  registroDesdeOtraSede Boolean
+  id     String  @id @default(uuid())
+  nombre String
+  codigo String?
+
+  paraleloId String
+  paralelo   Paralelo @relation(fields: [paraleloId], references: [nombre])
+  sesionId   String
+  sesion     Sesion   @relation(fields: [sesionId], references: [id])
+
+  tema                String
+  observaciones       String?
+  departamento        String?
+  fechaInicio         DateTime
+  fechaFin            DateTime
+  fechaLimiteRegistro DateTime
+  diasLimitePago      Int
+  nivel               Int
+  cupos               Int?
+  evaluaProfesor      Boolean
+  matriculaConDeuda   Boolean
+  legalizarMatriculas Boolean
+
   registroExterno       Boolean
   registroInterno       Boolean
   verificarSesion       Boolean
-  paralelo              Paralelo       @relation(fields: [paraleloId], references: [nombre])
-  plantilla             VarianteCurso? @relation(fields: [plantillaId], references: [id])
+  registroDesdeOtraSede Boolean
+  edadMinima            Int?
+  edadMaxima            Int?
+  costoPorMateria       Boolean
+  cumpleRequisitosMalla Boolean
+  pasarRecord           Boolean
+  aprobarCursoPrevio    Boolean
 
-  @@index([paraleloId], map: "curso_escuelas_paraleloId_fkey")
-  @@index([plantillaId], map: "curso_escuelas_plantillaId_fkey")
+  plantillaId String?
+  plantilla   VarianteCurso? @relation(fields: [plantillaId], references: [id])
+
+  asignaturas AsignaturaEnCursoEscuela[]
+
   @@map("curso_escuelas")
 }
 
+model AsignaturaEnCursoEscuela {
+  id String @id @default(uuid())
+
+  validaCredito         Boolean
+  validaPromedio        Boolean
+  horasColaborativas    Float
+  horasAsistidasDocente Float
+  horasAutonomas        Float
+  horasPracticas        Float
+  sumaHoras             Boolean
+  creditos              Float
+  requeridoAprobar      Boolean
+  asistenciaAprobar     Int
+
+  asignaturaId       String
+  asignatura         Asignatura        @relation(fields: [asignaturaId], references: [id])
+  cursoEscuelaId     String
+  cursoEscuela       CursoEscuela      @relation(fields: [cursoEscuelaId], references: [id])
+  profesorId         String?
+  profesor           User?             @relation(fields: [profesorId], references: [id])
+  modeloEvaluativoId String?
+  modeloEvaluativo   ModeloEvaluativo? @relation(fields: [modeloEvaluativoId], references: [id])
+
+  @@map("asignatura_en_curso_escuela")
+}
+
 model Paralelo {
-  nombre        String         @id
-  orden         Int
+  nombre String @id
+  orden  Int
+
   cursoEscuelas CursoEscuela[]
 
   @@map("paralelos")
@@ -229,8 +266,8 @@ model VarianteCurso {
   registroDesdeOtraSede Boolean
   estado                Boolean                     @default(false)
   asignaturas           AsignaturaEnVarianteCurso[]
-  cursoEscuelas         CursoEscuela[]
   curso                 Curso                       @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  cursoEscuelas         CursoEscuela[]
 
   @@index([cursoId], map: "variantes_de_cursos_cursoId_fkey")
   @@map("variantes_de_cursos")
@@ -289,11 +326,143 @@ model Grupo {
 }
 
 model Modalidad {
-  nombre String            @id
+  nombre String  @id
   alias  String?
+
   mallas MallaCurricular[]
 
   @@map("modalidades")
+}
+
+model Turno {
+  id       String   @id @default(uuid())
+  estado   Boolean  @default(false)
+  nombre   String
+  horas    Float
+  comienza DateTime @db.Time(0)
+  termina  DateTime @db.Time(0)
+  sesionId String
+  sesion   Sesion   @relation(fields: [sesionId], references: [id])
+
+  @@map("turnos")
+}
+
+model AlternativaEvaluacion {
+  id     String @id @default(uuid())
+  nombre String
+  codigo String
+
+  camposModeloEvaluativo CampoModeloEvaluativo[]
+
+  @@map("alternativas_evaluacion")
+}
+
+model CampoModeloEvaluativo {
+  id                      String  @id @default(uuid())
+  codigo                  String
+  ordenActa               Int
+  notaMaxima              Float
+  notaMinima              Float
+  decimales               Int
+  campoDependiente        Boolean
+  actualizaEstado         Boolean
+  actualizaEstadoNegativo Boolean
+  determinaEstadoFinal    Boolean
+  defineMaximos           Boolean
+
+  alternativaId      String
+  alternativa        AlternativaEvaluacion @relation(fields: [alternativaId], references: [id])
+  modeloEvaluativoId String
+  modeloEvaluativo   ModeloEvaluativo      @relation(fields: [modeloEvaluativoId], references: [id])
+
+  @@map("campos_modelo_evaluativo")
+}
+
+model ModeloEvaluativo {
+  id                              String  @id @default(uuid())
+  estado                          Boolean @default(false)
+  nombre                          String
+  notaMaxima                      Float
+  notaAprobatoria                 Float
+  notaRecuperacion                Float
+  porcentajeAsistenciaAprobatoria Int
+  decimalesNotaFinal              Int
+  defineMaximos                   Boolean
+  camposActualizanEstado          Boolean
+  observaciones                   String?
+
+  campos                     CampoModeloEvaluativo[]
+  asignaturasEnVarianteCurso AsignaturaEnVarianteCurso[]
+  asignaturasEnCursoEscuela  AsignaturaEnCursoEscuela[]
+
+  @@map("modelos_evaluativos")
+}
+
+model ModeloNivelacion {
+  id                 String  @id @default(uuid())
+  estado             Boolean @default(false)
+  nombre             String
+  notaMaxima         Float
+  notaAprobatoria    Float
+  decimalesNotaFinal Int
+  observaciones      String?
+
+  @@map("modelos_nivelacion")
+}
+
+model CampoProyectoIntegrador {
+  id                   String  @id @default(uuid())
+  nombre               String
+  codigo               String
+  observaciones        String?
+  ordenActa            Int
+  notaMaxima           Float
+  notaMinima           Float
+  decimales            Int
+  campoDependiente     Boolean
+  actualizaEstado      Boolean
+  determinaEstadoFinal Boolean
+
+  proyectoIntegradorId String
+  proyectoIntegrador   ProyectoIntegrador @relation(fields: [proyectoIntegradorId], references: [id])
+
+  @@map("campos_proyectos_integradores")
+}
+
+model ProyectoIntegrador {
+  id                 String  @id @default(uuid())
+  estado             Boolean @default(false)
+  nombre             String
+  notaMaxima         Float
+  notaAprobatoria    Float
+  decimalesNotaFinal Int
+  observaciones      String?
+
+  campos CampoProyectoIntegrador[]
+
+  @@map("proyectos_integradores")
+}
+
+model Sesion {
+  id     String      @id @default(uuid())
+  estado Boolean     @default(false)
+  nombre String
+  sedeId String
+  sede   Institucion @relation(fields: [sedeId], references: [id])
+  alias  String?
+
+  lunes     Boolean
+  martes    Boolean
+  miercoles Boolean
+  jueves    Boolean
+  viernes   Boolean
+  sabado    Boolean
+  domingo   Boolean
+
+  cursoEscuelas CursoEscuela[]
+  turnos        Turno[]
+
+  @@map("sesiones")
 }
 
 model Account {
@@ -337,6 +506,8 @@ model User {
   image         String?   @db.Text
   accounts      Account[]
   sessions      Session[]
+
+  asignaturasEnCursoEscuelas AsignaturaEnCursoEscuela[]
 
   @@map("users")
 }
