@@ -9,6 +9,9 @@ import {
 import { Button } from "./_components/ui/button";
 import { InteractionStatus } from "@azure/msal-browser";
 import { useEffect, useState } from "react";
+import LogoutIcon from "./_components/ui/icons/logout";
+import KeyIcon from "./_components/ui/icons/key";
+import StatusIcon from "./_components/ui/icons/connect-status";
 
 export default function UserSession() {
 	const { instance, inProgress } = useMsal();
@@ -35,7 +38,7 @@ export default function UserSession() {
 							<span className='font-bold'>Usuario:</span> {activeAccount?.name}
 						</div>
 						<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
-							<img src='/assets/icons/key.png' className='w-6' alt='' />
+							<KeyIcon className='w-6' />
 						</div>
 						<div
 							onClick={() =>
@@ -45,11 +48,11 @@ export default function UserSession() {
 							}
 							className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'
 						>
-							<img src='/assets/icons/logout.png' className='w-6' alt='' />
+							<LogoutIcon className='w-6' />
 						</div>
 					</section>
 					<div className='shadow-default flex flex-row items-center gap-2 rounded-lg border border-slate-300 p-2'>
-						<img src='/assets/icons/rounded.png' alt='' className='w-7' />
+						<StatusIcon className='w-6' />
 						Período de Prueba
 					</div>
 					<p className='text-lg font-bold'>{clock}</p>

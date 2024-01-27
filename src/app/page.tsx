@@ -2,6 +2,10 @@ import Link from "next/link";
 
 import { ROUTES } from "@/core/routes";
 import { getServerAuthSession } from "@/server/auth";
+import LupaIcon from "./_components/ui/icons/lupa";
+import FileUpload from "./_components/ui/icons/file-up";
+import QrCode from "./_components/ui/icons/qr-code";
+import PdfIcon from "./_components/ui/icons/pdf";
 
 const modulos = [
 	{
@@ -51,20 +55,13 @@ export default async function Home() {
 		<>
 			<section className='m-auto mt-2 sm:w-full lg:w-11/12'>
 				<section className='flex justify-end pt-4'>
-					<div className='shadow-default w-60 rounded-lg border border-slate-500 p-2 px-3 flex flex-row items-center gap-4'>
+					<div className='shadow-default flex w-60 flex-row items-center gap-4 rounded-lg border border-slate-500 p-2 px-3'>
 						<input
 							type='text'
 							name=''
 							className='h-full w-full bg-inherit outline-none'
 						/>
-						<svg
-						className="w-6"
-							xmlns='http://www.w3.org/2000/svg'
-							viewBox='0 0 24 24'
-							fill='currentColor'
-						>
-							<path d='M18.031 16.6168L22.3137 20.8995L20.8995 22.3137L16.6168 18.031C15.0769 19.263 13.124 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2C15.968 2 20 6.032 20 11C20 13.124 19.263 15.0769 18.031 16.6168ZM16.0247 15.8748C17.2475 14.6146 18 12.8956 18 11C18 7.1325 14.8675 4 11 4C7.1325 4 4 7.1325 4 11C4 14.8675 7.1325 18 11 18C12.8956 18 14.6146 17.2475 15.8748 16.0247L16.0247 15.8748Z'></path>
-						</svg>
+						<LupaIcon className='w-8' />
 					</div>
 				</section>
 				<main className='flex w-full flex-row gap-10'>
@@ -77,16 +74,12 @@ export default async function Home() {
 							/>
 							<section className='my-6 flex flex-row items-center gap-4'>
 								<div className='flex flex-col items-center gap-4'>
-									<img src='/assets/icons/upload.png' alt='' className='w-10' />
+									<FileUpload className='w-12' />
 									Subir imagen
 								</div>
 								<div className='flex flex-col items-center gap-4'>
-									<img
-										src='/assets/icons/qr_code.png'
-										alt=''
-										className='w-10'
-									/>
-									Subir imagen
+									<QrCode className='w-12' />
+									Ver codigo QR
 								</div>
 							</section>
 						</div>
@@ -110,15 +103,15 @@ export default async function Home() {
 						<div className='m-auto flex w-11/12 -translate-y-24 flex-col items-center gap-6'>
 							<h3 className='my-6 text-4xl font-bold'>PDF</h3>
 							<section className='shadow-default m-auto flex flex-col items-center justify-around gap-2 rounded-md p-6 px-10 text-center font-bold'>
-								<img src='/assets/icons/PDF.png' alt='' className='w-14' />
+								<PdfIcon className='w-12' />
 								Manual Team
 							</section>
 							<section className='shadow-default m-auto flex flex-col items-center justify-around gap-2 rounded-md p-6 px-10 text-center font-bold'>
-								<img src='/assets/icons/PDF.png' alt='' className='w-14' />
+								<PdfIcon className='w-12' />
 								Manual Team
 							</section>
 							<section className='shadow-default m-auto flex flex-col items-center justify-around gap-2 rounded-md p-6 px-10 text-center font-bold'>
-								<img src='/assets/icons/PDF.png' alt='' className='w-14' />
+								<PdfIcon className='w-12' />
 								Manual Team
 							</section>
 						</div>
@@ -136,11 +129,7 @@ export default async function Home() {
 										>
 											<Link href={m.href} className=''>
 												<div className='m-auto flex h-full w-11/12 flex-row items-center justify-around gap-10'>
-													<img
-														src='/assets/icons/doc_2.png'
-														className='w-14 text-white'
-														alt=''
-													/>
+													<QrCode className='w-16' />
 													<span className='flex w-6/12 flex-col'>
 														<p className='font-bold'>{m.label}</p>
 														<p className='text-sm text-white/50'>Descripciòn</p>
@@ -163,11 +152,7 @@ export default async function Home() {
 										>
 											<Link href={m.href} className=''>
 												<div className='m-auto flex h-full w-11/12 flex-row items-center justify-around gap-10'>
-													<img
-														src='/assets/icons/doc.png'
-														className='w-16 text-white'
-														alt=''
-													/>
+													<QrCode className='w-16'/>
 													<span className='flex w-6/12 flex-col'>
 														<p className='font-bold'>{m.label}</p>
 														<p className='text-sm text-white/50'>Descripciòn</p>
@@ -190,11 +175,7 @@ export default async function Home() {
 										>
 											<Link href={m.href} className=''>
 												<div className='m-auto flex h-full w-11/12 flex-row items-center justify-around gap-10'>
-													<img
-														src='/assets/icons/safety.png'
-														className='w-14 text-white'
-														alt=''
-													/>
+													<QrCode className='w-16'/>
 													<span className='flex w-6/12 flex-col'>
 														<p className='font-bold'>{m.label}</p>
 														<p className='text-sm text-white/50'>Descripciòn</p>
