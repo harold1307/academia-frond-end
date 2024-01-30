@@ -20,8 +20,16 @@ export default function UserSession() {
 
 	useEffect(() => {
 		const date = new Date();
-		console.log(date.toLocaleTimeString());
-		setClock(date.toLocaleTimeString());
+		const hour = date.toLocaleTimeString();
+		const hora =
+			hour.slice(0, hour.length - 6) + " " + hour.slice(8, hour.length);
+		setClock(hora);
+		console.log(
+			hour.slice(0, hour.length - 6) + hour.slice(7, hour.length - 2),
+		);
+		setTimeout(() => {
+			setClock(hora);
+		}, 10000);
 	}, [clock]);
 
 	return (

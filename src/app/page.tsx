@@ -152,7 +152,7 @@ export default async function Home() {
 										>
 											<Link href={m.href} className=''>
 												<div className='m-auto flex h-full w-11/12 flex-row items-center justify-around gap-10'>
-													<QrCode className='w-16'/>
+													<QrCode className='w-16' />
 													<span className='flex w-6/12 flex-col'>
 														<p className='font-bold'>{m.label}</p>
 														<p className='text-sm text-white/50'>Descripciòn</p>
@@ -175,7 +175,7 @@ export default async function Home() {
 										>
 											<Link href={m.href} className=''>
 												<div className='m-auto flex h-full w-11/12 flex-row items-center justify-around gap-10'>
-													<QrCode className='w-16'/>
+													<QrCode className='w-16' />
 													<span className='flex w-6/12 flex-col'>
 														<p className='font-bold'>{m.label}</p>
 														<p className='text-sm text-white/50'>Descripciòn</p>
