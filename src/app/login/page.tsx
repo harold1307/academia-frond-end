@@ -16,10 +16,10 @@ function Login() {
 	};
 
 	return (
-		<main className='absolute left-0 top-0 -z-10 h-screen w-full bg-[url(/assets/estudiantes.png)]'>
+		<main className='absolute left-0 top-0 -z-10 h-screen w-full bg-cover bg-no-repeat bg-[url(/assets/estudiantes.png)]'>
 			<section className='grid h-full w-full place-items-center bg-[#0d0f82be]'>
-				<div className='flex h-4/6 w-96 flex-col justify-around gap-6 p-12 backdrop-blur-lg'>
-					<h2 className='text-center text-5xl font-semibold'>SGA</h2>
+				<div className='flex h-4/6 w-96 flex-col justify-around gap-6 p-12 rounded-md inset-shadow-blur'>
+					<h2 className='text-center text-5xl font-medium'>SGA</h2>
 					<form className='flex flex-col items-center gap-6'>
 						<div className='flex w-full flex-col gap-2'>
 							<label className='text-lg' htmlFor=''>
