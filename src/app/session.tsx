@@ -18,56 +18,58 @@ export default function UserSession() {
 	const activeAccount = useAccount();
 	const [clock, setClock] = useState<any>();
 
+	function formatAMPM(date: any) {
+		let hours = date.getHours();
+		let minutes = date.getMinutes();
+		const ampm = hours >= 12 ? "PM" : "AM";
+		hours = hours % 12;
+		hours = hours ? hours : 12; // the hour '0' should be '12'
+		minutes = minutes < 10 ? "0" + minutes : minutes;
+		const strTime = hours + ":" + minutes + " " + ampm;
+		return strTime;
+	}
+
 	useEffect(() => {
-		const date = new Date();
-		const hour = date.toLocaleTimeString();
-		const hora =
-			hour.slice(0, hour.length - 6) + " " + hour.slice(8, hour.length);
-		setClock(hora);
-		console.log(
-			hour.slice(0, hour.length - 6) + hour.slice(7, hour.length - 2),
-		);
+		setClock(formatAMPM(new Date()));
+
 		setTimeout(() => {
-			setClock(hora);
-		}, 10000);
+			setClock(formatAMPM(new Date()));
+		}, 1000);
 	}, [clock]);
 
 	return (
 		<>
 			{inProgress !== InteractionStatus.None && <div>Cargando...</div>}
-			<AuthenticatedTemplate>
-				<div className='flex flex-row items-center gap-6'>
-					<section className='shadow-default flex flex-row items-center gap-4 rounded-xl border border-slate-500 p-2 px-4'>
-						<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
-							<span className='font-bold'>Correo:</span>{" "}
-							{activeAccount?.username}
-						</div>
-						<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
-							<span className='font-bold'>Usuario:</span> {activeAccount?.name}
-						</div>
-						<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
-							<KeyIcon className='w-6' />
-						</div>
-						<div
-							onClick={() =>
-								instance.logoutRedirect({
-									postLogoutRedirectUri: "http://localhost:3000/",
-								})
-							}
-							className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'
-						>
-							<LogoutIcon className='w-6' />
-						</div>
-					</section>
-					<div className='shadow-default flex flex-row items-center gap-2 rounded-lg border border-slate-300 p-2'>
-						<StatusIcon className='w-6' />
-						Período de Prueba
+			<div className='flex flex-row items-center gap-6'>
+				<section className='shadow-default flex flex-row items-center gap-4 rounded-xl border border-slate-500 p-2 px-4'>
+					<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
+						<span className='font-bold'>Correo:</span> {activeAccount?.username}
 					</div>
-					<p className='text-lg font-bold'>{clock}</p>
+					<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
+						<span className='font-bold'>Usuario:</span> {activeAccount?.name}
+					</div>
+					<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
+						<KeyIcon className='w-6' />
+					</div>
+					<div
+						onClick={() =>
+							instance.logoutRedirect({
+								postLogoutRedirectUri: "http://localhost:3000/",
+							})
+						}
+						className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'
+					>
+						<LogoutIcon className='w-6' />
+					</div>
+				</section>
+				<div className='shadow-default flex flex-row items-center gap-2 rounded-lg border border-slate-300 p-2'>
+					<StatusIcon className='w-6' />
+					Período de Prueba
 				</div>
-			</AuthenticatedTemplate>
+				<p className='text-lg font-bold'>{clock}</p>
+			</div>
 			<UnauthenticatedTemplate>
-				<Button
+				{/* <Button
 					onClick={() =>
 						instance.loginRedirect({
 							scopes: ["User.Read", "GroupMember.Read.All"],
@@ -75,7 +77,7 @@ export default function UserSession() {
 					}
 				>
 					Iniciar sesion
-				</Button>
+				</Button> */}
 			</UnauthenticatedTemplate>
 		</>
 	);

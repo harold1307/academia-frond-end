@@ -113,7 +113,7 @@ const schema: z.ZodType<UpdateMallaData> = z.object({
 });
 
 // la malla no es editable por cualquiera
-function UpdateMallaModal(props: { mallas: MallaCurricularTableItem[] }) {
+function UpdateMallaModal  (props: { mallas: MallaCurricularTableItem[] }) {
 	const { replaceDelete, replaceSet, searchParams } = useMutateSearchParams();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,

@@ -29,6 +29,10 @@ export class APIClass {
 		return new MallaCurricularClass(this._apiUrl);
 	}
 
+	get periodos() {
+		return new MallaCurricularClass(this._apiUrl);
+	}
+	
 	get asignaturas() {
 		return new AsignaturaClass(this._apiUrl);
 	}
