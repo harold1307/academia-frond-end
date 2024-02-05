@@ -1,10 +1,5 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Asignatura } from "@prisma/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import DeleteModal from "@/app/_components/modals/delete-modal";
@@ -18,99 +13,70 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { API } from "@/core/api-client";
+import type { AsignaturaFromAPI } from "@/core/api/asignaturas";
 import { ROUTES } from "@/core/routes";
-import { getParamName } from "@/utils";
-import type { CreateAsignatura } from "../add-asignatura";
-import { ASIGNATURA_KEYS } from "../query-keys";
-import { columns, type AsignaturaTableItem } from "./columns";
+import { useMutateModule } from "@/hooks/use-mutate-module";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import type { ZodInferSchema } from "@/utils/types";
+import { asignaturasParams, columns } from "./columns";
 import { DataTable } from "./data-table";
 
-export default function AsignaturaTable() {
-	const { data, isLoading } = useQuery({
-		queryKey: ASIGNATURA_KEYS.lists(),
-		queryFn: async () => {
-			return (await API.asignaturas.getMany()).data;
-		},
-	});
+type AsignaturaTableProps = {
+	asignaturas: AsignaturaFromAPI[];
+};
 
-	const asignaturas = React.useMemo(
-		() =>
-			data?.map(
-				a =>
-					({
-						...a,
-						isUsed: a.enUso,
-					}) satisfies AsignaturaTableItem,
-			) || [],
-		[data],
-	);
-
-	if (isLoading) {
-		return "Cargando tabla...";
-	}
-
-	if (isLoading && !data) {
-		return "WTF";
-	}
-
-	if (!data) return "Ha ocurrido un error en el fetch";
-
+export default function AsignaturaTable({ asignaturas }: AsignaturaTableProps) {
 	return (
 		<section>
 			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={columns} data={asignaturas} />
-			<UpdateAsignaturaTableModal asignaturas={data} />
-			<DeleteAsignaturaTableModal asignaturas={data} />
+			<UpdateAsignaturaTableModal asignaturas={asignaturas} />
+			<DeleteAsignaturaTableModal asignaturas={asignaturas} />
 		</section>
 	);
 }
 
-type UpdateAsignatura = Partial<CreateAsignatura>;
-
-const schema: z.ZodType<UpdateAsignatura> = z.object({
-	name: z.string().optional(),
-	codigo: z
-		.string()
-		.nullable()
-		.optional()
-		.transform(c => c || undefined),
+const schema = z.object<
+	ZodInferSchema<Parameters<typeof API.asignaturas.update>[0]["data"]>
+>({
+	nombre: z.string().optional(),
+	codigo: z.string().nullable().optional(),
 });
 
-function UpdateAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const queryClient = useQueryClient();
+type UpdateAsignatura = z.infer<typeof schema>;
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
+function UpdateAsignaturaTableModal(props: {
+	asignaturas: AsignaturaFromAPI[];
+}) {
+	const { searchParams, replaceDelete, router } = useMutateSearchParams();
+
+	const {
+		mutation: { mutate: onSubmit, isPending: isSubmitting },
+		form,
+	} = useMutateModule({
+		schema,
 		mutationFn: async ({
-			data,
+			data: { codigo, ...data },
 			id,
 		}: {
 			data: UpdateAsignatura;
 			id: string;
 		}) => {
-			return API.asignaturas.update({ asignatura: data, id });
+			return API.asignaturas.update({
+				data: { ...data, codigo: codigo || null },
+				id,
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			queryClient.invalidateQueries({
-				queryKey: ASIGNATURA_KEYS.lists(),
-			});
-			router.replace(ROUTES.asignatura);
+			replaceDelete(asignaturasParams.update);
+			router.refresh();
 		},
 	});
 
-	const form = useForm<UpdateAsignatura>({
-		resolver: zodResolver(schema),
-		disabled: isSubmitting,
-	});
-
 	const paramAsignaturaId = React.useMemo(
-		() =>
-			searchParams.get(
-				getParamName({ action: "actualizar", module: "Asignatura" }),
-			),
+		() => searchParams.get(asignaturasParams.update),
 		[searchParams],
 	);
 
@@ -124,7 +90,7 @@ function UpdateAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
 		return (
 			<ModalFallback
 				action='update'
-				redirectTo={() => router.replace(ROUTES.asignatura)}
+				redirectTo={() => replaceDelete(asignaturasParams.update)}
 			/>
 		);
 	}
@@ -142,7 +108,7 @@ function UpdateAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
 				onOpenChange: open => {
 					if (isSubmitting) return;
 					if (!open) {
-						router.replace(ROUTES.asignatura);
+						replaceDelete(asignaturasParams.update);
 						return;
 					}
 				},
@@ -187,33 +153,27 @@ function UpdateAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
 	);
 }
 
-function DeleteAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const queryClient = useQueryClient();
+function DeleteAsignaturaTableModal(props: {
+	asignaturas: AsignaturaFromAPI[];
+}) {
+	const { searchParams, router, replaceDelete } = useMutateSearchParams();
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
+	const {
+		mutation: { mutate, isPending },
+	} = useMutateModule({
 		mutationFn: async (id: string) => {
 			return API.asignaturas.deleteById(id);
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			queryClient.invalidateQueries({
-				queryKey: ASIGNATURA_KEYS.lists(),
-			});
-			router.replace(ROUTES.asignatura);
+			replaceDelete(asignaturasParams.delete);
+			router.refresh();
 		},
 	});
 
 	const paramAsignaturaId = React.useMemo(
-		() =>
-			searchParams.get(
-				getParamName({
-					action: "eliminar",
-					module: "Asignatura",
-				}),
-			),
+		() => searchParams.get(asignaturasParams.delete),
 		[searchParams],
 	);
 
@@ -236,15 +196,15 @@ function DeleteAsignaturaTableModal(props: { asignaturas: Asignatura[] }) {
 		<DeleteModal
 			description={`Estas seguro que deseas eliminar la asignatura: ${selectedAsignatura.nombre}`}
 			title='Eliminar asignatura'
-			onDelete={() => onSubmit(selectedAsignatura.id)}
-			disabled={isSubmitting}
-			onClose={() => router.replace(ROUTES.asignatura)}
+			onDelete={() => mutate(selectedAsignatura.id)}
+			disabled={isPending}
+			onClose={() => replaceDelete(asignaturasParams.delete)}
 			dialogProps={{
-				open: true,
+				defaultOpen: true,
 				onOpenChange: open => {
-					if (isSubmitting) return;
+					if (isPending) return;
 					if (!open) {
-						router.replace(ROUTES.asignatura);
+						replaceDelete(asignaturasParams.delete);
 						return;
 					}
 				},

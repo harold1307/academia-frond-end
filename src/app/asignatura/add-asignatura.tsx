@@ -18,27 +18,23 @@ import {
 	FormLabel,
 } from "@/app/_components/ui/form";
 import { API } from "@/core/api-client";
+import type { CreateAsignatura } from "@/core/api/asignaturas";
 import { useMutateModule } from "@/hooks/use-mutate-module";
+import type { Field } from "@/utils/forms";
+import type { ZodInferSchema } from "@/utils/types";
+import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
-import { ASIGNATURA_KEYS } from "./query-keys";
-import type { Field } from "@/utils/forms";
 
-const schema = z.object({
+const schema = z.object<ZodInferSchema<CreateAsignatura>>({
 	nombre: z.string(),
-	codigo: z
-		.string()
-		.nullable()
-		.optional()
-		.transform(c => c || null),
+	codigo: z.string().nullable(),
 });
 
-export type CreateAsignatura = z.infer<typeof schema>;
-
 export default function AddAsignatura() {
+	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
-		invalidateQueryKey: ASIGNATURA_KEYS.lists(),
 		mutationFn: async data => {
 			return API.asignaturas.create({
 				...data,
@@ -49,6 +45,7 @@ export default function AddAsignatura() {
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
+			router.refresh();
 		},
 
 		hookFormProps: {
