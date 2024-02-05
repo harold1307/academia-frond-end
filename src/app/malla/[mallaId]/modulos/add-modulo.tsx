@@ -22,7 +22,7 @@ import {
 } from "@/app/_components/ui/select";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { API } from "@/core/api-client";
-import type { CreateAsignaturaEnMallaParams } from "@/core/api/malla-curricular";
+import type { CreateAsignaturaEnMallaParams } from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { assertReferenceInput, type Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
@@ -105,7 +105,7 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 			},
 		},
 		mutationFn: async ({ asignaturaId, ...data }) => {
-			return API.mallas.createAsignaturaEnMalla({
+			return API.mallasCurriculares.createAsignaturaEnMalla({
 				mallaId,
 				asignaturaId,
 				data: {

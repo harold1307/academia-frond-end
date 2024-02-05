@@ -1,4 +1,4 @@
-import type { CampoFormacion } from "@prisma/client";
+import type { AlternativaEvaluacion } from "@prisma/client";
 import { z } from "zod";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
@@ -9,37 +9,42 @@ import {
 	type SimpleAPIResponse,
 } from ".";
 
-export type CampoFormacionFromAPI = ReplaceDateToString<
-	CampoFormacion & {
+export type AlternativaEvaluacionFromAPI = ReplaceDateToString<
+	AlternativaEvaluacion & {
 		enUso: boolean;
 	}
 >;
 
 const schema = z
-	.object<ZodInferSchema<CampoFormacionFromAPI>>({
+	.object<ZodInferSchema<AlternativaEvaluacionFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
 		enUso: z.boolean(),
+		codigo: z.string(),
+
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
 	})
 	.strict();
 
-export class CampoFormacionClass {
+export class AlternativaEvaluacionClass {
 	constructor(private apiUrl: string) {}
 
 	async update(params: {
 		id: string;
 		data: Partial<
-			Omit<CampoFormacionFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
+			Omit<
+				AlternativaEvaluacionFromAPI,
+				"id" | "enUso" | "createdAt" | "updatedAt"
+			>
 		>;
-	}): Promise<APIResponse<CampoFormacionFromAPI>> {
+	}): Promise<APIResponse<AlternativaEvaluacionFromAPI>> {
 		const res = zodFetcher(
 			z.object({
 				data: schema,
 				message: z.string(),
 			}),
-			this.apiUrl + `/api/campos-formacion/${params.id}`,
+			this.apiUrl + `/api/alternativas-evaluacion/${params.id}`,
 			{
 				method: "PATCH",
 				headers: {
@@ -54,11 +59,11 @@ export class CampoFormacionClass {
 
 	async create(
 		data: Omit<
-			CampoFormacionFromAPI,
+			AlternativaEvaluacionFromAPI,
 			"id" | "enUso" | "createdAt" | "updatedAt"
 		>,
 	): Promise<SimpleAPIResponse> {
-		const res = await fetch(this.apiUrl + `/api/campos-formacion`, {
+		const res = await fetch(this.apiUrl + `/api/alternativas-evaluacion`, {
 			method: "POST",
 			headers: {
 				"Context-Type": "application/json",
@@ -75,13 +80,13 @@ export class CampoFormacionClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<CampoFormacionFromAPI[]>> {
+	async getMany(_: void): Promise<APIResponse<AlternativaEvaluacionFromAPI[]>> {
 		const res = zodFetcher(
 			z.object({
 				data: schema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/campos-formacion",
+			this.apiUrl + "/api/alternativas-evaluacion",
 		);
 
 		return res;
@@ -89,22 +94,25 @@ export class CampoFormacionClass {
 
 	async getById(
 		id: string,
-	): Promise<APIResponse<CampoFormacionFromAPI | null>> {
+	): Promise<APIResponse<AlternativaEvaluacionFromAPI | null>> {
 		const res = zodFetcher(
 			z.object({
 				data: schema.nullable(),
 				message: z.string(),
 			}),
-			this.apiUrl + `/api/campos-formacion/${id}`,
+			this.apiUrl + `/api/alternativas-evaluacion/${id}`,
 		);
 
 		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {
-		const res = await fetch(this.apiUrl + `/api/campos-formacion/${id}`, {
-			method: "DELETE",
-		});
+		const res = await fetch(
+			this.apiUrl + `/api/alternativas-evaluacion/${id}`,
+			{
+				method: "DELETE",
+			},
+		);
 
 		if (!res.ok) {
 			const json = (await res.json()) as APIResponse<undefined>;

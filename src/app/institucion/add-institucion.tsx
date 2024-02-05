@@ -56,7 +56,7 @@ export default function AddInstitucion() {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async (data: Data) => {
-			return API.instituciones.create(data);
+			return API.sedes.create(data);
 		},
 		onError: console.error,
 		onSuccess: response => {

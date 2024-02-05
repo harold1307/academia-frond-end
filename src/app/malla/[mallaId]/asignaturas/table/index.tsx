@@ -7,7 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/app/_components/ui/card";
-import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/malla-curricular";
+import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/mallas-curriculares";
 import { NIVELES_PREFIXES } from "@/utils/forms";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";

@@ -1,61 +1,106 @@
 import type { AreaConocimiento } from "@prisma/client";
+import { z } from "zod";
 
-import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import {
+	APIError,
+	zodFetcher,
+	type APIResponse,
+	type SimpleAPIResponse,
+} from ".";
 
-export type AreaConocimientoFromAPI = AreaConocimiento & {
-	enUso: boolean;
-};
+export type AreaConocimientoFromAPI = ReplaceDateToString<
+	AreaConocimiento & {
+		enUso: boolean;
+	}
+>;
+
+const schema = z
+	.object<ZodInferSchema<AreaConocimientoFromAPI>>({
+		id: z.string().uuid(),
+		nombre: z.string(),
+		enUso: z.boolean(),
+		codigo: z.string().nullable(),
+
+		createdAt: z.string().datetime(),
+		updatedAt: z.string().datetime(),
+	})
+	.strict();
 
 export class AreaConocimientoClass {
 	constructor(private apiUrl: string) {}
 
+	async update(params: {
+		id: string;
+		data: Partial<
+			Omit<AreaConocimientoFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
+		>;
+	}): Promise<APIResponse<AreaConocimientoFromAPI>> {
+		const res = zodFetcher(
+			z.object({
+				data: schema,
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/areas-conocimiento/${params.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.data),
+			},
+		);
+
+		return res;
+	}
+
 	async create(
-		areaConocimiento: Omit<AreaConocimientoFromAPI, "id" | "enUso">,
+		data: Omit<
+			AreaConocimientoFromAPI,
+			"id" | "enUso" | "createdAt" | "updatedAt"
+		>,
 	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/areas-conocimiento`, {
 			method: "POST",
 			headers: {
 				"Context-Type": "application/json",
 			},
-			body: JSON.stringify(areaConocimiento),
+			body: JSON.stringify(data),
 		});
 
 		if (!res.ok) {
-			console.error(
-				"Error al crear el area de conocimiento.",
-				await res.json(),
-			);
-			throw new APIError("Error al crear el area de conocimiento.");
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
 		}
 
 		return res.json();
 	}
 
 	async getMany(_: void): Promise<APIResponse<AreaConocimientoFromAPI[]>> {
-		const res = await fetch(this.apiUrl + "/api/areas-conocimiento");
+		const res = zodFetcher(
+			z.object({
+				data: schema.array(),
+				message: z.string(),
+			}),
+			this.apiUrl + "/api/areas-conocimiento",
+		);
 
-		if (!res.ok) {
-			console.error(
-				"Error al obtener areas de conocimiento.",
-				await res.json(),
-			);
-			throw new APIError("Error al obtener areas de conocimiento.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async getById(
 		id: string,
 	): Promise<APIResponse<AreaConocimientoFromAPI | null>> {
-		const res = await fetch(this.apiUrl + `/api/areas-conocimiento/${id}`);
+		const res = zodFetcher(
+			z.object({
+				data: schema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/areas-conocimiento/${id}`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener area de conocimiento.", await res.json());
-			throw new APIError("Error al obtener area de conocimiento.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {
@@ -64,37 +109,9 @@ export class AreaConocimientoClass {
 		});
 
 		if (!res.ok) {
-			console.error(
-				"Error al eliminar el area de conocimiento.",
-				await res.json(),
-			);
-			throw new APIError("Error al eliminar el area de conocimiento.");
-		}
+			const json = (await res.json()) as APIResponse<undefined>;
 
-		return res.json();
-	}
-
-	async update(params: {
-		id: string;
-		areaConocimiento: Partial<Omit<AreaConocimientoFromAPI, "id" | "enUso">>;
-	}): Promise<SimpleAPIResponse> {
-		const res = await fetch(
-			this.apiUrl + `/api/areas-conocimiento/${params.id}`,
-			{
-				method: "PATCH",
-				headers: {
-					"Context-Type": "application/json",
-				},
-				body: JSON.stringify(params.areaConocimiento),
-			},
-		);
-
-		if (!res.ok) {
-			console.error(
-				"Error al actualizar el area de conocimiento.",
-				await res.json(),
-			);
-			throw new APIError("Error al actualizar el area de conocimiento.");
+			throw new APIError(json.message);
 		}
 
 		return res.json();

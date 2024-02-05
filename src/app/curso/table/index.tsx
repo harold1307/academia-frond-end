@@ -23,11 +23,10 @@ import { DataTable } from "./data-table";
 import DeleteModal from "@/app/_components/modals/delete-modal";
 
 interface CursoTableProps {
-	data: Curso[]
+	data: Curso[];
 }
 
-export default function CursoTable({ data }:CursoTableProps) {
-
+export default function CursoTable({ data }: CursoTableProps) {
 	const cursos = React.useMemo(() => {
 		return data?.map(
 			curso =>
@@ -36,7 +35,6 @@ export default function CursoTable({ data }:CursoTableProps) {
 				}) satisfies CursoTableItem,
 		);
 	}, [data]);
-
 
 	if (!cursos) return "Ha ocurrido un error en el fetch";
 
@@ -80,7 +78,7 @@ function UpdateCursoModal({ cursos }: { cursos: Curso[] }) {
 		}) => {
 			return API.cursos.update({
 				id,
-				curso: data,
+				data: data,
 			});
 		},
 		onError: console.error,
@@ -164,7 +162,7 @@ function DeactivateCursoModal({ cursos }: { cursos: Curso[] }) {
 		mutationFn: async ({ id, estado }: { id: string; estado: boolean }) => {
 			return API.cursos.update({
 				id,
-				curso: {
+				data: {
 					estado: !estado,
 				},
 			});

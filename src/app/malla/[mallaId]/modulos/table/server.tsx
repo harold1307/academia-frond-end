@@ -7,12 +7,13 @@ export default async function MallaModulosTableServer({
 }: {
 	mallaId: string;
 }) {
-	const modulos = await APIserver.mallas.getMallaWithAsignaturasByMallaId(
-		mallaId,
-		{
-			asignaturas_esAnexo: true,
-		},
-	);
+	const modulos =
+		await APIserver.mallasCurriculares.getMallaWithAsignaturasByMallaId(
+			mallaId,
+			{
+				asignaturas_esAnexo: true,
+			},
+		);
 
 	const tableItems = modulos.data.asignaturasEnMalla.map(
 		a =>

@@ -1,7 +1,13 @@
 import type { Paralelo } from "@prisma/client";
 
-import type { ReplaceDateToString } from "@/utils/types";
-import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import { z } from "zod";
+import {
+	APIError,
+	zodFetcher,
+	type APIResponse,
+	type SimpleAPIResponse,
+} from ".";
 
 export type ParaleloFromAPI = ReplaceDateToString<
 	Paralelo & {
@@ -9,38 +15,54 @@ export type ParaleloFromAPI = ReplaceDateToString<
 	}
 >;
 
-// type UpdateParaleloParams = {
-// 	id: string;
-// 	data: Partial<Omit<ParaleloFromAPI, "nombre">>;
-// };
+type CreateParalelo = Omit<
+	ParaleloFromAPI,
+	"enUso" | "createdAt" | "updatedAt"
+>;
+
+type UpdateParaleloParams = {
+	id: string;
+	data: Partial<Omit<CreateParalelo, "nombre">>;
+};
+
+const paraleloSchema = z
+	.object<ZodInferSchema<ParaleloFromAPI>>({
+		nombre: z.string(),
+		orden: z.number(),
+		enUso: z.boolean(),
+
+		createdAt: z.string().datetime(),
+		updatedAt: z.string().datetime(),
+	})
+	.strict();
 
 // el ID de los paralelos son el nombre mismo
 export class ParaleloClass {
 	constructor(private apiUrl: string) {}
 
-	// async update({
-	// 	data,
-	// 	id,
-	// }: UpdateParaleloParams): Promise<APIResponse<ParaleloFromAPI>> {
-	// 	const res = await fetch(this.apiUrl + `/api/paralelos/${id}`, {
-	// 		method: "PATCH",
-	// 		headers: {
-	// 			"Context-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify(data),
-	// 	});
+	async update({
+		data,
+		id,
+	}: UpdateParaleloParams): Promise<APIResponse<ParaleloFromAPI>> {
+		const res = zodFetcher(
+			z.object({
+				data: paraleloSchema,
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/paralelos/${id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
 
-	// 	if (!res.ok) {
-	// 		console.error("Error al actualizar el paralelo.", await res.json());
-	// 		throw new APIError("Error al actualizar el paralelo.");
-	// 	}
+		return res;
+	}
 
-	// 	return res.json();
-	// }
-
-	async create(
-		data: Omit<ParaleloFromAPI, "enUso">,
-	): Promise<SimpleAPIResponse> {
+	async create(data: CreateParalelo): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/paralelos`, {
 			method: "POST",
 			headers: {
@@ -50,33 +72,35 @@ export class ParaleloClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al crear el paralelo.", await res.json());
-			throw new APIError("Error al crear el paralelo.");
+			const json = (await res.json()) as APIResponse<undefined>;
+			throw new APIError(json.message);
 		}
 
 		return res.json();
 	}
 
 	async getMany(_: void): Promise<APIResponse<ParaleloFromAPI[]>> {
-		const res = await fetch(this.apiUrl + "/api/paralelos");
+		const res = zodFetcher(
+			z.object({
+				data: paraleloSchema.array(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/paralelos`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener paralelos.", await res.json());
-			throw new APIError("Error al obtener paralelos.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async getById(id: string): Promise<APIResponse<ParaleloFromAPI | null>> {
-		const res = await fetch(this.apiUrl + `/api/paralelos/${id}`);
+		const res = zodFetcher(
+			z.object({
+				data: paraleloSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/paralelos/${id}`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener paralelo.", await res.json());
-			throw new APIError("Error al obtener paralelo.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {
@@ -85,8 +109,8 @@ export class ParaleloClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al eliminar el paralelo.", await res.json());
-			throw new APIError("Error al eliminar el paralelo.");
+			const json = (await res.json()) as APIResponse<undefined>;
+			throw new APIError(json.message);
 		}
 
 		return res.json();

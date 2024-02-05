@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { APIserver } from "@/core/api-server";
-import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/malla-curricular";
+import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/mallas-curriculares";
 import AsignaturaEnMallaTable from ".";
 import { NIVELES_PREFIXES } from "@/utils/forms";
 
@@ -10,10 +10,11 @@ export default async function AsignaturaEnMallaTableServer({
 }: {
 	mallaId: string;
 }) {
-	const malla = await APIserver.mallas.getMallaWithAsignaturasByMallaId(
-		mallaId,
-		{ asignaturas_esAnexo: false },
-	);
+	const malla =
+		await APIserver.mallasCurriculares.getMallaWithAsignaturasByMallaId(
+			mallaId,
+			{ asignaturas_esAnexo: false },
+		);
 
 	if (!malla.data) return notFound();
 

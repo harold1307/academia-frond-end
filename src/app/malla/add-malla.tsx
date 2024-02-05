@@ -109,7 +109,7 @@ export default function AddMalla() {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async (data: CreateMallaCurricularOutput) => {
-			return API.mallas.create(data);
+			return API.mallasCurriculares.create(data);
 		},
 		onError: console.error,
 		onSuccess: response => {

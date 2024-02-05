@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import { API } from "@/core/api-client";
-import type { UpdateMallaData } from "@/core/api/malla-curricular";
+import type { UpdateMallaData } from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { mallaParams } from "../add-malla";
@@ -19,7 +19,7 @@ export default function MallaCurricularTable() {
 	const { isLoading, data } = useQuery({
 		queryKey: MALLA_KEYS.lists(),
 		queryFn: async () => {
-			const data = await API.mallas.getMany();
+			const data = await API.mallasCurriculares.getMany();
 
 			return data.data;
 		},
@@ -122,7 +122,10 @@ function UpdateMallaModal(props: { mallas: MallaCurricularTableItem[] }) {
 			id: string;
 			data: z.infer<typeof schema>;
 		}) => {
-			return API.mallas.update({ id: params.id, mallaCurricular: params.data });
+			return API.mallasCurriculares.update({
+				id: params.id,
+				data: params.data,
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {

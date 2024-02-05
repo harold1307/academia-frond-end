@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/malla-curricular";
+import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/mallas-curriculares";
 import type { NIVELES_PREFIXES } from "@/utils/forms";
 
 interface DataTableProps<TData, TValue> {

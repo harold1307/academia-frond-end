@@ -1,14 +1,41 @@
 import type { Modalidad } from "@prisma/client";
+import { z } from "zod";
 
-import type { ReplaceDateToString } from "@/utils/types";
-import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import {
+	APIError,
+	zodFetcher,
+	type APIResponse,
+	type SimpleAPIResponse,
+} from ".";
 
-export type ModalidadFromAPI = ReplaceDateToString<Modalidad>;
+export type ModalidadFromAPI = ReplaceDateToString<
+	Modalidad & {
+		enUso: boolean;
+	}
+>;
 
 type UpdateModalidadParams = {
 	id: string;
-	data: Partial<Omit<ModalidadFromAPI, "nombre">>;
+	data: Partial<
+		Omit<
+			ModalidadFromAPI,
+			"nombre" | "enUso" | "id" | "createdAt" | "updatedAt"
+		>
+	>;
 };
+
+const modalidadSchema = z
+	.object<ZodInferSchema<ModalidadFromAPI>>({
+		id: z.string().uuid(),
+		nombre: z.string(),
+		alias: z.string().nullable(),
+		enUso: z.boolean(),
+
+		createdAt: z.string().datetime(),
+		updatedAt: z.string().datetime(),
+	})
+	.strict();
 
 // el ID de las modalidades son el nombre mismo
 export class ModalidadClass {
@@ -18,23 +45,27 @@ export class ModalidadClass {
 		data,
 		id,
 	}: UpdateModalidadParams): Promise<APIResponse<ModalidadFromAPI>> {
-		const res = await fetch(this.apiUrl + `/api/modalidades/${id}`, {
-			method: "PATCH",
-			headers: {
-				"Context-Type": "application/json",
+		const res = zodFetcher(
+			z.object({
+				data: modalidadSchema,
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/modalidades/${id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
 			},
-			body: JSON.stringify(data),
-		});
+		);
 
-		if (!res.ok) {
-			console.error("Error al actualizar la modalidad.", await res.json());
-			throw new APIError("Error al actualizar la modalidad.");
-		}
-
-		return res.json();
+		return res;
 	}
 
-	async create(data: ModalidadFromAPI): Promise<SimpleAPIResponse> {
+	async create(
+		data: Omit<ModalidadFromAPI, "enUso" | "createdAt" | "updatedAt" | "id">,
+	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/modalidades`, {
 			method: "POST",
 			headers: {
@@ -44,33 +75,35 @@ export class ModalidadClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al crear la modalidad.", await res.json());
-			throw new APIError("Error al crear la modalidad.");
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
 		}
 
 		return res.json();
 	}
 
 	async getMany(_: void): Promise<APIResponse<ModalidadFromAPI[]>> {
-		const res = await fetch(this.apiUrl + "/api/modalidades");
+		const res = zodFetcher(
+			z.object({
+				data: modalidadSchema.array(),
+				message: z.string(),
+			}),
+			this.apiUrl + "/api/modalidades",
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener modalidades.", await res.json());
-			throw new APIError("Error al obtener modalidades.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async getById(id: string): Promise<APIResponse<ModalidadFromAPI | null>> {
-		const res = await fetch(this.apiUrl + `/api/modalidades/${id}`);
+		const res = zodFetcher(
+			z.object({
+				data: modalidadSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/modalidades/${id}`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener modalidad.", await res.json());
-			throw new APIError("Error al obtener modalidad.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {
@@ -79,8 +112,8 @@ export class ModalidadClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al eliminar la modalidad.", await res.json());
-			throw new APIError("Error al eliminar la modalidad.");
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
 		}
 
 		return res.json();

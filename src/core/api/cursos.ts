@@ -1,53 +1,87 @@
-import type {
-	Curso as PrismaCurso,
-	VarianteCurso as PrismaVarianteCurso,
-} from "@prisma/client";
+import type { Curso } from "@prisma/client";
+import { z } from "zod";
 
-import type { ReplaceDateToString } from "@/utils/types";
-import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import {
+	APIError,
+	zodFetcher,
+	type APIResponse,
+	type SimpleAPIResponse,
+} from ".";
+import {
+	varianteCursoSchema,
+	type VarianteCursoFromAPI,
+} from "./variantes-curso";
 
-export type Curso = ReplaceDateToString<PrismaCurso> & {
-	variantesCount: number;
-};
+export type CursoFromAPI = ReplaceDateToString<
+	Curso & {
+		variantesCount: number;
+	}
+>;
 
-export type VarianteCurso = ReplaceDateToString<PrismaVarianteCurso>;
-
-export type CursoWithVariantes = Curso & {
-	variantes: VarianteCurso[];
+export type CursoWithVariantes = CursoFromAPI & {
+	variantes: VarianteCursoFromAPI[];
 };
 
 export type CreateVarianteCurso = Omit<
-	VarianteCurso,
+	VarianteCursoFromAPI,
 	"cursoId" | "id" | "fechaAprobacion" | "estado"
 > & {
 	fechaAprobacion: string | Date;
 };
+
+const cursoSchema = z
+	.object<ZodInferSchema<CursoFromAPI>>({
+		id: z.string().uuid(),
+		estado: z.boolean(),
+		nombre: z.string(),
+		certificado: z.string().nullable(),
+		alias: z.string().nullable(),
+		variantesCount: z.number(),
+
+		createdAt: z.string(),
+		updatedAt: z.string(),
+	})
+	.strict();
+
+const schemaWithVariantes = cursoSchema
+	.extend({
+		variantes: varianteCursoSchema.array(),
+	})
+	.strict();
 
 export class CursoClass {
 	constructor(private apiUrl: string) {}
 
 	async update(params: {
 		id: string;
-		curso: Partial<Omit<Curso, "id" | "createdAt">>;
-	}): Promise<APIResponse<Curso>> {
-		const res = await fetch(this.apiUrl + `/api/cursos/${params.id}`, {
-			method: "PATCH",
-			headers: {
-				"Context-Type": "application/json",
+		data: Partial<
+			Omit<CursoFromAPI, "id" | "createdAt" | "updatedAt" | "variantesCount">
+		>;
+	}): Promise<APIResponse<CursoFromAPI>> {
+		const res = zodFetcher(
+			z.object({
+				data: cursoSchema,
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/cursos/${params.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.data),
 			},
-			body: JSON.stringify(params.curso),
-		});
+		);
 
-		if (!res.ok) {
-			console.error("Error al actualizar la curso.", await res.json());
-			throw new APIError("Error al actualizar la curso.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async create(
-		curso: Omit<Curso, "id" | "createdAt" | "variantesCount">,
+		curso: Omit<
+			CursoFromAPI,
+			"id" | "estado" | "createdAt" | "updatedAt" | "variantesCount"
+		>,
 	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/cursos`, {
 			method: "POST",
@@ -58,33 +92,36 @@ export class CursoClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al crear la curso.", await res.json());
-			throw new APIError("Error al crear la curso.");
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
 		}
 
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<Curso[]>> {
-		const res = await fetch(this.apiUrl + "/api/cursos");
+	async getMany(_: void): Promise<APIResponse<CursoFromAPI[]>> {
+		const res = zodFetcher(
+			z.object({
+				data: cursoSchema.array(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/cursos`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener cursos.", await res.json());
-			throw new APIError("Error al obtener cursos.");
-		}
-
-		return res.json();
+		return res;
 	}
 
-	async getById(id: string): Promise<APIResponse<Curso | null>> {
-		const res = await fetch(this.apiUrl + `/api/cursos/${id}`);
+	async getById(id: string): Promise<APIResponse<CursoFromAPI | null>> {
+		const res = zodFetcher(
+			z.object({
+				data: cursoSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/cursos/${id}`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener curso.", await res.json());
-			throw new APIError("Error al obtener curso.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {
@@ -93,8 +130,9 @@ export class CursoClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al eliminar la curso.", await res.json());
-			throw new APIError("Error al eliminar la curso.");
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
 		}
 
 		return res.json();
@@ -103,14 +141,15 @@ export class CursoClass {
 	async getCursoWithVariantesByCursoId(
 		cursoId: string,
 	): Promise<APIResponse<CursoWithVariantes>> {
-		const res = await fetch(this.apiUrl + `/api/cursos/${cursoId}/variantes`);
+		const res = zodFetcher(
+			z.object({
+				data: schemaWithVariantes,
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/cursos/${cursoId}/variantes`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener curso con variantes.", await res.json());
-			throw new APIError("Error al obtener curso con variantes.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async createVarianteCurso(
@@ -126,8 +165,9 @@ export class CursoClass {
 		});
 
 		if (!res.ok) {
-			console.error("Error al crear la variante de curso.", await res.json());
-			throw new APIError("Error al crear la variante de curso.");
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
 		}
 
 		return res.json();

@@ -44,7 +44,7 @@ export default function InstitucionTable() {
 	const { data, isLoading } = useQuery({
 		queryKey: INSTITUCION_KEYS.lists(),
 		queryFn: async () => {
-			const data = await API.instituciones.getMany();
+			const data = await API.sedes.getMany();
 
 			return data.data.map(({ createdAt: _, ...rest }) => ({
 				...rest,
@@ -92,7 +92,7 @@ function UpdateInstitucionTableModal(props: {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async ({ data, id }: { data: Data; id: string }) => {
-			return API.instituciones.update({ institucion: data, id });
+			return API.sedes.update({ data: data, id });
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -289,7 +289,7 @@ function DeleteInstitucionModal(props: {
 	const queryClient = useQueryClient();
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async (id: string) => {
-			return API.instituciones.deleteById(id);
+			return API.sedes.deleteById(id);
 		},
 		onError: console.error,
 		onSuccess: response => {

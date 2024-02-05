@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AsignaturasEnMallaPage({ params }: Context) {
 	const asignaturas = await APIserver.asignaturas.getMany();
-	const malla = await APIserver.mallas.getById(params.mallaId);
+	const malla = await APIserver.mallasCurriculares.getById(params.mallaId);
 
 	if (!malla) {
 		console.log("Malla no existe");
