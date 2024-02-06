@@ -22,7 +22,10 @@ import {
 } from "@/app/_components/ui/select";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { API } from "@/core/api-client";
-import type { CreateAsignaturaEnMallaParams } from "@/core/api/malla-curricular";
+import type {
+	CreateAsignaturaEnNivelMallaParams,
+	CreateAsignaturaModuloEnMalla,
+} from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { assertReferenceInput, type Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
@@ -30,7 +33,7 @@ import type { ZodInferSchema } from "@/utils/types";
 const schema = z.object<
 	ZodInferSchema<
 		Omit<
-			CreateAsignaturaEnMallaParams["data"],
+			CreateAsignaturaModuloEnMalla,
 			| "descripcion"
 			| "resultadosAprendizaje"
 			| "competenciaGenerica"
@@ -47,16 +50,17 @@ const schema = z.object<
 		}
 	>
 >({
-	tipoAsignatura: z.nativeEnum($Enums.TipoAsignatura),
+	tipoAsignatura: z.enum(["PRACTICA", "TEORICA", "TEORICA_PRACTICA"] as const),
 	identificacion: z.string(),
 	permiteMatriculacion: z.boolean(),
-	validaCredito: z.boolean(),
-	validaPromedio: z.boolean(),
+	validaParaCredito: z.boolean(),
+	validaParaPromedio: z.boolean(),
 	costoEnMatricula: z.boolean(),
-	practicasPreProfesionales: z.boolean(),
-	requeridaEgreso: z.boolean(),
+	requeridaParaGraduar: z.boolean(),
 	cantidadMatriculas: z.number(),
-	horasSemanales: z.number(),
+	cantidadMatriculasAutorizadas: z.number().nullable(),
+	minimoCreditosRequeridos: z.number().nullable(),
+	maximaCantidadHorasSemanalas: z.number(),
 	horasColaborativas: z.number(),
 	horasAsistidasDocente: z.number(),
 	horasAutonomas: z.number(),
@@ -64,15 +68,23 @@ const schema = z.object<
 	sumaHoras: z.boolean(),
 	creditos: z.number(),
 	noValidaAsistencia: z.boolean(),
-	materiaComun: z.boolean(),
-	objetivos: z.string().optional(),
+	materiaGeneral: z.boolean(),
+	guiaPracticaMetodologiaObligatoria: z.boolean(),
+	aprobarGuiaPracticaMetodologica: z.boolean(),
+	competencia: z.string().nullable(),
+	objetivosEspecificos: z.string().nullable(),
 	descripcion: z.string().optional(),
-	resultadosAprendizaje: z.string().optional(),
-	asignaturaId: z.string(),
-
+	resultados: z.string().nullable(),
+	aporteAsignaturaAlPerfil: z.string().nullable(),
+	objetivoGeneral: z.string().nullable(),
 	competenciaGenerica: z.string().optional(),
-	areaConocimientoId: z.string(),
+	objetivos: z.string().optional(),
+	resultadosAprendizaje: z.string().optional(),
+
+	asignaturaId: z.string().uuid(),
+	areaConocimientoId: z.string().uuid(),
 	campoFormacionId: z.string(),
+	mallaId: z.string().uuid(),
 });
 
 type AddModuloProps = {
@@ -91,13 +103,15 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 		hookFormProps: {
 			defaultValues: {
 				permiteMatriculacion: false,
-				validaCredito: false,
-				validaPromedio: false,
+				validaParaCredito: false,
+				validaParaPromedio: false,
 				costoEnMatricula: false,
-				practicasPreProfesionales: false,
-				requeridaEgreso: false,
+				requeridaParaGraduar: false,
+				sumaHoras: false,
 				noValidaAsistencia: false,
-				materiaComun: false,
+				materiaGeneral: false,
+				guiaPracticaMetodologiaObligatoria: false,
+				aprobarGuiaPracticaMetodologica: false,
 				horasColaborativas: 0,
 				horasAsistidasDocente: 0,
 				horasAutonomas: 0,
@@ -105,20 +119,20 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 			},
 		},
 		mutationFn: async ({ asignaturaId, ...data }) => {
-			return API.mallas.createAsignaturaEnMalla({
-				mallaId,
-				asignaturaId,
-				data: {
-					...data,
-					descripcion: data.descripcion || null,
-					resultadosAprendizaje: data.resultadosAprendizaje || null,
-					competenciaGenerica: data.competenciaGenerica || null,
-					objetivos: data.objetivos || null,
-					esAnexo: true,
-					ejeFormativoId: null,
-					nivel: 0,
-				},
-			});
+			// return API.mallasCurriculares.createAsignaturaEnMalla({
+			// 	mallaId,
+			// 	asignaturaId,
+			// 	data: {
+			// 		...data,
+			// 		descripcion: data.descripcion || null,
+			// 		resultadosAprendizaje: data.resultadosAprendizaje || null,
+			// 		competenciaGenerica: data.competenciaGenerica || null,
+			// 		objetivos: data.objetivos || null,
+			// 		esAnexo: true,
+			// 		ejeFormativoId: null,
+			// 		nivel: 0,
+			// 	},
+			// });
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -407,12 +421,12 @@ const fields = [
 		inputType: "checkbox",
 	},
 	{
-		name: "validaCredito",
+		name: "validaParaCredito",
 		label: "Valida para credito",
 		inputType: "checkbox",
 	},
 	{
-		name: "validaPromedio",
+		name: "validaParaPromedio",
 		label: "Valida para promedio",
 		inputType: "checkbox",
 	},
@@ -427,7 +441,7 @@ const fields = [
 		inputType: "checkbox",
 	},
 	{
-		name: "requeridaEgreso",
+		name: "requeridaParaEgresar",
 		label: "Requerida para egresar",
 		inputType: "checkbox",
 	},
@@ -436,7 +450,11 @@ const fields = [
 		label: "Cantidad matriculas",
 		inputType: "number",
 	},
-	{ name: "horasSemanales", label: "Horas semanales", inputType: "number" },
+	{
+		name: "maximaCantidadHorasSemanalas",
+		label: "Horas semanales",
+		inputType: "number",
+	},
 	{
 		name: "reference-horasTotales",
 		label: "Horas totales",
@@ -478,7 +496,7 @@ const fields = [
 		inputType: "custom-text-area",
 	},
 	{
-		name: "objetivos",
+		name: "objetivosEspecificos",
 		label: "Objetivos especificos de la asignatura",
 		inputType: "custom-text-area",
 	},
@@ -494,7 +512,7 @@ const fields = [
 	},
 ] satisfies Field<
 	keyof (Omit<
-		CreateAsignaturaEnMallaParams["data"],
+		CreateAsignaturaEnNivelMallaParams["data"],
 		"ejeFormativoId" | "nivel"
 	> & {
 		asignaturaId: string;

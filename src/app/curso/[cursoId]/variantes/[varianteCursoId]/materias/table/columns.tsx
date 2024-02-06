@@ -1,68 +1,95 @@
-'use client'
-import { Button } from "@/app/_components/ui/button";
-import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/_components/ui/dropdown-menu";
+"use client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock } from "lucide-react";
-import { MateriaSchema } from "../add-materia";
 
-export type MateriaTableItem = MateriaSchema
+import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
+import { Button } from "@/app/_components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/app/_components/ui/dropdown-menu";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
+export type MateriaTableItem = {
+	id: string;
+	asignaturaModelo: string;
+	horas: number;
+	creditos: number;
+	asistenciaAprobar: number;
+	calificar: boolean;
+	notaMaxima: number;
+	notaParaAprobar: number;
+	requeridaAprobar: boolean;
+	sumaHoras: boolean;
+};
 
 const helper = createColumnHelper<MateriaTableItem>();
 
 export const materiasColumns = [
 	helper.accessor("id", {}),
-    helper.accessor("asginatura", {
-        header: "Asignatura",
-    }),
+	helper.accessor("asignaturaModelo", {
+		header: "Asignatura / Modelo",
+	}),
 	helper.accessor("horas", {
 		header: "Horas",
 	}),
 	helper.accessor("creditos", {
-		header: 'Créditos',
+		header: "Créditos",
 	}),
 	helper.accessor("asistenciaAprobar", {
-        header: 'Asistencia',
+		header: "Asistencia",
 	}),
 	helper.accessor("calificar", {
-        header: 'Califica',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+		header: "Califica",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("notaMaxima", {
-        header: 'Nota Máxima',
+		header: "Nota Máxima",
 	}),
 	helper.accessor("notaParaAprobar", {
-        header: 'Nota Aprobar',
+		header: "Nota Aprobar",
 	}),
 	helper.accessor("requeridaAprobar", {
-        header: 'Requerida',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+		header: "Requerida",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("sumaHoras", {
-        header: 'Suma Horas',
-		cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+		header: "Suma Horas",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
-	
+
 	helper.display({
 		id: "actions",
 		cell: ({ row }) => {
 			const programaId = row.getValue("id") as string;
-			return <Actions
-			  programaId={programaId}
-              showDelete={true} 
-            />;
+			return <Actions programaId={programaId} showDelete={true} />;
 		},
 	}),
 ];
 
 export const materiasParams = {
-	update: 'actualizarMateria',
-	deactivate: 'desactivarMateria',
-
-}
-function Actions(props: { programaId: string, showDelete: boolean }) {
-	const { replaceSet, router } = useMutateSearchParams();
+	update: "actualizarMateria",
+	deactivate: "desactivarMateria",
+};
+function Actions(props: { programaId: string; showDelete: boolean }) {
+	const { replaceSet } = useMutateSearchParams();
 
 	return (
 		<DropdownMenu>
@@ -77,7 +104,9 @@ function Actions(props: { programaId: string, showDelete: boolean }) {
 					<span>Editar</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => replaceSet(materiasParams.deactivate, props.programaId)}
+					onClick={() =>
+						replaceSet(materiasParams.deactivate, props.programaId)
+					}
 				>
 					<Lock className='mr-2 h-4 w-4' />
 					<span>Desactivar</span>

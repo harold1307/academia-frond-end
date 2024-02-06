@@ -1,9 +1,9 @@
-import type { MallaCurricular } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { FileSignature, GripHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
 import { Button } from "@/app/_components/ui/button";
 import {
 	DropdownMenu,
@@ -13,69 +13,79 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { ROUTES } from "@/core/routes";
 
-export type MallaCurricularTableItem = Omit<
-	MallaCurricular,
-	"createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	credits: number;
-	coursesCount: number;
-	totalHours: number;
-	coursesHours: number;
-	approved: {
+export type MallaCurricularTableItem = {
+	id: string;
+	modalidad: string;
+	tituloObtenido: string;
+	codigo: string | null;
+	creditos: number;
+	totalHoras: number;
+	horasMaterias: number;
+	horasProyectoIntegrador: number;
+	horasPracticasPreprofesionales: number;
+	horasPracticasComunitarias: number;
+	niveles: number;
+	materias: number;
+	materiasAdelantar: number | null;
+	modulos: number;
+	alumnos: number;
+	vigencia: {
 		fechaAprobacion: Date;
 		fechaLimiteVigencia: Date;
 	};
-	isCurrent: boolean;
-	isUsed: boolean;
-	modulesCount: number;
-	onlineCoursesCount: number;
-	studentsUsingCount: number;
+	esVigente: boolean;
+	nivelacion: boolean;
+	egresan: boolean;
+	graduan: boolean;
+	tieneMecanismoTitulacion: boolean;
+	enUso: boolean;
+	activa: boolean;
 };
 
 const helper = createColumnHelper<MallaCurricularTableItem>();
 
 export const columns = [
 	helper.accessor("id", {}),
-	helper.accessor("modalidadId", {
+	helper.accessor("modalidad", {
 		header: "Modalidad",
 	}),
 	helper.accessor("tituloObtenido", {
 		header: "Titulo obtenido",
 	}),
-	helper.accessor("credits", {
+	helper.accessor("codigo", {
+		header: "Codigo",
+	}),
+	helper.accessor("creditos", {
 		header: "Creditos",
 	}),
-	helper.accessor("totalHours", {
+	helper.accessor("totalHoras", {
 		header: "Horas totales",
 	}),
-	helper.accessor("coursesHours", {
+	helper.accessor("horasMaterias", {
 		header: "Horas materias",
 	}),
-	helper.accessor("horasPractica", {
-		header: "Horas pract.",
+	helper.accessor("horasProyectoIntegrador", {
+		header: "P. integradores",
 	}),
-	helper.accessor("horasVinculacion", {
-		header: "Horas vinc.",
+	helper.accessor("horasPracticasPreprofesionales", {
+		header: "P. preprofesionales",
+	}),
+	helper.accessor("horasPracticasComunitarias", {
+		header: "P. comunitarias",
 	}),
 	helper.accessor("niveles", {
 		header: "Niveles",
 	}),
-	helper.accessor("cantidadLibreOpcionEgreso", {
-		header: "Libre opcion",
-	}),
-	helper.accessor("cantidadOptativasEgreso", {
-		header: "Optativas",
-	}),
-	helper.accessor("coursesCount", {
+	helper.accessor("materias", {
 		header: "Materias",
 	}),
-	helper.accessor("modulesCount", {
+	helper.accessor("materiasAdelantar", {
+		header: "Materias adelantar",
+	}),
+	helper.accessor("modulos", {
 		header: "Modulos",
 	}),
-	helper.accessor("onlineCoursesCount", {
-		header: "Materias online",
-	}),
-	helper.accessor("approved", {
+	helper.accessor("vigencia", {
 		header: "Aprobada",
 		cell: ({ cell }) => {
 			const { fechaAprobacion, fechaLimiteVigencia } = cell.getValue();
@@ -87,16 +97,71 @@ export const columns = [
 			);
 		},
 	}),
-	helper.accessor("isCurrent", {
-		header: "Vigencia",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+	helper.accessor("alumnos", {
+		header: "Alumnos",
 	}),
-	helper.accessor("usaNivelacion", {
-		header: "Niv.",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+	helper.accessor("esVigente", {
+		header: "Vigente",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
-	helper.accessor("studentsUsingCount", {
-		header: "Uso",
+	helper.accessor("nivelacion", {
+		header: "Nivelacion",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
+	}),
+	helper.accessor("egresan", {
+		header: "Egresan",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
+	}),
+	helper.accessor("graduan", {
+		header: "Graduan",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
+	}),
+	helper.accessor("tieneMecanismoTitulacion", {
+		header: "Tiene mecanismo de titulacion",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
+	}),
+	helper.accessor("enUso", {
+		header: "En uso",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
+	}),
+	helper.accessor("activa", {
+		header: "Activa",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.display({
 		id: "actions",

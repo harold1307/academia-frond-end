@@ -1,47 +1,43 @@
 import { notFound } from "next/navigation";
+
 import { APIserver } from "@/core/api-server";
-import { MateriaSchema } from "../add-materia";
 import MateriasTable from ".";
 
-interface MockUpDataI {
-	programas:MateriaSchema[]
-}
-const data:MockUpDataI = {
-	programas: [ 
-        {
-            id: '1',
-            asginatura: 'asignatura1',
-            lms: 'Lms1',
-            plantillaLms: 'PlantillaLms1',
-            validaParaCreditos: true,
-            validaParaPromedios: true,
-            horas: 2,
-            horasDocencia: 3,
-            horasColaborativas: 8,
-            horasAsistidasPorDocente: 1,
-            horasOrganizacionAprendizaje: 1,
-            horasAutonomas:6,
-            horasPracticas:7,
-            creditos:9,
-            requeridaAprobar: true,
-            sumaHoras: true,
-            calificar: false,
-            modeloEvaluativo: 'modelo3',
-            notaMaxima: 10,
-            notaParaAprobar: 7,
-            cantidadDecimales: 1,
-            asistenciaAprobar: 75,
-        }
-	]
-}
-
 interface MateriasTableServerProps {
-    varianteId:string
+	varianteId: string;
 }
-export default async function MateriasTableServer({ varianteId }:MateriasTableServerProps) {
+
+export default async function MateriasTableServer({
+	varianteId,
+}: MateriasTableServerProps) {
 	//Fetch programas
+	const varianteWithAsignaturas =
+		await APIserver.variantesCurso.getByIdWithAsignaturas(varianteId);
 
-	// if (!programas.data) return notFound();
+	if (!varianteWithAsignaturas.data) return notFound();
 
-	return <MateriasTable data={data.programas} />;
+	return (
+		<MateriasTable
+			tableData={varianteWithAsignaturas.data.asignaturas.map(a => ({
+				asignaturaModelo: a.asignatura.nombre,
+				asistenciaAprobar: a.asistenciaAprobar || 0, // implementar con modelo evaluativo
+				creditos: a.creditos,
+				id: a.id,
+				horas:
+					a.horasAsistidasDocente +
+					a.horasAutonomas +
+					a.horasColaborativas +
+					a.horasPracticas,
+				requeridaAprobar: a.requeridoAprobar,
+				sumaHoras: a.sumaHoras,
+				notaParaAprobar: a.notaMinima || 0, // implementar con modelo evaluativo
+				calificar:
+					!!a.modeloEvaluativoId ||
+					(!a.modeloEvaluativoId &&
+						(a.notaMaxima !== null || a.notaMinima !== null)),
+				notaMaxima: a.notaMaxima || 0, // implementar con modelo evaluativo
+			}))}
+			data={varianteWithAsignaturas.data.asignaturas}
+		/>
+	);
 }

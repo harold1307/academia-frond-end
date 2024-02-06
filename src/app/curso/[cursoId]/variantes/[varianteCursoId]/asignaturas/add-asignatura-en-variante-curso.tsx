@@ -1,4 +1,5 @@
 "use client";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 import MutateModal from "@/app/_components/modals/mutate-modal";
@@ -17,13 +18,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/app/_components/ui/select";
+import { ASIGNATURA_KEYS } from "@/app/asignatura/query-keys";
 import { API } from "@/core/api-client";
 import type { CreateAsignaturaEnVarianteCursoParams } from "@/core/api/variantes-curso";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { assertReferenceInput, type Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
-import { useQuery } from "@tanstack/react-query";
-import { ASIGNATURA_KEYS } from "@/app/asignatura/query-keys";
 
 const schema = z.object<
 	ZodInferSchema<
@@ -41,8 +41,12 @@ const schema = z.object<
 	sumaHoras: z.boolean(),
 	creditos: z.number(),
 	requeridoAprobar: z.boolean(),
-	asistenciaAprobar: z.number(),
+	asistenciaAprobar: z.number().nullable(),
+	cantidadDecimales: z.number().nullable(),
+	notaMaxima: z.number().nullable(),
+	notaMinima: z.number().nullable(),
 	asignaturaId: z.string(),
+	modeloEvaluativoId: z.string().uuid().nullable(),
 });
 
 export default function AddAsignaturaEnVarianteCurso({

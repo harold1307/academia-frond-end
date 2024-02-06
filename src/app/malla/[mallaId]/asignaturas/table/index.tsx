@@ -7,7 +7,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/app/_components/ui/card";
-import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/malla-curricular";
+import type {
+	AsignaturaEnNivelMallaFromAPI,
+	MallaCurricularFromAPI,
+} from "@/core/api/mallas-curriculares";
 import { NIVELES_PREFIXES } from "@/utils/forms";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -16,28 +19,45 @@ export default function AsignaturaEnMallaTable({
 	tableRows,
 	malla,
 }: {
-	tableRows: any;
-	malla: MallaCurricularWithAsignaturasFromAPI;
+	tableRows: {
+		[x: "id" | "ejeFormativo" | string]:
+			| AsignaturaEnNivelMallaFromAPI[]
+			| string;
+	};
+	malla: MallaCurricularFromAPI;
 }) {
 	const [cols, setCols] = React.useState(columns);
 
 	React.useEffect(() => {
-		const totalNiveles = malla.niveles;
+		// const totalNiveles = malla.niveles;
 
-		const nivelesPrefixes = NIVELES_PREFIXES.slice(0, totalNiveles);
+		// const nivelesPrefixes = NIVELES_PREFIXES.slice(0, totalNiveles.length);
 
 		setCols([
 			...columns,
-			...nivelesPrefixes.map(prefix => ({
-				accessorKey: prefix + " NIVEL",
-				id: prefix + " NIVEL",
-				header: prefix + " NIVEL",
+			...malla.niveles.map(nivel => ({
+				accessorKey: nivel.id,
+				header: NIVELES_PREFIXES[nivel.nivel - 1] + " NIVEL",
+				id: nivel.id,
+
 				// @ts-expect-error not well typed because dynamic columns
 				cell: ({ getValue }) =>
 					(
-						getValue() as MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"]
-					).map(a => <AsignaturaEnMalla asignaturaEnMalla={a} key={a.id} />),
+						getValue() as MallaCurricularFromAPI["niveles"][number]
+					).asignaturas.map(a => (
+						<AsignaturaEnMalla asignaturaEnMalla={a} key={a.id} />
+					)),
 			})),
+			// ...nivelesPrefixes.map(prefix => ({
+			// 	accessorKey: prefix + " NIVEL",
+			// 	id: prefix + " NIVEL",
+			// 	header: prefix + " NIVEL",
+			// 	// @ts-expect-error not well typed because dynamic columns
+			// 	cell: ({ getValue }) =>
+			// 		(getValue() as MallaCurricularFromAPI["niveles"]).map(a => (
+			// 			<AsignaturaEnMalla asignaturaEnMalla={a.asignaturas} key={a.id} />
+			// 		)),
+			// })),
 			{
 				accessorKey: "total",
 				id: "total",
@@ -49,13 +69,13 @@ export default function AsignaturaEnMallaTable({
 	return (
 		<section>
 			<h1 className='text-2xl font-semibold'>Tabla</h1>
-			<DataTable columns={cols as any} data={tableRows} />
+			<DataTable columns={cols as any} data={tableRows as any} />
 		</section>
 	);
 }
 
 type AsignaturaEnMallaProps = {
-	asignaturaEnMalla: MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"][number];
+	asignaturaEnMalla: MallaCurricularFromAPI["niveles"][number]["asignaturas"][number];
 };
 
 function AsignaturaEnMalla({ asignaturaEnMalla }: AsignaturaEnMallaProps) {
@@ -66,7 +86,7 @@ function AsignaturaEnMalla({ asignaturaEnMalla }: AsignaturaEnMallaProps) {
 		horasAutonomas,
 		horasColaborativas,
 		horasPracticas,
-		horasSemanales,
+		maximaCantidadHorasSemanalas,
 		creditos,
 	} = asignaturaEnMalla;
 
@@ -83,7 +103,8 @@ function AsignaturaEnMalla({ asignaturaEnMalla }: AsignaturaEnMallaProps) {
 					{identificacion + " - " + asignatura.nombre}
 				</CardTitle>
 				<CardDescription>
-					Hrs: {horasTotales} Cred: {creditos} H.Sem: {horasSemanales}
+					Hrs: {horasTotales} Cred: {creditos} H.Sem:{" "}
+					{maximaCantidadHorasSemanalas}
 				</CardDescription>
 			</CardHeader>
 		</Card>

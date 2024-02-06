@@ -15,9 +15,9 @@ export const dynamic = "force-dynamic";
 
 export default async function AsignaturasEnMallaPage({ params }: Context) {
 	const asignaturas = await APIserver.asignaturas.getMany();
-	const malla = await APIserver.mallas.getById(params.mallaId);
+	const malla = await APIserver.mallasCurriculares.getById(params.mallaId);
 
-	if (!malla) {
+	if (!malla.data) {
 		console.log("Malla no existe");
 		return notFound();
 	}
@@ -26,8 +26,11 @@ export default async function AsignaturasEnMallaPage({ params }: Context) {
 		<>
 			<div className='mt-4'>
 				<AddAsignaturaEnMalla
-					mallaId={params.mallaId}
-					mallaNiveles={malla.data?.niveles}
+					mallaCurricularId={params.mallaId}
+					mallaNiveles={malla.data.niveles.map(n => ({
+						id: n.id,
+						nivel: n.nivel,
+					}))}
 					asignaturas={asignaturas.data}
 				/>
 				<React.Suspense fallback={"Cargando tabla..."}>

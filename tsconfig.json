@@ -22,7 +22,8 @@
 		"paths": {
 			"@/*": ["./src/*"]
 		},
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"strictNullChecks": true
 	},
 	"include": [
 		".eslintrc.cjs",

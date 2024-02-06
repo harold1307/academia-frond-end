@@ -40,11 +40,9 @@ export default function AreasConocimientoTable({
 }
 
 const schema = z.object<
-	ZodInferSchema<
-		Parameters<AreaConocimientoClass["update"]>[0]["areaConocimiento"]
-	>
+	ZodInferSchema<Parameters<AreaConocimientoClass["update"]>[0]["data"]>
 >({
-	codigo: z.string().optional(),
+	codigo: z.string().nullable().optional(),
 	nombre: z.string().optional(),
 });
 
@@ -61,7 +59,7 @@ export function UpdateAreaConocimiento({
 			id: string;
 			data: z.infer<typeof schema>;
 		}) => {
-			return API.areasConocimiento.update({ id, areaConocimiento: data });
+			return API.areasConocimiento.update({ id, data });
 		},
 		onError: console.error,
 		onSuccess: response => {

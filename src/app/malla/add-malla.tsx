@@ -1,11 +1,9 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TipoDuracion, type MallaCurricular } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { TipoDuracion } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import React from "react";
-import { useForm } from "react-hook-form";
+import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -31,8 +29,19 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
+import type {
+	CreateMallaCurricular,
+	CreatePracticaComunitariaEnMalla,
+	CreatePracticaPreProfesionalEnMalla,
+} from "@/core/api/mallas-curriculares";
+import { useMutateModule } from "@/hooks/use-mutate-module";
 import { cn } from "@/utils";
-import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
+import {
+	NIVELES_PREFIXES,
+	assertReferenceInput,
+	type Field,
+} from "@/utils/forms";
+import type { ZodInferSchema } from "@/utils/types";
 import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
@@ -44,92 +53,243 @@ import {
 	PopoverTrigger,
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
+import { ASIGNATURA_KEYS } from "../asignatura/query-keys";
 
 export const mallaParams = {
 	update: "actualizarMalla",
 };
 
-type CreateMallaCurricularInput = Omit<
-	MallaCurricular,
-	| "id"
-	| "createdAt"
-	| "registroPracticasDesde"
-	| "registroVinculacionDesde"
-	| "registroProyectosDesde"
-> & {
-	registroPracticasDesde: (typeof NIVELES_PREFIXES)[number];
-	registroVinculacionDesde: (typeof NIVELES_PREFIXES)[number];
-	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
-};
-
-type CreateMallaCurricularOutput = Omit<
-	MallaCurricular,
-	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	fechaAprobacion: string;
-	fechaLimiteVigencia: string;
-};
-
-const createMallaSchema: z.ZodType<
-	CreateMallaCurricularOutput,
-	z.ZodTypeDef,
-	CreateMallaCurricularInput
-> = z.object({
+const createMallaSchema = z.object<
+	ZodInferSchema<
+		Omit<
+			CreateMallaCurricular,
+			| "programaId"
+			| "tituloObtenidoId"
+			| "codigo"
+			| "cantidadArrastres"
+			| "porcentajeMinimoPasarNivel"
+			| "maximoMateriasAdelantar"
+			| "perfilEgreso"
+			| "observaciones"
+			| "tipoDuracion"
+			| "practicasComunitarias"
+			| "practicasPreProfesionales"
+		> & {
+			tipoDuracion?: TipoDuracion | null;
+			tituloObtenidoId?: string | null;
+			codigo?: string | null;
+			cantidadArrastres?: number | null;
+			porcentajeMinimoPasarNivel?: number | null;
+			maximoMateriasAdelantar?: number | null;
+			perfilEgreso?: string | null;
+			observaciones?: string | null;
+			practicasComunitarias?:
+				| (Omit<
+						CreatePracticaComunitariaEnMalla,
+						"horas" | "creditos" | "registroDesdeNivel"
+				  > & {
+						horas?: number | null;
+						creditos?: number | null;
+						registroDesdeNivel?: number | null;
+				  })
+				| null;
+			practicasPreProfesionales?:
+				| (Omit<
+						CreatePracticaPreProfesionalEnMalla,
+						"horas" | "creditos" | "registroDesdeNivel"
+				  > & {
+						horas?: number | null;
+						creditos?: number | null;
+						registroDesdeNivel?: number | null;
+				  })
+				| null;
+			"reference-practicasPreProfesionales": boolean;
+			"reference-pppLigadasAMaterias": boolean;
+			"reference-practicasComunitarias": boolean;
+			"reference-pcLigadasAMaterias": boolean;
+			"reference-calculoAvanceNivel": boolean;
+			"reference-puedeAdelantarMaterias": boolean;
+		}
+	>
+>({
 	modalidadId: z.string(),
-	tituloObtenido: z.string(),
-	tipoDuracion: z.nativeEnum(TipoDuracion),
-	fechaAprobacion: z.date().transform(date => date.toISOString()),
-	fechaLimiteVigencia: z.date().transform(date => date.toISOString()),
-	niveles: z.number(),
-	maximoMateriasMatricula: z.number(),
-	cantidadLibreOpcionEgreso: z.number(),
-	cantidadOptativasEgreso: z.number(),
-	cantidadArrastres: z.number(),
-	practicasLigadasMaterias: z.boolean(),
-	horasPractica: z.number(),
-	registroPracticasDesde: z
-		.enum(NIVELES_PREFIXES)
-		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
-	horasVinculacion: z.number(),
-	registroVinculacionDesde: z
-		.enum(NIVELES_PREFIXES)
-		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
-	registroProyectosDesde: z
-		.enum(NIVELES_PREFIXES)
-		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
-	usaNivelacion: z.boolean(),
+	tituloObtenidoId: z.string().nullable().optional(),
+	tipoDuracion: z
+		.enum(["ANOS", "CREDITOS", "HORAS", "SEMESTRES"] as const)
+		.nullable()
+		.optional(),
+	codigo: z.string().nullable().optional(),
+	fechaAprobacion: z.string().datetime(),
+	fechaLimiteVigencia: z.string().datetime(),
+	cantidadOtrasMateriasMatricula: z.number(),
+	limiteSeleccionMateriaPorAdministrativo: z.boolean(),
+	cantidadArrastres: z.number().nullable().optional(),
+	porcentajeMinimoPasarNivel: z.number().nullable().optional(),
+	maximoMateriasAdelantar: z.number().nullable().optional(),
+	automatriculaModulos: z.boolean(),
 	plantillasSilabo: z.boolean(),
-	perfilEgreso: z.string(),
-	observaciones: z.string(),
+	modeloPlanificacion: z.boolean(),
+	perfilEgreso: z.string().nullable().optional(),
+	observaciones: z.string().nullable().optional(),
+
+	niveles: z.number({ coerce: true }),
+	practicasComunitarias: z
+		.object({
+			requiereAutorizacion: z.boolean(),
+			creditos: z.number().nullable().optional(),
+			horas: z.number().nullable().optional(),
+			registroDesdeNivel: z.number().min(0).max(10).nullable().optional(),
+			registroPracticasAdelantadas: z.boolean(),
+			registroMultiple: z.boolean(),
+		})
+		.nullable()
+		.optional(),
+	practicasPreProfesionales: z
+		.object({
+			requiereAutorizacion: z.boolean(),
+			creditos: z.number().nullable().optional(),
+			horas: z.number().nullable().optional(),
+			registroDesdeNivel: z.number().min(0).max(10).nullable().optional(),
+			registroPracticasAdelantadas: z.boolean(),
+		})
+		.nullable()
+		.optional(),
+
+	"reference-practicasPreProfesionales": z.boolean(),
+	"reference-pppLigadasAMaterias": z.boolean(),
+	"reference-practicasComunitarias": z.boolean(),
+	"reference-pcLigadasAMaterias": z.boolean(),
+	"reference-calculoAvanceNivel": z.boolean(),
+	"reference-puedeAdelantarMaterias": z.boolean(),
 });
 
-export default function AddMalla() {
+export default function AddMalla({ programaId }: { programaId?: string }) {
 	const router = useRouter();
-	const [open, setOpen] = React.useState(false);
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: CreateMallaCurricularOutput) => {
-			return API.mallas.create(data);
+	const {
+		mutation: { isPending, mutate },
+		form,
+		open,
+		setOpen,
+	} = useMutateModule({
+		schema: createMallaSchema,
+		mutationFn: async ({
+			tipoDuracion,
+			codigo,
+			cantidadArrastres,
+			porcentajeMinimoPasarNivel,
+			maximoMateriasAdelantar,
+			perfilEgreso,
+			observaciones,
+			tituloObtenidoId,
+			practicasComunitarias,
+			practicasPreProfesionales,
+			...data
+		}) => {
+			if (!programaId) return;
+
+			return API.programas.createMalla({
+				programaId,
+				data: {
+					...data,
+					tipoDuracion: tipoDuracion || null,
+					codigo: codigo || null,
+					cantidadArrastres: cantidadArrastres ?? null,
+					porcentajeMinimoPasarNivel: porcentajeMinimoPasarNivel ?? null,
+					maximoMateriasAdelantar: maximoMateriasAdelantar ?? null,
+					perfilEgreso: perfilEgreso || null,
+					observaciones: observaciones || null,
+					tituloObtenidoId: tituloObtenidoId || null,
+					practicasComunitarias: data["reference-practicasComunitarias"]
+						? {
+								...practicasComunitarias,
+								requiereAutorizacion:
+									practicasComunitarias?.requiereAutorizacion || false,
+								creditos: data["reference-pcLigadasAMaterias"]
+									? null
+									: practicasComunitarias?.creditos || null,
+								horas: data["reference-pcLigadasAMaterias"]
+									? null
+									: practicasComunitarias?.creditos || null,
+								registroDesdeNivel: data["reference-pcLigadasAMaterias"]
+									? null
+									: practicasComunitarias?.creditos || null,
+								registroPracticasAdelantadas:
+									practicasComunitarias?.registroPracticasAdelantadas || false,
+								registroMultiple:
+									practicasComunitarias?.registroMultiple || false,
+							}
+						: null,
+					practicasPreProfesionales: data["reference-practicasPreProfesionales"]
+						? {
+								...practicasPreProfesionales,
+								requiereAutorizacion:
+									practicasPreProfesionales?.requiereAutorizacion || false,
+								creditos: data["reference-pppLigadasAMaterias"]
+									? null
+									: practicasPreProfesionales?.creditos || null,
+								horas: data["reference-pppLigadasAMaterias"]
+									? null
+									: practicasPreProfesionales?.creditos || null,
+								registroDesdeNivel: data["reference-pppLigadasAMaterias"]
+									? null
+									: practicasPreProfesionales?.creditos || null,
+								registroPracticasAdelantadas:
+									practicasPreProfesionales?.registroPracticasAdelantadas ||
+									false,
+							}
+						: null,
+				},
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			setOpen(false);
 			router.refresh();
+		},
+		hookFormProps: {
+			defaultValues: {
+				limiteSeleccionMateriaPorAdministrativo: false,
+				automatriculaModulos: false,
+				plantillasSilabo: false,
+				modeloPlanificacion: false,
+				"reference-practicasPreProfesionales": false,
+				"reference-pppLigadasAMaterias": false,
+				"reference-practicasComunitarias": false,
+				"reference-pcLigadasAMaterias": false,
+				"reference-calculoAvanceNivel": false,
+				"reference-puedeAdelantarMaterias": false,
+				perfilEgreso: "",
+				observaciones: "",
+			},
+			shouldUnregister: true,
 		},
 	});
 
-	const form = useForm<CreateMallaCurricularOutput>({
-		resolver: zodResolver(createMallaSchema),
-		defaultValues: {
-			practicasLigadasMaterias: false,
-			plantillasSilabo: false,
-			usaNivelacion: false,
-			perfilEgreso: "",
-			observaciones: "",
+	const { niveles, ...formValues } = form.watch();
+
+	const {
+		data: modalidades,
+		isLoading: modalidadesAreLoading,
+		refetch: fetchModalidades,
+	} = useQuery({
+		queryKey: ASIGNATURA_KEYS.list(""),
+		queryFn: async () => {
+			return API.modalidades.getMany();
 		},
-		disabled: isSubmitting,
-		shouldUnregister: true,
+		enabled: false,
+	});
+
+	const {
+		data: titulosObtenidos,
+		isLoading: titulosObtenidosAreLoading,
+		refetch: fetchTitulosObtenidos,
+	} = useQuery({
+		queryKey: ["titulosObtenidos"],
+		queryFn: async () => {
+			return API.titulosObtenidos.getMany();
+		},
+		enabled: false,
 	});
 
 	return (
@@ -137,7 +297,9 @@ export default function AddMalla() {
 			<h1 className='text-2xl font-semibold'>Adicionar malla</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant='success'>Adicionar</Button>
+					<Button variant='success' disabled={!programaId}>
+						Adicionar
+					</Button>
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
@@ -145,137 +307,28 @@ export default function AddMalla() {
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data => mutate(data))}
 							className='space-y-8'
 						>
-							{fields.map(f => (
-								<FormField
-									control={form.control}
-									name={f.name}
-									key={
-										f.name.includes("Desde")
-											? f.name + form.watch().niveles
-											: f.name
+							{fields.map(f => {
+								if (assertReferenceInput(f.name)) {
+									if (f.name === "reference-pppLigadasAMaterias") {
+										if (!formValues[f.dependsOn]) {
+											return null;
+										}
 									}
-									render={({ field }) => {
-										switch (f.inputType) {
-											case "custom-date": {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<Popover>
-															<PopoverTrigger asChild>
-																<FormControl>
-																	<Button
-																		variant={"outline"}
-																		className={cn(
-																			"col-span-9 w-[240px] pl-3 text-left font-normal",
-																			!field.value && "text-muted-foreground",
-																		)}
-																		disabled={field.disabled}
-																	>
-																		{field.value ? (
-																			format(
-																				field.value as unknown as Date,
-																				"PPP",
-																			)
-																		) : (
-																			<span>Pick a date</span>
-																		)}
-																		<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-																	</Button>
-																</FormControl>
-															</PopoverTrigger>
-															<PopoverContent
-																className='w-auto p-0'
-																align='start'
-															>
-																<Calendar
-																	mode='single'
-																	selected={field.value as unknown as Date}
-																	onSelect={field.onChange}
-																	disabled={date =>
-																		date < new Date() || !!field.disabled
-																	}
-																	initialFocus
-																/>
-															</PopoverContent>
-														</Popover>
-													</FormItem>
-												);
-											}
-											case "custom-select": {
-												const options =
-													f.options === "niveles"
-														? NIVELES_PREFIXES.slice(
-																0,
-																form.getValues().niveles,
-															).map(
-																v =>
-																	({
-																		value: v,
-																		label: `${v} NIVEL`,
-																	}) satisfies {
-																		label: string;
-																		value: string;
-																	},
-															)
-														: f.options;
 
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<Select
-															onValueChange={field.onChange}
-															defaultValue={field.value as string}
-															disabled={field.disabled}
-														>
-															<FormControl>
-																<SelectTrigger className='col-span-9'>
-																	<SelectValue
-																		placeholder={f.placeholder}
-																		className='w-full'
-																	/>
-																</SelectTrigger>
-															</FormControl>
-															<SelectContent>
-																{options.map(o =>
-																	typeof o === "string" ? (
-																		<SelectItem value={o} key={o}>
-																			{o}
-																		</SelectItem>
-																	) : (
-																		<SelectItem value={o.value} key={o.value}>
-																			{o.label}
-																		</SelectItem>
-																	),
-																)}
-															</SelectContent>
-														</Select>
-													</FormItem>
-												);
-											}
-											case "custom-text-area": {
-												return (
-													<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Textarea
-																className='col-span-9 resize-none'
-																{...field}
-																value={field.value as string}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-											case "checkbox": {
+									if (f.dependsOn && !formValues[f.dependsOn]) {
+										return null;
+									}
+
+									return (
+										<FormField
+											control={form.control}
+											name={f.name}
+											key={f.name}
+											disabled={isPending}
+											render={({ field }) => {
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
 														<FormLabel className='col-span-3 text-end'>
@@ -289,44 +342,350 @@ export default function AddMalla() {
 														</FormControl>
 													</FormItem>
 												);
-											}
-											default: {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Input
-																{...field}
-																value={
-																	typeof field.value === "boolean"
-																		? undefined
-																		: field.value || undefined
-																}
-																onChange={e =>
-																	f.inputType === "number"
-																		? field.onChange(+e.target.value)
-																		: field.onChange(e.target.value)
-																}
-																type={f.inputType}
-																placeholder={f.placeholder}
-																className='col-span-9'
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
+											}}
+										/>
+									);
+								}
+
+								if (f.dependsOn) {
+									if (f.dependsOn === "reference-calculoAvanceNivel") {
+										if (
+											f.name === "cantidadArrastres" &&
+											!formValues[f.dependsOn]
+										) {
+											return (
+												<FormField
+													control={form.control}
+													name={f.name}
+													key={f.name}
+													disabled={isPending}
+													render={({ field }) => (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={
+																		typeof field.value === "boolean"
+																			? undefined
+																			: field.value || undefined
+																	}
+																	onChange={e =>
+																		f.inputType === "number"
+																			? field.onChange(+e.target.value)
+																			: field.onChange(e.target.value)
+																	}
+																	type={f.inputType}
+																	placeholder={f.placeholder}
+																	className='col-span-9'
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+											);
 										}
-									}}
-								/>
-							))}
+
+										if (
+											f.name === "porcentajeMinimoPasarNivel" &&
+											formValues[f.dependsOn]
+										) {
+											return (
+												<FormField
+													control={form.control}
+													name={f.name}
+													key={f.name}
+													disabled={isPending}
+													render={({ field }) => (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={
+																		typeof field.value === "boolean"
+																			? undefined
+																			: field.value || undefined
+																	}
+																	onChange={e =>
+																		f.inputType === "number"
+																			? field.onChange(+e.target.value)
+																			: field.onChange(e.target.value)
+																	}
+																	type={f.inputType}
+																	placeholder={f.placeholder}
+																	className='col-span-9'
+																/>
+															</FormControl>
+														</FormItem>
+													)}
+												/>
+											);
+										}
+
+										return null;
+									}
+
+									if (
+										f.dependsOn === "reference-practicasPreProfesionales" &&
+										!formValues[f.dependsOn]
+									) {
+										return null;
+									}
+
+									if (
+										f.dependsOn === "reference-practicasComunitarias" &&
+										!formValues[f.dependsOn]
+									) {
+										return null;
+									}
+
+									if (f.dependsOn === "reference-pppLigadasAMaterias") {
+										if (!formValues["reference-practicasPreProfesionales"])
+											return null;
+
+										if (formValues[f.dependsOn]) return null;
+									}
+
+									if (f.dependsOn === "reference-pcLigadasAMaterias") {
+										if (!formValues["reference-practicasComunitarias"])
+											return null;
+
+										if (formValues[f.dependsOn]) return null;
+									}
+
+									if (f.dependsOn === "reference-puedeAdelantarMaterias") {
+										if (!formValues[f.dependsOn]) return null;
+									}
+								}
+
+								return (
+									<FormField
+										control={form.control}
+										name={f.name}
+										key={f.name}
+										disabled={isPending}
+										shouldUnregister={true}
+										render={({ field }) => {
+											switch (f.inputType) {
+												case "custom-date": {
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<Popover>
+																<PopoverTrigger asChild>
+																	<FormControl>
+																		<Button
+																			variant={"outline"}
+																			className={cn(
+																				"col-span-9 w-[240px] pl-3 text-left font-normal",
+																				!field.value && "text-muted-foreground",
+																			)}
+																			disabled={field.disabled}
+																		>
+																			{field.value ? (
+																				format(
+																					field.value as unknown as Date,
+																					"PPP",
+																				)
+																			) : (
+																				<span>Pick a date</span>
+																			)}
+																			<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+																		</Button>
+																	</FormControl>
+																</PopoverTrigger>
+																<PopoverContent
+																	className='w-auto p-0'
+																	align='start'
+																>
+																	<Calendar
+																		mode='single'
+																		selected={field.value as unknown as Date}
+																		onSelect={field.onChange}
+																		disabled={date =>
+																			date < new Date() || !!field.disabled
+																		}
+																		initialFocus
+																	/>
+																</PopoverContent>
+															</Popover>
+														</FormItem>
+													);
+												}
+												case "custom-select": {
+													let options:
+														| { label: string; value: string }[]
+														| string[]
+														| undefined = Array.isArray(f.options)
+														? f.options
+														: undefined;
+													let loading;
+
+													if (f.options === "niveles") {
+														options = NIVELES_PREFIXES.slice(0, niveles).map(
+															(v, idx) =>
+																({
+																	value: `${idx + 1}`,
+																	label: `${v} NIVEL`,
+																}) satisfies {
+																	label: string;
+																	value: string;
+																},
+														);
+													} else if (f.options === "custom") {
+														switch (f.name) {
+															case "modalidadId": {
+																options = modalidades?.data.map(m => ({
+																	label: m.nombre,
+																	value: m.id,
+																}));
+
+																loading = modalidadesAreLoading;
+																break;
+															}
+															case "tituloObtenidoId": {
+																options = titulosObtenidos?.data.map(t => ({
+																	label: t.nombre,
+																	value: t.id,
+																}));
+
+																loading = titulosObtenidosAreLoading;
+															}
+														}
+													}
+
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<Select
+																onValueChange={field.onChange}
+																defaultValue={field.value as string}
+																disabled={field.disabled}
+																onOpenChange={() => {
+																	if (
+																		f.name === "modalidadId" &&
+																		!modalidades
+																	) {
+																		fetchModalidades();
+																	}
+																	if (
+																		f.name === "tituloObtenidoId" &&
+																		!titulosObtenidos
+																	) {
+																		fetchTitulosObtenidos();
+																	}
+																}}
+															>
+																<FormControl>
+																	<SelectTrigger className='col-span-9'>
+																		<SelectValue
+																			placeholder={f.placeholder}
+																			className='w-full'
+																		/>
+																	</SelectTrigger>
+																</FormControl>
+																<SelectContent>
+																	{loading
+																		? "Cargando opciones..."
+																		: options?.length
+																			? options.map(o =>
+																					typeof o === "string" ? (
+																						<SelectItem value={o} key={o}>
+																							{o}
+																						</SelectItem>
+																					) : (
+																						<SelectItem
+																							value={o.value}
+																							key={o.value}
+																						>
+																							{o.label}
+																						</SelectItem>
+																					),
+																				)
+																			: "No hay resultados"}
+																</SelectContent>
+															</Select>
+														</FormItem>
+													);
+												}
+												case "custom-text-area": {
+													return (
+														<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<Textarea
+																	className='col-span-9 resize-none'
+																	{...field}
+																	value={field.value as string}
+																/>
+															</FormControl>
+														</FormItem>
+													);
+												}
+												case "checkbox": {
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<Checkbox
+																	checked={field.value as boolean}
+																	onCheckedChange={field.onChange}
+																/>
+															</FormControl>
+														</FormItem>
+													);
+												}
+												default: {
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={
+																		typeof field.value === "boolean"
+																			? undefined
+																			: field.value || undefined
+																	}
+																	onChange={e =>
+																		f.inputType === "number"
+																			? field.onChange(+e.target.value)
+																			: field.onChange(e.target.value)
+																	}
+																	type={f.inputType}
+																	placeholder={f.placeholder}
+																	className='col-span-9'
+																/>
+															</FormControl>
+														</FormItem>
+													);
+												}
+											}
+										}}
+									/>
+								);
+							})}
 							<DialogFooter>
-								<Button disabled={isSubmitting} type='submit' variant='success'>
+								<Button disabled={isPending} type='submit' variant='success'>
 									Guardar
 								</Button>
 								<Button
-									disabled={isSubmitting}
+									disabled={isPending}
 									variant='destructive'
 									type='button'
 									onClick={() => setOpen(false)}
@@ -342,21 +701,129 @@ export default function AddMalla() {
 	);
 }
 
+const practicasPreProfesionalesFields = [
+	{
+		name: "reference-practicasPreProfesionales",
+		inputType: "checkbox",
+		label: "Realizan practicas preprofesionales",
+	},
+	{
+		name: "practicasPreProfesionales.requiereAutorizacion",
+		inputType: "checkbox",
+		label: "Requiere autorizacion para iniciar practicas",
+		dependsOn: "reference-practicasPreProfesionales",
+	},
+	{
+		name: "reference-pppLigadasAMaterias",
+		inputType: "checkbox",
+		label: "Practicas preprofesionales ligadas a materias",
+		dependsOn: "reference-practicasPreProfesionales",
+	},
+	{
+		name: "practicasPreProfesionales.horas",
+		inputType: "number",
+		label: "Horas de practicas preprofesionales",
+		dependsOn: "reference-pppLigadasAMaterias",
+	},
+	{
+		name: "practicasPreProfesionales.creditos",
+		inputType: "number",
+		label: "Creditos de practicas preprofesionales",
+		dependsOn: "reference-pppLigadasAMaterias",
+	},
+	{
+		name: "practicasPreProfesionales.registroDesdeNivel",
+		inputType: "custom-select",
+		placeholder: "------------",
+		label: "Registro de practicas preprofesionales desde",
+		options: "niveles",
+		dependsOn: "reference-pppLigadasAMaterias",
+	},
+	{
+		name: "practicasPreProfesionales.registroPracticasAdelantadas",
+		inputType: "checkbox",
+		label: "Registro de practicas preprofesionales adelantadas",
+		dependsOn: "reference-practicasPreProfesionales",
+	},
+] satisfies Field<FieldPath<z.infer<typeof createMallaSchema>>>[];
+
+const practicasComunitariasFields = [
+	{
+		name: "reference-practicasComunitarias",
+		inputType: "checkbox",
+		label: "Realizan practicas comunitarias",
+	},
+	{
+		name: "practicasComunitarias.requiereAutorizacion",
+		inputType: "checkbox",
+		label: "Requiere autorizacion para iniciar practicas",
+		dependsOn: "reference-practicasComunitarias",
+	},
+	{
+		name: "reference-pcLigadasAMaterias",
+		inputType: "checkbox",
+		label: "Practicas comunitarias ligadas a materias",
+		dependsOn: "reference-practicasComunitarias",
+	},
+	{
+		name: "practicasComunitarias.horas",
+		inputType: "number",
+		label: "Horas de practicas comunitarias",
+		dependsOn: "reference-pcLigadasAMaterias",
+	},
+	{
+		name: "practicasComunitarias.creditos",
+		inputType: "number",
+		label: "Creditos de practicas comunitarias",
+		dependsOn: "reference-pcLigadasAMaterias",
+	},
+	{
+		name: "practicasComunitarias.registroDesdeNivel",
+		inputType: "custom-select",
+		placeholder: "------------",
+		label: "Registro de practicas comunitarias desde",
+		options: "niveles",
+		dependsOn: "reference-pcLigadasAMaterias",
+	},
+	{
+		name: "practicasComunitarias.registroPracticasAdelantadas",
+		inputType: "checkbox",
+		label: "Registro de practicas comunitarias adelantadas",
+		dependsOn: "reference-practicasComunitarias",
+	},
+	{
+		name: "practicasComunitarias.registroMultiple",
+		inputType: "checkbox",
+		label: "Puede registrarse en multiples practicas comunitarias",
+		dependsOn: "reference-practicasComunitarias",
+	},
+] satisfies Field<FieldPath<z.infer<typeof createMallaSchema>>>[];
+
 const fields = [
 	{
 		name: "modalidadId",
 		inputType: "custom-select",
-		options: ["Modalidad1", "Modalidad2"],
+		options: "custom",
 		placeholder: "------------",
 		label: "Modalidad",
 	},
-	{ name: "tituloObtenido", inputType: "text", label: "Titulo obtenido" },
+	{
+		name: "tituloObtenidoId",
+		inputType: "custom-select",
+		label: "Titulo obtenido",
+		options: "custom",
+	},
 	{
 		name: "tipoDuracion",
 		inputType: "custom-select",
 		placeholder: "------------",
 		options: Object.keys(TipoDuracion),
 		label: "Tipo duracion",
+	},
+	{
+		name: "codigo",
+		inputType: "text",
+		label: "Codigo",
 	},
 	{
 		name: "fechaAprobacion",
@@ -370,58 +837,59 @@ const fields = [
 	},
 	{ name: "niveles", inputType: "number", label: "Niveles de la malla" },
 	{
-		name: "maximoMateriasMatricula",
+		name: "cantidadOtrasMateriasMatricula",
 		inputType: "number",
-		label: "Maximo de materias en matricula",
+		label: "Cantidad de otras materias en matricula",
 	},
 	{
-		name: "cantidadLibreOpcionEgreso",
-		inputType: "number",
-		label: "Cantidad de libre opcion para egresar",
+		name: "limiteSeleccionMateriaPorAdministrativo",
+		inputType: "checkbox",
+		label: "Limite en selección de materias por administrativos",
 	},
 	{
-		name: "cantidadOptativasEgreso",
-		inputType: "number",
-		label: "Cantidad de optativas para egresar",
+		name: "reference-calculoAvanceNivel",
+		inputType: "checkbox",
+		label: "Calculo de avance de nivel por %",
 	},
 	{
 		name: "cantidadArrastres",
 		inputType: "number",
 		label: "Cantidad de arrastres",
+		dependsOn: "reference-calculoAvanceNivel",
 	},
 	{
-		name: "practicasLigadasMaterias",
+		name: "porcentajeMinimoPasarNivel",
+		inputType: "number",
+		label: "Porcentaje minimo pasar nivel",
+		dependsOn: "reference-calculoAvanceNivel",
+	},
+	...practicasPreProfesionalesFields,
+	...practicasComunitariasFields,
+	{
+		name: "reference-puedeAdelantarMaterias",
 		inputType: "checkbox",
-		label: "Practicas ligadas a materias",
-	},
-	{ name: "horasPractica", inputType: "number", label: "Horas practica" },
-	{
-		name: "registroPracticasDesde",
-		inputType: "custom-select",
-		placeholder: "------------",
-		options: "niveles",
-		label: "Registro de practicas desde",
-	},
-	{ name: "horasVinculacion", inputType: "number", label: "Horas vinculacion" },
-	{
-		name: "registroVinculacionDesde",
-		inputType: "custom-select",
-		placeholder: "------------",
-		options: "niveles",
-		label: "Registro de vinculacion desde",
+		label: "Puede adelantar materias",
 	},
 	{
-		name: "registroProyectosDesde",
-		inputType: "custom-select",
-		placeholder: "------------",
-		options: "niveles",
-		label: "Registro de proyectos desde",
+		name: "maximoMateriasAdelantar",
+		inputType: "number",
+		label: "Maximo materias adelantar",
+		dependsOn: "reference-puedeAdelantarMaterias",
 	},
-	{ name: "usaNivelacion", inputType: "checkbox", label: "Usa nivelacion" },
+	{
+		name: "automatriculaModulos",
+		inputType: "number",
+		label: "Automatricula en modulos",
+	},
 	{
 		name: "plantillasSilabo",
-		inputType: "checkbox",
+		inputType: "number",
 		label: "Plantillas de silabo",
+	},
+	{
+		name: "modeloPlanificacion",
+		inputType: "checkbox",
+		label: "Modelo de planificacion",
 	},
 	{
 		name: "perfilEgreso",
@@ -433,4 +901,4 @@ const fields = [
 		inputType: "custom-text-area",
 		label: "Observaciones",
 	},
-] satisfies Field<keyof CreateMallaCurricularInput>[];
+] satisfies Field<FieldPath<z.infer<typeof createMallaSchema>>>[];

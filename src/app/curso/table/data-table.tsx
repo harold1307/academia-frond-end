@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { CursoTableItem, columns } from "./columns";
+import type { columns, CursoTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
@@ -25,7 +25,9 @@ interface DataTableProps {
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({});
+		React.useState<VisibilityState>({
+			id: false,
+		});
 	const table = useReactTable({
 		data,
 		columns,
@@ -36,22 +38,23 @@ export function DataTable({ columns, data }: DataTableProps) {
 		},
 	});
 
-	React.useEffect(() => {
-		table.setColumnVisibility({
-			id: false,
-		});
-	}, [table]);
-
 	return (
 		<div>
-			<Table >
+			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header, index) => {
 								return (
-									<TableHead key={header.id}
-									 className={`${index === 0 ? 'border-l-2 rounded-l-md' : ''} ${index === headerGroup.headers.length - 1 ? ' border-r-2 rounded-r-md' : ''}`}
+									<TableHead
+										key={header.id}
+										className={`${
+											index === 0 ? "rounded-l-md border-l-2" : ""
+										} ${
+											index === headerGroup.headers.length - 1
+												? " rounded-r-md border-r-2"
+												: ""
+										}`}
 									>
 										{header.isPlaceholder
 											? null
@@ -65,7 +68,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 						</TableRow>
 					))}
 				</TableHeader>
-				<TableBody 
+				<TableBody
 				// className="before:content-['space'] before:leading-8 before:text-transparent"
 				>
 					{table.getRowModel().rows?.length ? (
@@ -75,7 +78,16 @@ export function DataTable({ columns, data }: DataTableProps) {
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map((cell, index) => (
-									<TableCell key={cell.id} className={`${index === 1 ? 'w-5/12' : ''} ${index === 0 ? 'text-left w-2/12' : ( index === row.getVisibleCells().length - 1 ? 'text-right flex justify-end items-end' : ' ')}`}>
+									<TableCell
+										key={cell.id}
+										className={`${index === 1 ? "w-5/12" : ""} ${
+											index === 0
+												? "w-2/12 text-left"
+												: index === row.getVisibleCells().length - 1
+													? "flex items-end justify-end text-right"
+													: " "
+										}`}
+									>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}

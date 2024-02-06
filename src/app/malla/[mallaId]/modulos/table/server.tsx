@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+
 import { APIserver } from "@/core/api-server";
 import MallaModulosTable from ".";
 import type { ModuloTableItem } from "./columns";
@@ -7,14 +9,11 @@ export default async function MallaModulosTableServer({
 }: {
 	mallaId: string;
 }) {
-	const modulos = await APIserver.mallas.getMallaWithAsignaturasByMallaId(
-		mallaId,
-		{
-			asignaturas_esAnexo: true,
-		},
-	);
+	const malla = await APIserver.mallasCurriculares.getById(mallaId);
 
-	const tableItems = modulos.data.asignaturasEnMalla.map(
+	if (!malla.data) return notFound();
+
+	const tableItems = malla.data.modulos.map(
 		a =>
 			({
 				id: a.id,
@@ -31,9 +30,9 @@ export default async function MallaModulosTableServer({
 					a.horasColaborativas +
 					a.horasPracticas,
 				matriculacion: a.permiteMatriculacion,
-				requeridaEgreso: a.requeridaEgreso,
-				validaCreditos: a.validaCredito,
-				validaPromedio: a.validaPromedio,
+				requeridaEgreso: a.requeridaParaGraduar,
+				validaCreditos: a.validaParaCredito,
+				validaPromedio: a.validaParaPromedio,
 			}) satisfies ModuloTableItem,
 	);
 

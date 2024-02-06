@@ -1,5 +1,11 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
+import {
+	FileSignature,
+	Lock,
+	StretchHorizontal,
+	Unlock,
+	X,
+} from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -16,8 +22,7 @@ export type CursoTableItem = {
 	id: string;
 	estado: boolean;
 	nombre: string;
-	certificado: string | null;
-	alias: string | null;
+	variantes: number;
 };
 
 const helper = createColumnHelper<CursoTableItem>();
@@ -27,14 +32,7 @@ export const columns = [
 	helper.accessor("nombre", {
 		header: "Curso",
 	}),
-	helper.accessor("certificado", {
-		header: "Certificado obtenido",
-	}),
-	helper.accessor("alias", {
-		header: "Alias",
-	}),
-	helper.display({
-		id: "variantes",
+	helper.accessor("variantes", {
 		header: "Variantes",
 	}),
 	helper.accessor("estado", {
@@ -45,13 +43,21 @@ export const columns = [
 		id: "actions",
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
+			const variantes = row.getValue("variantes") as number;
+			const estado = row.getValue("estado") as boolean;
 
-			return <Actions cursoId={id} showDelete={true} />;
+			return (
+				<Actions cursoId={id} showDelete={variantes > 0} isActive={estado} />
+			);
 		},
 	}),
 ];
 
-function Actions(props: { cursoId: string; showDelete: boolean }) {
+function Actions(props: {
+	cursoId: string;
+	showDelete: boolean;
+	isActive: boolean;
+}) {
 	const { replaceSet, router } = useMutateSearchParams();
 
 	return (
@@ -75,8 +81,23 @@ function Actions(props: { cursoId: string; showDelete: boolean }) {
 				<DropdownMenuItem
 					onClick={() => replaceSet(cursosParams.deactivate, props.cursoId)}
 				>
-					<Lock className='mr-2 h-4 w-4' />
-					<span>Desactivar</span>
+					{props.isActive ? (
+						<>
+							<Lock className='mr-2 h-4 w-4' />
+							<span>Desactivar</span>
+						</>
+					) : (
+						<>
+							<Unlock className='mr-2 h-4 w-4' />
+							<span>Activar</span>
+						</>
+					)}
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(cursosParams.delete, props.cursoId)}
+				>
+					<X className='mr-2 h-4 w-4' />
+					<span>Eliminar</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

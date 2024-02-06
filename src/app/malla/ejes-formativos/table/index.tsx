@@ -41,7 +41,11 @@ type UpdateEjeFormativoProps = {
 };
 
 const schema = z.object<
-	ZodInferSchema<Partial<Omit<EjeFormativoFromAPI, "id" | "enUso">>>
+	ZodInferSchema<
+		Partial<
+			Omit<EjeFormativoFromAPI, "id" | "enUso" | "updatedAt" | "createdAt">
+		>
+	>
 >({
 	nombre: z.string().optional(),
 });
@@ -59,7 +63,7 @@ export function UpdateEjeFormativo({
 			id: string;
 			data: z.infer<typeof schema>;
 		}) => {
-			return API.ejesFormativos.update({ id, ejeFormativo: data });
+			return API.ejesFormativos.update({ id, data });
 		},
 		onError: console.error,
 		onSuccess: response => {

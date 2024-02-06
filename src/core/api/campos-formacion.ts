@@ -1,55 +1,104 @@
 import type { CampoFormacion } from "@prisma/client";
+import { z } from "zod";
 
-import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import {
+	APIError,
+	zodFetcher,
+	type APIResponse,
+	type SimpleAPIResponse,
+} from ".";
 
-export type CampoFormacionFromAPI = CampoFormacion & {
-	enUso: boolean;
-};
+export type CampoFormacionFromAPI = ReplaceDateToString<
+	CampoFormacion & {
+		enUso: boolean;
+	}
+>;
+
+export const campoFormacionSchema = z
+	.object<ZodInferSchema<CampoFormacionFromAPI>>({
+		id: z.string().uuid(),
+		nombre: z.string(),
+		enUso: z.boolean(),
+		createdAt: z.string().datetime(),
+		updatedAt: z.string().datetime(),
+	})
+	.strict();
 
 export class CampoFormacionClass {
 	constructor(private apiUrl: string) {}
 
+	async update(params: {
+		id: string;
+		data: Partial<
+			Omit<CampoFormacionFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
+		>;
+	}): Promise<APIResponse<CampoFormacionFromAPI>> {
+		const res = zodFetcher(
+			z.object({
+				data: campoFormacionSchema,
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/campos-formacion/${params.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.data),
+			},
+		);
+
+		return res;
+	}
+
 	async create(
-		campoFormacion: Omit<CampoFormacionFromAPI, "id" | "enUso">,
+		data: Omit<
+			CampoFormacionFromAPI,
+			"id" | "enUso" | "createdAt" | "updatedAt"
+		>,
 	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/campos-formacion`, {
 			method: "POST",
 			headers: {
 				"Context-Type": "application/json",
 			},
-			body: JSON.stringify(campoFormacion),
+			body: JSON.stringify(data),
 		});
 
 		if (!res.ok) {
-			console.error("Error al crear la campo de formacion.", await res.json());
-			throw new APIError("Error al crear la campo de formacion.");
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
 		}
 
 		return res.json();
 	}
 
 	async getMany(_: void): Promise<APIResponse<CampoFormacionFromAPI[]>> {
-		const res = await fetch(this.apiUrl + "/api/campos-formacion");
+		const res = zodFetcher(
+			z.object({
+				data: campoFormacionSchema.array(),
+				message: z.string(),
+			}),
+			this.apiUrl + "/api/campos-formacion",
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener campos de formacion.", await res.json());
-			throw new APIError("Error al obtener campos de formacion.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async getById(
 		id: string,
 	): Promise<APIResponse<CampoFormacionFromAPI | null>> {
-		const res = await fetch(this.apiUrl + `/api/campos-formacion/${id}`);
+		const res = zodFetcher(
+			z.object({
+				data: campoFormacionSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/campos-formacion/${id}`,
+		);
 
-		if (!res.ok) {
-			console.error("Error al obtener campo de formacion.", await res.json());
-			throw new APIError("Error al obtener campo de formacion.");
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {
@@ -58,34 +107,9 @@ export class CampoFormacionClass {
 		});
 
 		if (!res.ok) {
-			console.error(
-				"Error al eliminar la campo de formacion.",
-				await res.json(),
-			);
-			throw new APIError("Error al eliminar la campo de formacion.");
-		}
+			const json = (await res.json()) as APIResponse<undefined>;
 
-		return res.json();
-	}
-
-	async update(params: {
-		id: string;
-		campoFormacion: Partial<Omit<CampoFormacionFromAPI, "id" | "enUso">>;
-	}): Promise<SimpleAPIResponse> {
-		const res = await fetch(
-			this.apiUrl + `/api/campos-formacion/${params.id}`,
-			{
-				method: "PATCH",
-				headers: {
-					"Context-Type": "application/json",
-				},
-				body: JSON.stringify(params.campoFormacion),
-			},
-		);
-
-		if (!res.ok) {
-			console.error("Error al crear la campo de formacion.", await res.json());
-			throw new APIError("Error al crear la campo de formacion.");
+			throw new APIError(json.message);
 		}
 
 		return res.json();
