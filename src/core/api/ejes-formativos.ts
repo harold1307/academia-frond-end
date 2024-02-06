@@ -15,7 +15,7 @@ export type EjeFormativoFromAPI = ReplaceDateToString<
 	}
 >;
 
-const schema = z
+export const ejeFormativoSchema = z
 	.object<ZodInferSchema<EjeFormativoFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
@@ -37,7 +37,7 @@ export class EjeFormativoClass {
 	}): Promise<APIResponse<EjeFormativoFromAPI>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema,
+				data: ejeFormativoSchema,
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/ejes-formativos/${params.id}`,
@@ -76,7 +76,7 @@ export class EjeFormativoClass {
 	async getMany(_: void): Promise<APIResponse<EjeFormativoFromAPI[]>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema.array(),
+				data: ejeFormativoSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/ejes-formativos",
@@ -88,7 +88,7 @@ export class EjeFormativoClass {
 	async getById(id: string): Promise<APIResponse<EjeFormativoFromAPI | null>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema.nullable(),
+				data: ejeFormativoSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/ejes-formativos/${id}`,

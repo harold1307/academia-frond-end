@@ -218,5 +218,5 @@ type CreateTituloObtenidoParams = {
 
 type CreateMallaParams = {
 	programaId: string;
-	data: CreateMallaCurricular;
+	data: Omit<CreateMallaCurricular, "programaId">;
 };

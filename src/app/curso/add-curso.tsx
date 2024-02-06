@@ -1,8 +1,12 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import { API } from "@/core/api-client";
+import type { CreateCurso } from "@/core/api/cursos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
+import type { Field } from "@/utils/forms";
+import type { ZodInferSchema } from "@/utils/types";
 import MutateModal from "../_components/modals/mutate-modal";
 import {
 	FormControl,
@@ -11,40 +15,31 @@ import {
 	FormLabel,
 } from "../_components/ui/form";
 import { Input } from "../_components/ui/input";
-import type { Field } from "@/utils/forms";
-import { CURSO_KEYS } from "./query-keys";
-import { useRouter } from "next/navigation";
 
 export const cursosParams = {
 	update: "actualizarCurso",
 	deactivate: "desactivarCurso",
+	delete: "eliminarCurso",
 } as const;
 
-const schema = z.object({
+const schema = z.object<ZodInferSchema<CreateCurso>>({
 	nombre: z.string(),
-	certificado: z.string().optional(),
-	alias: z.string().optional(),
 });
 
 export default function AddCurso() {
-	const router = useRouter()
+	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
-		invalidateQueryKey: CURSO_KEYS.lists(),
 		schema,
 		mutationFn: async data => {
 			return API.cursos.create({
 				...data,
-				alias: data.alias || null,
-				certificado: data.certificado || null,
-				estado: true,
 			});
 		},
 		onError: console.error,
 		onSuccess: response => {
-			router.refresh()
 			console.log({ response });
+			router.refresh();
 		},
-		hookFormProps: {},
 	});
 
 	return (
@@ -93,14 +88,14 @@ export const fields = [
 		inputType: "text",
 		label: "Nombre",
 	},
-	{
-		name: "certificado",
-		inputType: "text",
-		label: "Certificado a obtener",
-	},
-	{
-		name: "alias",
-		inputType: "text",
-		label: "Alias",
-	},
+	// {
+	// 	name: "certificado",
+	// 	inputType: "text",
+	// 	label: "Certificado a obtener",
+	// },
+	// {
+	// 	name: "alias",
+	// 	inputType: "text",
+	// 	label: "Alias",
+	// },
 ] satisfies Field<keyof z.infer<typeof schema>>[];

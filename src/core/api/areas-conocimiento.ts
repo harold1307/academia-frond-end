@@ -15,7 +15,7 @@ export type AreaConocimientoFromAPI = ReplaceDateToString<
 	}
 >;
 
-const schema = z
+export const areaConocimientoSchema = z
 	.object<ZodInferSchema<AreaConocimientoFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
@@ -38,7 +38,7 @@ export class AreaConocimientoClass {
 	}): Promise<APIResponse<AreaConocimientoFromAPI>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema,
+				data: areaConocimientoSchema,
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/areas-conocimiento/${params.id}`,
@@ -80,7 +80,7 @@ export class AreaConocimientoClass {
 	async getMany(_: void): Promise<APIResponse<AreaConocimientoFromAPI[]>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema.array(),
+				data: areaConocimientoSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/areas-conocimiento",
@@ -94,7 +94,7 @@ export class AreaConocimientoClass {
 	): Promise<APIResponse<AreaConocimientoFromAPI | null>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema.nullable(),
+				data: areaConocimientoSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/areas-conocimiento/${id}`,

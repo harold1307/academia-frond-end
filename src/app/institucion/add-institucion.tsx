@@ -1,6 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TipoInstitucion } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -22,21 +21,15 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/app/_components/ui/form";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
+import type { CreateSede } from "@/core/api/sede";
+import type { ZodInferSchema } from "@/utils/types";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
 import { INSTITUCION_KEYS } from "./query-keys";
 
-const createInstitucionSchema = z.object({
+const createInstitucionSchema = z.object<ZodInferSchema<CreateSede>>({
 	nombre: z.string(),
-	tipo: z.nativeEnum(TipoInstitucion),
 	pais: z.string(),
 	provincia: z.string(),
 	canton: z.string(),
@@ -105,7 +98,7 @@ export default function AddInstitucion() {
 									</FormItem>
 								)}
 							/>
-							<FormField
+							{/* <FormField
 								control={form.control}
 								name='tipo'
 								render={({ field }) => (
@@ -133,7 +126,7 @@ export default function AddInstitucion() {
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+							/> */}
 							<FormField
 								control={form.control}
 								name='pais'

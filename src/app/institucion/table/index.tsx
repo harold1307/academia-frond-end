@@ -1,6 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TipoInstitucion } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
@@ -26,13 +25,6 @@ import {
 	FormMessage,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
 import { ROUTES } from "@/core/routes";
 import { institucionParams } from "../add-institucion";
@@ -74,7 +66,6 @@ export default function InstitucionTable() {
 
 const createInstitucionSchema = z.object({
 	nombre: z.string(),
-	tipo: z.nativeEnum(TipoInstitucion),
 	pais: z.string(),
 	provincia: z.string(),
 	canton: z.string(),
@@ -167,7 +158,7 @@ function UpdateInstitucionTableModal(props: {
 								</FormItem>
 							)}
 						/>
-						<FormField
+						{/* <FormField
 							control={form.control}
 							name='tipo'
 							defaultValue={selectedInstitucion.tipo}
@@ -196,7 +187,7 @@ function UpdateInstitucionTableModal(props: {
 									<FormMessage />
 								</FormItem>
 							)}
-						/>
+						/> */}
 						<FormField
 							control={form.control}
 							name='pais'

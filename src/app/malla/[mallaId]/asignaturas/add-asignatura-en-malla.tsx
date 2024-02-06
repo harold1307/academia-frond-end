@@ -21,7 +21,7 @@ import {
 } from "@/app/_components/ui/select";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { API } from "@/core/api-client";
-import type { CreateAsignaturaEnMallaParams } from "@/core/api/mallas-curriculares";
+import type { CreateAsignaturaEnNivelMallaParams } from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import {
 	NIVELES_PREFIXES,
@@ -34,63 +34,72 @@ import { ASIGNATURA_EN_MALLA_KEYS } from "./query-keys";
 const schema = z.object<
 	ZodInferSchema<
 		Omit<
-			CreateAsignaturaEnMallaParams["data"],
+			CreateAsignaturaEnNivelMallaParams["data"],
 			| "descripcion"
 			| "resultadosAprendizaje"
 			| "competenciaGenerica"
-			| "objetivos"
 			| "esAnexo"
+			| "objetivosEspecificos"
 		> & {
 			asignaturaId: string;
-			descripcion?: string;
-			resultadosAprendizaje?: string;
-			competenciaGenerica?: string;
-			objetivos?: string;
+			descripcion?: string | null;
+			resultadosAprendizaje?: string | null;
+			competenciaGenerica?: string | null;
+			objetivosEspecificos?: string | null;
+			nivelMallaId: string;
 		}
 	>
 >({
-	nivel: z.number({ coerce: true }),
-	tipoAsignatura: z.nativeEnum($Enums.TipoAsignatura),
+	tipoAsignatura: z.enum(["PRACTICA", "TEORICA", "TEORICA_PRACTICA"] as const),
 	identificacion: z.string(),
 	permiteMatriculacion: z.boolean(),
-	validaCredito: z.boolean(),
-	validaPromedio: z.boolean(),
+	calculoNivel: z.boolean(),
+	validaParaCredito: z.boolean(),
+	validaParaPromedio: z.boolean(),
 	costoEnMatricula: z.boolean(),
-	practicasPreProfesionales: z.boolean(),
-	requeridaEgreso: z.boolean(),
+	requeridaParaEgresar: z.boolean(),
 	cantidadMatriculas: z.number(),
-	horasSemanales: z.number(),
+	cantidadMatriculasAutorizadas: z.number().nullable(),
+	minimoCreditosRequeridos: z.number().nullable(),
+	maximaCantidadHorasSemanalas: z.number(),
 	horasColaborativas: z.number(),
 	horasAsistidasDocente: z.number(),
 	horasAutonomas: z.number(),
 	horasPracticas: z.number(),
 	sumaHoras: z.boolean(),
 	creditos: z.number(),
+	horasProyectoIntegrador: z.number(),
 	noValidaAsistencia: z.boolean(),
 	materiaComun: z.boolean(),
-	objetivos: z.string().optional(),
-	descripcion: z.string().optional(),
-	resultadosAprendizaje: z.string().optional(),
-	asignaturaId: z.string(),
+	guiaPracticaMetodologiaObligatoria: z.boolean(),
+	aprobarGuiaPracticaMetodologica: z.boolean(),
+	descripcion: z.string().nullable().optional(),
+	objetivoGeneral: z.string().nullable(),
+	resultadosAprendizaje: z.string().nullable().optional(),
+	aporteAsignaturaAlPerfil: z.string().nullable(),
+	competenciaGenerica: z.string().nullable().optional(),
+	objetivosEspecificos: z.string().nullable().optional(),
+	observaciones: z.string().nullable(),
+	nivelMallaId: z.string(),
 
-	competenciaGenerica: z.string().optional(),
 	ejeFormativoId: z.string(),
+	asignaturaId: z.string(),
 	areaConocimientoId: z.string(),
-	campoFormacionId: z.string(),
+	campoFormacionId: z.string().nullable(),
 });
 
 export default function AddAsignaturaEnMalla({
-	mallaId,
+	mallaCurricularId,
 	asignaturas,
 	mallaNiveles,
 }: {
-	mallaId: string;
+	mallaCurricularId: string;
 	asignaturas: {
 		id: string;
 		nombre: string;
 		codigo: string | null;
 	}[];
-	mallaNiveles: number | undefined;
+	mallaNiveles: { id: string; nivel: number }[];
 }) {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
@@ -98,30 +107,33 @@ export default function AddAsignaturaEnMalla({
 		hookFormProps: {
 			defaultValues: {
 				permiteMatriculacion: false,
-				validaCredito: false,
-				validaPromedio: false,
+				calculoNivel: false,
+				validaParaCredito: false,
+				validaParaPromedio: false,
 				costoEnMatricula: false,
-				practicasPreProfesionales: false,
-				requeridaEgreso: false,
+				requeridaParaEgresar: false,
+				sumaHoras: false,
 				noValidaAsistencia: false,
 				materiaComun: false,
+				guiaPracticaMetodologiaObligatoria: false,
+				aprobarGuiaPracticaMetodologica: false,
 				horasColaborativas: 0,
 				horasAsistidasDocente: 0,
 				horasAutonomas: 0,
 				horasPracticas: 0,
 			},
 		},
-		mutationFn: async ({ asignaturaId, ...data }) => {
-			return API.mallasCurriculares.createAsignaturaEnMalla({
-				mallaId,
-				asignaturaId,
+		mutationFn: async ({ asignaturaId, nivelMallaId, ...data }) => {
+			return API.mallasCurriculares.createAsignaturaEnNivelMalla({
+				mallaCurricularId,
+				nivelMallaId,
 				data: {
 					...data,
 					descripcion: data.descripcion || null,
 					resultadosAprendizaje: data.resultadosAprendizaje || null,
 					competenciaGenerica: data.competenciaGenerica || null,
-					objetivos: data.objetivos || null,
-					esAnexo: false,
+					objetivosEspecificos: data.objetivosEspecificos || null,
+					asignaturaId,
 				},
 			});
 		},
@@ -235,11 +247,14 @@ export default function AddAsignaturaEnMalla({
 													);
 													break;
 												}
-												case "nivel": {
-													options = NIVELES_PREFIXES.slice(0, mallaNiveles).map(
+												case "nivelMallaId": {
+													options = NIVELES_PREFIXES.slice(
+														0,
+														mallaNiveles.length,
+													).map(
 														(v, idx) =>
 															({
-																value: `${idx + 1}`,
+																value: mallaNiveles[idx]?.id || "",
 																label: `${v} NIVEL`,
 															}) satisfies { label: string; value: string },
 													);
@@ -413,7 +428,7 @@ const fields = [
 		placeholder: "-----------------",
 	},
 	{
-		name: "nivel",
+		name: "nivelMallaId",
 		inputType: "custom-select",
 		label: "Nivel",
 		options: "custom",
@@ -461,12 +476,12 @@ const fields = [
 		inputType: "checkbox",
 	},
 	{
-		name: "validaCredito",
+		name: "validaParaCredito",
 		label: "Valida para credito",
 		inputType: "checkbox",
 	},
 	{
-		name: "validaPromedio",
+		name: "validaParaPromedio",
 		label: "Valida para promedio",
 		inputType: "checkbox",
 	},
@@ -476,12 +491,7 @@ const fields = [
 		inputType: "checkbox",
 	},
 	{
-		name: "practicasPreProfesionales",
-		label: "Practicas pre-profesionales",
-		inputType: "checkbox",
-	},
-	{
-		name: "requeridaEgreso",
+		name: "requeridaParaEgresar",
 		label: "Requerida para egresar",
 		inputType: "checkbox",
 	},
@@ -490,7 +500,11 @@ const fields = [
 		label: "Cantidad matriculas",
 		inputType: "number",
 	},
-	{ name: "horasSemanales", label: "Horas semanales", inputType: "number" },
+	{
+		name: "maximaCantidadHorasSemanalas",
+		label: "Maxima Cantidad de Horas Semanalas",
+		inputType: "number",
+	},
 	{
 		name: "reference-horasTotales",
 		label: "Horas totales",
@@ -521,20 +535,25 @@ const fields = [
 	{ name: "sumaHoras", label: "Suma horas", inputType: "checkbox" },
 	{ name: "creditos", label: "Creditos", inputType: "number" },
 	{
+		name: "horasProyectoIntegrador",
+		label: "Horas proyecto integrador",
+		inputType: "number",
+	},
+	{
 		name: "noValidaAsistencia",
 		label: "No valida asistencia",
 		inputType: "checkbox",
 	},
 	{ name: "materiaComun", label: "Materia comun", inputType: "checkbox" },
 	{
-		name: "competenciaGenerica",
-		label: "Competencia generica",
-		inputType: "custom-text-area",
+		name: "guiaPracticaMetodologiaObligatoria",
+		label: "Guia práctica o metodológica obligatoria",
+		inputType: "checkbox",
 	},
 	{
-		name: "objetivos",
-		label: "Objetivos especificos de la asignatura",
-		inputType: "custom-text-area",
+		name: "aprobarGuiaPracticaMetodologica",
+		label: "Aprobar guia práctica o metodológica",
+		inputType: "checkbox",
 	},
 	{
 		name: "descripcion",
@@ -542,10 +561,33 @@ const fields = [
 		inputType: "custom-text-area",
 	},
 	{
+		name: "objetivoGeneral",
+		label: "Objetivo General",
+		inputType: "custom-text-area",
+	},
+	{
 		name: "resultadosAprendizaje",
 		label: "Resultados de aprendizaje",
 		inputType: "custom-text-area",
 	},
-] satisfies Field<
-	keyof (CreateAsignaturaEnMallaParams["data"] & { asignaturaId: string })
->[];
+	{
+		name: "aporteAsignaturaAlPerfil",
+		label: "Aporte de la asignatura al perfil profesional",
+		inputType: "custom-text-area",
+	},
+	{
+		name: "competenciaGenerica",
+		label: "Competencia generica",
+		inputType: "custom-text-area",
+	},
+	{
+		name: "objetivosEspecificos",
+		label: "Objetivos especificos de la asignatura",
+		inputType: "custom-text-area",
+	},
+	{
+		name: "observaciones",
+		label: "Observaciones",
+		inputType: "custom-text-area",
+	},
+] satisfies Field<keyof (z.infer<typeof schema> & { asignaturaId: string })>[];

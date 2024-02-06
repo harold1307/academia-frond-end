@@ -16,12 +16,14 @@ export type Field<K> =
 	| FieldSelect<K>
 	| FieldDate<K>
 	| FieldTextArea<K>
-	| FieldReference;
+	| FieldDummy
+	| FieldReference<K>;
 
 type FieldDefault<K> = {
 	name: K;
 	inputType: Exclude<React.HTMLInputTypeAttribute, object>;
 	placeholder?: string;
+	dependsOn?: K | `reference-${string}`;
 	label: string;
 };
 
@@ -29,6 +31,7 @@ type FieldDate<K> = {
 	name: K;
 	inputType: "custom-date";
 	placeholder?: string;
+	dependsOn?: K | `reference-${string}`;
 	label: string;
 };
 
@@ -37,14 +40,25 @@ type FieldSelect<K> = {
 	inputType: "custom-select";
 	options: string[] | { label: string; value: string }[] | K | "custom";
 	placeholder?: string;
+	dependsOn?: K | `reference-${string}`;
 	label: string;
 };
 
-type FieldReference = {
+// campo que se usa como computed values
+type FieldReference<K> = {
 	name: `reference-${string}`;
 	inputType: Exclude<React.HTMLInputTypeAttribute, object>;
 	placeholder?: string;
+	dependsOn?: K | `reference-${string}`;
 	label: string;
+};
+
+// campo que es usado para la activacion de otros
+type FieldDummy = {
+	name: `dummy-${string}`;
+	inputType: "checkbox";
+	label: string;
+	placeholder?: undefined;
 };
 
 // const CUSTOM_FIELDS = [
@@ -64,4 +78,8 @@ export function assertReferenceInput(
 	name: string,
 ): name is `reference-${string}` {
 	return name.includes("reference-");
+}
+
+export function assertDummyInput(name: string): name is `dummy-${string}` {
+	return name.includes("dummy-");
 }

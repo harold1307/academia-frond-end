@@ -14,7 +14,6 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import { API } from "@/core/api-client";
 import type { AsignaturaFromAPI } from "@/core/api/asignaturas";
-import { ROUTES } from "@/core/routes";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import type { ZodInferSchema } from "@/utils/types";
@@ -187,7 +186,7 @@ function DeleteAsignaturaTableModal(props: {
 		return (
 			<ModalFallback
 				action='delete'
-				redirectTo={() => router.replace(ROUTES.asignatura)}
+				redirectTo={() => replaceDelete(asignaturasParams.delete)}
 			/>
 		);
 	}

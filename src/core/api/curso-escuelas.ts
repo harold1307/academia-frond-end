@@ -38,14 +38,14 @@ const schema = z
 		legalizarMatriculas: z.boolean(),
 		registroExterno: z.boolean(),
 		registroInterno: z.boolean(),
-		verificarSesion: z.boolean(),
+		verificaSesion: z.boolean(),
 		registroDesdeOtraSede: z.boolean(),
 		edadMinima: z.number().nullable(),
 		edadMaxima: z.number().nullable(),
 		costoPorMateria: z.boolean(),
 		cumpleRequisitosMalla: z.boolean(),
 		pasarRecord: z.boolean(),
-		aprobarCursoPrevio: z.boolean(),
+
 		plantillaId: z.string().uuid().nullable(),
 
 		createdAt: z.string().datetime(),

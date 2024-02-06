@@ -1,8 +1,10 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
-import { GripHorizontal, StretchHorizontal } from "lucide-react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { StretchHorizontal } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { format } from "date-fns";
 
+import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
 import { Button } from "@/app/_components/ui/button";
 import {
 	DropdownMenu,
@@ -30,7 +32,7 @@ export type VarianteCursoTableItem = {
 	edadMaxima: number | null;
 	requisitosMalla: boolean;
 	pasarRecord: boolean;
-	cursoPrevio: boolean;
+	// cursoPrevio: boolean;
 	nivelMinimo: boolean;
 	enUso: boolean;
 	activa: boolean;
@@ -48,6 +50,7 @@ export const columns = [
 	}),
 	helper.accessor("aprobada", {
 		header: "Aprobada",
+		cell: ({ getValue }) => format(new Date(getValue()), "dd-MM-yyyy"),
 	}),
 	helper.accessor("materiasCount", {
 		header: "Materias",
@@ -57,24 +60,60 @@ export const columns = [
 	}),
 	helper.accessor("registroExterno", {
 		header: "Registro externo",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("registroInterno", {
 		header: "Registro interno",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("registroOtraSede", {
 		header: "Registro otra sede",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("costoPorMateria", {
 		header: "Costo x materia",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	// helper.accessor("costoPorMaterias", {
 	// 	header: "Costo x materias",
 	// }),
 	helper.accessor("verificaSesion", {
 		header: "Verifica sesion",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("rangoEdad", {
 		header: "Rango de edad",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("edadMinima", {
 		header: "Edad minima",
@@ -84,21 +123,57 @@ export const columns = [
 	}),
 	helper.accessor("requisitosMalla", {
 		header: "Requisitos malla",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("pasarRecord", {
 		header: "Pasar al record",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
-	helper.accessor("cursoPrevio", {
-		header: "Curso previo",
-	}),
+	// helper.accessor("cursoPrevio", {
+	// 	header: "Curso previo",
+	// 	cell: ({ getValue, column }) => (
+	// 		<StatusButtonTooltip
+	// 			status={getValue()}
+	// 			hoverTitle={column.columnDef.header as string}
+	// 		/>
+	// 	),
+	// }),
 	helper.accessor("nivelMinimo", {
 		header: "Nivel minimo",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("enUso", {
 		header: "En uso",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.accessor("activa", {
 		header: "Activa",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.display({
 		id: "actions",
@@ -111,16 +186,14 @@ export const columns = [
 ];
 
 export const variantesParams = {
-	update: 'actualizarVariante',
-	deactivate: 'desactivarVariante',
-
-}
+	update: "actualizarVariante",
+	deactivate: "desactivarVariante",
+};
 
 function Actions({ varianteCursoId }: { varianteCursoId: string }) {
 	const router = useRouter();
-	const { cursoId } = useParams<{ cursoId: string }>();
-  const pathname = usePathname()
-  
+	const pathname = usePathname();
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -129,40 +202,28 @@ function Actions({ varianteCursoId }: { varianteCursoId: string }) {
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
 					onClick={() => {
-						console.log(pathname)
-						router.push(pathname + ROUTES.curso.programas(varianteCursoId))}
-					}
+						console.log(pathname);
+						router.push(pathname + ROUTES.curso.programas(varianteCursoId));
+					}}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
-					<span>programas</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => router.push(pathname + ROUTES.curso.materias(varianteCursoId))}
-				>
-					<StretchHorizontal className='mr-2 h-4 w-4' />
-					<span>Materias</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => router.push(pathname + ROUTES.curso.costos(varianteCursoId))}
-				>
-					<StretchHorizontal className='mr-2 h-4 w-4' />
-					<span>Costos</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-				 //onClick={() => onClick(cursosParams.update, props.cursoId)}
-				>
-					<GripHorizontal className='mr-2 h-4 w-4' />
 					<span>Programas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
 					onClick={() =>
-						router.push(
-							ROUTES.curso.asignaturasVariantes(cursoId, varianteCursoId),
-						)
+						router.push(pathname + ROUTES.curso.materias(varianteCursoId))
 					}
 				>
-					<GripHorizontal className='mr-2 h-4 w-4' />
+					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Materias</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						router.push(pathname + ROUTES.curso.costos(varianteCursoId))
+					}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>Costos</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

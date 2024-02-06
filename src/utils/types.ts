@@ -57,3 +57,7 @@ export type ZodInferSchema<T extends object> = {
 				: z.ZodType<T[Key]>
 		: z.ZodType<T[Key]>;
 };
+
+export type NonNullableObject<T extends object> = {
+	[K in keyof T]: Exclude<T[K], null>;
+};

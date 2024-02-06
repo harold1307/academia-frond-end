@@ -15,7 +15,7 @@ export type CampoFormacionFromAPI = ReplaceDateToString<
 	}
 >;
 
-const schema = z
+export const campoFormacionSchema = z
 	.object<ZodInferSchema<CampoFormacionFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
@@ -36,7 +36,7 @@ export class CampoFormacionClass {
 	}): Promise<APIResponse<CampoFormacionFromAPI>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema,
+				data: campoFormacionSchema,
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/campos-formacion/${params.id}`,
@@ -78,7 +78,7 @@ export class CampoFormacionClass {
 	async getMany(_: void): Promise<APIResponse<CampoFormacionFromAPI[]>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema.array(),
+				data: campoFormacionSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/campos-formacion",
@@ -92,7 +92,7 @@ export class CampoFormacionClass {
 	): Promise<APIResponse<CampoFormacionFromAPI | null>> {
 		const res = zodFetcher(
 			z.object({
-				data: schema.nullable(),
+				data: campoFormacionSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/campos-formacion/${id}`,

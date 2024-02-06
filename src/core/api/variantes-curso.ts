@@ -8,19 +8,23 @@ import {
 	type APIResponse,
 	type SimpleAPIResponse,
 } from ".";
+import { asignaturaSchema, type AsignaturaFromAPI } from "./asignaturas";
 
 export type VarianteCursoFromAPI = ReplaceDateToString<VarianteCurso>;
 
-export type AsignaturaEnVarianteCursoFromAPI =
-	ReplaceDateToString<AsignaturaEnVarianteCurso>;
+export type AsignaturaEnVarianteCursoFromAPI = ReplaceDateToString<
+	AsignaturaEnVarianteCurso & {
+		asignatura: AsignaturaFromAPI;
+	}
+>;
 
-export type VarianteCursoWithAsignaturas = VarianteCursoFromAPI & {
+export type VarianteCursoWithAsignaturasFromAPI = VarianteCursoFromAPI & {
 	asignaturas: AsignaturaEnVarianteCursoFromAPI[];
 };
 
 export type CreateAsignaturaEnVarianteCurso = Omit<
 	AsignaturaEnVarianteCursoFromAPI,
-	"id" | "createdAt" | "updatedAt"
+	"id" | "createdAt" | "updatedAt" | "asignatura"
 >;
 
 type UpdateVarianteCursoParams = {
@@ -51,19 +55,53 @@ export const varianteCursoSchema = z
 		descripcion: z.string(),
 		registroExterno: z.boolean(),
 		registroInterno: z.boolean(),
-		verificarSesion: z.boolean(),
+		verificaSesion: z.boolean(),
 		edadMinima: z.number().nullable(),
 		edadMaxima: z.number().nullable(),
-		fechaAprobacion: z.string().uuid(),
+		fechaAprobacion: z.string().datetime(),
 		registroDesdeOtraSede: z.boolean(),
 		costoPorMateria: z.boolean(),
 		cumpleRequisitosMalla: z.boolean(),
 		pasarRecord: z.boolean(),
-		aprobarCursoPrevio: z.boolean(),
+		costoPorCantidadMateria: z.boolean(),
+
 		cursoId: z.string().uuid(),
 
-		createdAt: z.string().uuid(),
+		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
+	})
+	.strict();
+
+const asignaturaVarianteCursoSchema = z.object<
+	ZodInferSchema<AsignaturaEnVarianteCursoFromAPI>
+>({
+	id: z.string().uuid(),
+	validaCredito: z.boolean(),
+	validaPromedio: z.boolean(),
+	horasColaborativas: z.number(),
+	horasAsistidasDocente: z.number(),
+	horasAutonomas: z.number(),
+	horasPracticas: z.number(),
+	sumaHoras: z.boolean(),
+	creditos: z.number(),
+	requeridoAprobar: z.boolean(),
+	asistenciaAprobar: z.number().nullable(),
+	cantidadDecimales: z.number().nullable(),
+	notaMaxima: z.number().nullable(),
+	notaMinima: z.number().nullable(),
+
+	asignaturaId: z.string(),
+	varianteCursoId: z.string(),
+	modeloEvaluativoId: z.string().uuid().nullable(),
+	asignatura: asignaturaSchema,
+
+	createdAt: z.string().datetime(),
+	updatedAt: z.string().datetime(),
+});
+
+const varianteCursoWithAsignaturasSchema = varianteCursoSchema
+	.extend({
+		asignaturas: asignaturaVarianteCursoSchema.array(),
 	})
 	.strict();
 
@@ -119,17 +157,16 @@ export class VarianteCursoClass {
 
 	async getByIdWithAsignaturas(
 		id: string,
-	): Promise<APIResponse<VarianteCursoWithAsignaturas>> {
-		const res = await fetch(
+	): Promise<APIResponse<VarianteCursoWithAsignaturasFromAPI | null>> {
+		const res = zodFetcher(
+			z.object({
+				data: varianteCursoWithAsignaturasSchema.nullable(),
+				message: z.string(),
+			}),
 			this.apiUrl + `/api/variantes-curso/${id}/asignaturas`,
 		);
 
-		if (!res.ok) {
-			const json = (await res.json()) as APIResponse<undefined>;
-			throw new APIError(json.message);
-		}
-
-		return res.json();
+		return res;
 	}
 
 	async deleteById(id: string): Promise<SimpleAPIResponse> {

@@ -1,4 +1,5 @@
 "use client";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
 import MutateModal from "@/app/_components/modals/mutate-modal";
@@ -21,13 +22,12 @@ import { API } from "@/core/api-client";
 import type { CreateLugarEjecucionParams } from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { ReplaceNullableToOptional, ZodInferSchema } from "@/utils/types";
-import { useQuery } from "@tanstack/react-query";
 
 const schema = z.object<
 	ZodInferSchema<ReplaceNullableToOptional<CreateLugarEjecucionParams["data"]>>
 >({
 	codigo: z.string().optional(),
-	institucionId: z.string(),
+	sedeId: z.string(),
 });
 
 export default function AddSede({ mallaId }: { mallaId: string }) {
@@ -76,7 +76,7 @@ export default function AddSede({ mallaId }: { mallaId: string }) {
 			>
 				<FormField
 					control={form.control}
-					name='institucionId'
+					name='sedeId'
 					render={({ field }) => {
 						const options = instituciones?.data.map(i => ({
 							value: i.id,

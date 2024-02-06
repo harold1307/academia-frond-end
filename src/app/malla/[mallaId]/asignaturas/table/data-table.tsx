@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { MallaCurricularWithAsignaturasFromAPI } from "@/core/api/mallas-curriculares";
+import type { MallaCurricularFromAPI } from "@/core/api/mallas-curriculares";
 import type { NIVELES_PREFIXES } from "@/utils/forms";
 
 interface DataTableProps<TData, TValue> {
@@ -111,11 +111,12 @@ export function DataTable<TData, TValue>({
 									rows.forEach(r => {
 										const asignaturas = r.getValue(
 											nivel,
-										) as MallaCurricularWithAsignaturasFromAPI["asignaturasEnMalla"];
+										) as MallaCurricularFromAPI["niveles"][number]["asignaturas"];
 
 										asignaturas.forEach(asignatura => {
 											if (asignatura.sumaHoras) {
-												config.horasSem += asignatura.horasSemanales;
+												config.horasSem +=
+													asignatura.maximaCantidadHorasSemanalas;
 												config.horas +=
 													asignatura.horasAsistidasDocente +
 													asignatura.horasAutonomas +

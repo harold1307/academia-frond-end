@@ -25,18 +25,20 @@ export type CursoWithVariantes = CursoFromAPI & {
 
 export type CreateVarianteCurso = Omit<
 	VarianteCursoFromAPI,
-	"cursoId" | "id" | "fechaAprobacion" | "estado"
+	"cursoId" | "id" | "fechaAprobacion" | "estado" | "createdAt" | "updatedAt"
 > & {
 	fechaAprobacion: string | Date;
 };
+export type CreateCurso = Omit<
+	CursoFromAPI,
+	"id" | "estado" | "createdAt" | "updatedAt" | "variantesCount"
+>;
 
 const cursoSchema = z
 	.object<ZodInferSchema<CursoFromAPI>>({
 		id: z.string().uuid(),
 		estado: z.boolean(),
 		nombre: z.string(),
-		certificado: z.string().nullable(),
-		alias: z.string().nullable(),
 		variantesCount: z.number(),
 
 		createdAt: z.string(),
@@ -77,23 +79,17 @@ export class CursoClass {
 		return res;
 	}
 
-	async create(
-		curso: Omit<
-			CursoFromAPI,
-			"id" | "estado" | "createdAt" | "updatedAt" | "variantesCount"
-		>,
-	): Promise<SimpleAPIResponse> {
+	async create(data: CreateCurso): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/cursos`, {
 			method: "POST",
 			headers: {
 				"Context-Type": "application/json",
 			},
-			body: JSON.stringify(curso),
+			body: JSON.stringify(data),
 		});
 
 		if (!res.ok) {
 			const json = (await res.json()) as APIResponse<undefined>;
-
 			throw new APIError(json.message);
 		}
 
@@ -131,7 +127,6 @@ export class CursoClass {
 
 		if (!res.ok) {
 			const json = (await res.json()) as APIResponse<undefined>;
-
 			throw new APIError(json.message);
 		}
 
@@ -166,7 +161,6 @@ export class CursoClass {
 
 		if (!res.ok) {
 			const json = (await res.json()) as APIResponse<undefined>;
-
 			throw new APIError(json.message);
 		}
 

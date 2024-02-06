@@ -1,11 +1,11 @@
-import type { Institucion } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
 
 import BaseTableActions from "@/app/_components/table-actions";
+import type { SedeFromAPI } from "@/core/api/sede";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { institucionParams } from "../add-institucion";
 
-export type InstitucionTableItem = Omit<Institucion, "createdAt"> & {
+export type InstitucionTableItem = Omit<SedeFromAPI, "createdAt"> & {
 	enUso: boolean;
 };
 
@@ -16,9 +16,9 @@ export const columns = [
 	columnHelper.accessor("nombre", {
 		header: "Nombre",
 	}),
-	columnHelper.accessor("tipo", {
-		header: "Tipo",
-	}),
+	// columnHelper.accessor("tipo", {
+	// 	header: "Tipo",
+	// }),
 	columnHelper.accessor("pais", {
 		header: "Pais",
 	}),

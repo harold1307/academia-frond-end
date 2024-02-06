@@ -1,5 +1,4 @@
 import type {
-	$Enums,
 	AsignaturaEnNivelMalla,
 	AsignaturaModuloEnMalla,
 	LugarEjecucion,
@@ -10,17 +9,30 @@ import type {
 } from "@prisma/client";
 import { z } from "zod";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import {
 	APIError,
 	zodFetcher,
 	type APIResponse,
 	type SimpleAPIResponse,
 } from ".";
-import type { AreaConocimientoFromAPI } from "./areas-conocimiento";
-import type { AsignaturaFromAPI } from "./asignaturas";
-import type { CampoFormacionFromAPI } from "./campos-formacion";
-import type { EjeFormativoFromAPI } from "./ejes-formativos";
+import {
+	areaConocimientoSchema,
+	type AreaConocimientoFromAPI,
+} from "./areas-conocimiento";
+import { asignaturaSchema, type AsignaturaFromAPI } from "./asignaturas";
+import {
+	campoFormacionSchema,
+	type CampoFormacionFromAPI,
+} from "./campos-formacion";
+import {
+	ejeFormativoSchema,
+	type EjeFormativoFromAPI,
+} from "./ejes-formativos";
 import { sedeSchema, type SedeFromAPI } from "./sede";
 import {
 	tituloObtenidoSchema,
@@ -64,16 +76,23 @@ export type MallaCurricularFromAPI = ReplaceDateToString<
 		practicaComunitaria: PracticaComunitariaEnMallaFromAPI | null;
 		tituloObtenido: TituloObtenidoFromAPI | null;
 		niveles: (NivelMallaFromAPI & {
-			asignaturas: Omit<
-				AsignaturaEnNivelMallaFromAPI,
-				"ejeFormativo" | "areaConocimiento" | "campoFormacion" | "asignatura"
-			>[];
+			asignaturas: AsignaturaEnNivelMallaFromAPI[];
 		})[];
 		modulos: Omit<
 			AsignaturaModuloEnMallaFromAPI,
-			"asignatura" | "areaConocimiento" | "campoFormacion"
+			"areaConocimiento" | "campoFormacion"
 		>[];
 	}
+>;
+
+export type CreateAsignaturaModuloEnMalla = Omit<
+	AsignaturaModuloEnMalla,
+	| "id"
+	| "createdAt"
+	| "updatedAt"
+	| "asignatura"
+	| "areaConocimiento"
+	| "campoFormacion"
 >;
 
 export type MallaCurricularWithLugaresEjecucionFromAPI =
@@ -144,6 +163,20 @@ export type UpdateMallaData = Partial<
 	}
 >;
 
+export type MallaCurricularQueryFilter = Partial<
+	NonNullableObject<
+		Omit<
+			MallaCurricular,
+			| "fechaAprobacion"
+			| "fechaLimiteVigencia"
+			| "cantidadOtrasMateriasMatricula"
+			| "createdAt"
+			| "updatedAt"
+			| "id"
+		>
+	>
+>;
+
 const moduloSchema = z
 	.object<ZodInferSchema<MallaCurricularFromAPI["modulos"][number]>>({
 		id: z.string().uuid(),
@@ -178,6 +211,7 @@ const moduloSchema = z
 		resultados: z.string().nullable(),
 		aporteAsignaturaAlPerfil: z.string().nullable(),
 		objetivoGeneral: z.string().nullable(),
+		asignatura: asignaturaSchema,
 
 		asignaturaId: z.string().uuid(),
 		areaConocimientoId: z.string().uuid(),
@@ -230,6 +264,11 @@ const asignaturaEnNivelMallaSchema = z
 		competenciaGenerica: z.string().nullable(),
 		objetivosEspecificos: z.string().nullable(),
 		observaciones: z.string().nullable(),
+
+		asignatura: asignaturaSchema,
+		ejeFormativo: ejeFormativoSchema,
+		areaConocimiento: areaConocimientoSchema,
+		campoFormacion: campoFormacionSchema.nullable(),
 
 		ejeFormativoId: z.string().uuid(),
 		nivelMallaId: z.string().uuid(),
@@ -364,7 +403,17 @@ export class MallaCurricularClass {
 		return res;
 	}
 
-	async getMany(_: void): Promise<APIResponse<MallaCurricularFromAPI[]>> {
+	async getMany(
+		filters?: MallaCurricularQueryFilter,
+	): Promise<APIResponse<MallaCurricularFromAPI[]>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(filters ?? {}).forEach(([key, value]) => {
+			if (value === undefined) return;
+
+			searchParams.append(key, `${value}`);
+		});
+
 		const res = zodFetcher(
 			z.object({
 				data: mallaSchema.array(),
@@ -404,31 +453,31 @@ export class MallaCurricularClass {
 		return res.json();
 	}
 
-	async createAsignaturaEnMalla({
-		asignaturaId,
-		data,
-		mallaId,
-	}: CreateAsignaturaEnMallaParams): Promise<SimpleAPIResponse> {
-		const res = await fetch(
-			this.apiUrl +
-				`/api/mallas-curriculares/${mallaId}/asignaturas/${asignaturaId}`,
-			{
-				method: "POST",
-				headers: {
-					"Context-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			},
-		);
+	// async createAsignaturaEnMalla({
+	// 	asignaturaId,
+	// 	data,
+	// 	mallaId,
+	// }: CreateAsignaturaEnMallaParams): Promise<SimpleAPIResponse> {
+	// 	const res = await fetch(
+	// 		this.apiUrl +
+	// 			`/api/mallas-curriculares/${mallaId}/asignaturas/${asignaturaId}`,
+	// 		{
+	// 			method: "POST",
+	// 			headers: {
+	// 				"Context-Type": "application/json",
+	// 			},
+	// 			body: JSON.stringify(data),
+	// 		},
+	// 	);
 
-		if (!res.ok) {
-			const json = (await res.json()) as APIResponse<undefined>;
+	// 	if (!res.ok) {
+	// 		const json = (await res.json()) as APIResponse<undefined>;
 
-			throw new APIError(json.message);
-		}
+	// 		throw new APIError(json.message);
+	// 	}
 
-		return res.json();
-	}
+	// 	return res.json();
+	// }
 
 	async createAsignaturaEnNivelMalla({
 		data,
@@ -534,40 +583,40 @@ export type CreateAsignaturaEnNivelMallaParams = {
 	>;
 };
 
-export type CreateAsignaturaEnMallaParams = {
-	mallaId: string;
-	asignaturaId: string;
-	data: {
-		esAnexo: boolean;
-		nivel: number;
-		tipoAsignatura: $Enums.TipoAsignatura;
-		identificacion: string;
-		permiteMatriculacion: boolean;
-		validaCredito: boolean;
-		validaPromedio: boolean;
-		costoEnMatricula: boolean;
-		practicasPreProfesionales: boolean;
-		requeridaEgreso: boolean;
-		cantidadMatriculas: number;
-		horasSemanales: number;
-		horasColaborativas: number;
-		horasAsistidasDocente: number;
-		horasAutonomas: number;
-		horasPracticas: number;
-		sumaHoras: boolean;
-		creditos: number;
-		noValidaAsistencia: boolean;
-		materiaComun: boolean;
-		objetivos: string | null;
-		descripcion: string | null;
-		resultadosAprendizaje: string | null;
+// export type CreateAsignaturaEnMallaParams = {
+// 	mallaId: string;
+// 	asignaturaId: string;
+// 	data: {
+// 		esAnexo: boolean;
+// 		nivel: number;
+// 		tipoAsignatura: $Enums.TipoAsignatura;
+// 		identificacion: string;
+// 		permiteMatriculacion: boolean;
+// 		validaCredito: boolean;
+// 		validaPromedio: boolean;
+// 		costoEnMatricula: boolean;
+// 		practicasPreProfesionales: boolean;
+// 		requeridaEgreso: boolean;
+// 		cantidadMatriculas: number;
+// 		horasSemanales: number;
+// 		horasColaborativas: number;
+// 		horasAsistidasDocente: number;
+// 		horasAutonomas: number;
+// 		horasPracticas: number;
+// 		sumaHoras: boolean;
+// 		creditos: number;
+// 		noValidaAsistencia: boolean;
+// 		materiaComun: boolean;
+// 		objetivos: string | null;
+// 		descripcion: string | null;
+// 		resultadosAprendizaje: string | null;
 
-		competenciaGenerica: string | null;
-		ejeFormativoId: string | null;
-		areaConocimientoId: string;
-		campoFormacionId: string;
-	};
-};
+// 		competenciaGenerica: string | null;
+// 		ejeFormativoId: string | null;
+// 		areaConocimientoId: string;
+// 		campoFormacionId: string;
+// 	};
+// };
 
 export type CreateLugarEjecucionParams = {
 	mallaId: string;
