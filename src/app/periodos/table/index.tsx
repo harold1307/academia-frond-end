@@ -41,6 +41,12 @@ import { Checkbox } from "@/app/_components/ui/checkbox";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { z } from "zod";
 import { MallaCurricular } from "@prisma/client";
+import ModalFallback from "@/app/_components/modals/modal-fallback";
+import { ROUTES } from "@/core/routes";
+import { periodoParams } from "../addPeriodo";
+import { cn } from "@/utils";
+import { format } from "date-fns";
+import { Calendar, CalendarIcon } from "lucide-react";
 
 export default function PeriodosLectivosTables() {
 	return (
@@ -55,7 +61,6 @@ export default function PeriodosLectivosTables() {
 function UpdatePeriodoTableModal(props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const queryClient = useQueryClient();
 	const [open, setOpen] = React.useState(false);
 
 	type CreatePeriodoInput = Omit<
@@ -85,13 +90,13 @@ function UpdatePeriodoTableModal(props) {
 	});
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async data => {
-			return API.periodos.update({ periodos: data, id });
+		mutationFn: async ({ data, id }) => {
+			return API.periodos.update({ periodos: { data, id } });
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			setOpen(false);
+			router.replace(ROUTES.periodo.path);
 			router.refresh();
 		},
 	});
@@ -103,8 +108,35 @@ function UpdatePeriodoTableModal(props) {
 		shouldUnregister: true,
 	});
 
+	const paramPeriodoId = React.useMemo(
+		() => searchParams.get(periodoParams.update),
+		[searchParams],
+	);
+
+	if (!paramPeriodoId) return null;
+
+	const selectedPeriodo = props.periodos.find(i => i.id === paramPeriodoId);
+
+	if (!selectedPeriodo) {
+		return (
+			<ModalFallback
+				action='update'
+				redirectTo={() => router.replace(ROUTES.periodo.path)}
+			/>
+		);
+	}
+
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog
+			defaultOpen={true}
+			onOpenChange={open => {
+				if (isSubmitting) return;
+				if (!open) {
+					router.replace(ROUTES.periodo.path);
+					return;
+				}
+			}}
+		>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
 					<DialogTitle>Adicionar periodo</DialogTitle>
@@ -295,7 +327,7 @@ function UpdatePeriodoTableModal(props) {
 								disabled={isSubmitting}
 								variant='destructive'
 								type='button'
-								onClick={() => setOpen(false)}
+								onClick={() => router.replace(ROUTES.periodo.path)}
 							>
 								Cancelar
 							</Button>

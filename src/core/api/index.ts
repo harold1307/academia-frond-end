@@ -1,5 +1,4 @@
 import { createZodFetcher } from "zod-fetch";
-
 import { AlternativaEvaluacionClass } from "./alternativas-evaluacion";
 import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
@@ -28,6 +27,7 @@ import { TipoDocumentoEnProgramaClass } from "./tipos-documento-programas";
 import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { VarianteCursoClass } from "./variantes-curso";
+import { PeriodosLectivosClass } from "./periodos-lectivos";
 
 export type APIResponse<D> = {
 	data: D;
@@ -62,7 +62,7 @@ export class APIClass {
 	}
 
 	get periodos() {
-		return new MallaCurricularClass(this._apiUrl);
+		return new PeriodosLectivosClass(this._apiUrl);
 	}
 	
 	get asignaturas() {
