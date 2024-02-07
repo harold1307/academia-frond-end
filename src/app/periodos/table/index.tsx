@@ -32,7 +32,6 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/app/_components/ui/popover";
-import { PlusCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { API } from "@/core/api-client";
@@ -86,7 +85,7 @@ function UpdatePeriodoTableModal(props) {
 	});
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: createPeriodoSchema) => {
+		mutationFn: async data => {
 			return API.periodos.update({ periodos: data, id });
 		},
 		onError: console.error,

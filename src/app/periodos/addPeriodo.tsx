@@ -48,7 +48,7 @@ import { Textarea } from "../_components/ui/textarea";
 export const periodoParams = {
 	add: "agregarPeriodo",
 	update: "actualizarPeriodo",
-};
+} as const;
 
 type CreatePeriodoInput = Omit<
 	MallaCurricular,
