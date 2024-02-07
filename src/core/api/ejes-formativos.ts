@@ -1,13 +1,9 @@
 import type { EjeFormativo } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type EjeFormativoFromAPI = ReplaceDateToString<
 	EjeFormativo & {
@@ -27,7 +23,10 @@ export const ejeFormativoSchema = z
 	.strict();
 
 export class EjeFormativoClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
@@ -35,7 +34,7 @@ export class EjeFormativoClass {
 			Omit<EjeFormativoFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
 		>;
 	}): Promise<APIResponse<EjeFormativoFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: ejeFormativoSchema,
 				message: z.string(),
@@ -74,7 +73,7 @@ export class EjeFormativoClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<EjeFormativoFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: ejeFormativoSchema.array(),
 				message: z.string(),
@@ -86,7 +85,7 @@ export class EjeFormativoClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<EjeFormativoFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: ejeFormativoSchema.nullable(),
 				message: z.string(),

@@ -1,13 +1,9 @@
 import type { ModeloEvaluativo } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CampoModeloEvaluativoFromAPI } from "./campos-modelos-evaluativos";
 
 export type ModeloEvaluativoFromAPI = ReplaceDateToString<
@@ -58,7 +54,10 @@ const modeloEvaluativoSchema = z
 	.strict();
 
 export class ModeloEvaluativoClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		data,
@@ -66,7 +65,7 @@ export class ModeloEvaluativoClass {
 	}: UpdateModeloEvaluativoParams): Promise<
 		APIResponse<ModeloEvaluativoFromAPI>
 	> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modeloEvaluativoSchema,
 				message: z.string(),
@@ -102,7 +101,7 @@ export class ModeloEvaluativoClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<ModeloEvaluativoFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modeloEvaluativoSchema.array(),
 				message: z.string(),
@@ -116,7 +115,7 @@ export class ModeloEvaluativoClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<ModeloEvaluativoFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modeloEvaluativoSchema.nullable(),
 				message: z.string(),

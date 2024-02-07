@@ -1,13 +1,9 @@
 import type { TipoDocumento } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type TipoDocumentoFromAPI = ReplaceDateToString<
 	TipoDocumento & {
@@ -48,13 +44,16 @@ export const tipoDocumentoSchema = z
 	.strict();
 
 export class TipoDocumentoClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		id,
 		data,
 	}: UpdateTipoDocumentoParams): Promise<APIResponse<TipoDocumentoFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: tipoDocumentoSchema,
 				message: z.string(),
@@ -91,7 +90,7 @@ export class TipoDocumentoClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<TipoDocumentoFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: tipoDocumentoSchema.array(),
 				message: z.string(),
@@ -103,7 +102,7 @@ export class TipoDocumentoClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<TipoDocumentoFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: tipoDocumentoSchema.nullable(),
 				message: z.string(),

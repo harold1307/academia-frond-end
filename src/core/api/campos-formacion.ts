@@ -1,13 +1,9 @@
 import type { CampoFormacion } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type CampoFormacionFromAPI = ReplaceDateToString<
 	CampoFormacion & {
@@ -26,7 +22,10 @@ export const campoFormacionSchema = z
 	.strict();
 
 export class CampoFormacionClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
@@ -34,7 +33,7 @@ export class CampoFormacionClass {
 			Omit<CampoFormacionFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
 		>;
 	}): Promise<APIResponse<CampoFormacionFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: campoFormacionSchema,
 				message: z.string(),
@@ -76,7 +75,7 @@ export class CampoFormacionClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<CampoFormacionFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: campoFormacionSchema.array(),
 				message: z.string(),
@@ -90,7 +89,7 @@ export class CampoFormacionClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<CampoFormacionFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: campoFormacionSchema.nullable(),
 				message: z.string(),

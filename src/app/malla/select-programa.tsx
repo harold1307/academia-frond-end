@@ -9,6 +9,7 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import React from "react";
 
 export default function SelectPrograma({
 	programas,
@@ -24,8 +25,9 @@ export default function SelectPrograma({
 			onValueChange={v => {
 				replaceSet("programaId", v);
 			}}
+			defaultValue={programaId}
 		>
-			<SelectTrigger className='w-[180px]' defaultValue={programaId}>
+			<SelectTrigger className='w-[300px]'>
 				<SelectValue placeholder='Selecciona un programa' />
 			</SelectTrigger>
 			<SelectContent>
@@ -35,6 +37,9 @@ export default function SelectPrograma({
 							{p.nombre}
 						</SelectItem>
 					))}
+					<SelectItem key={"Programa"} value={"Programa"}>
+						{"Programa"}
+					</SelectItem>
 				</SelectGroup>
 			</SelectContent>
 		</Select>
