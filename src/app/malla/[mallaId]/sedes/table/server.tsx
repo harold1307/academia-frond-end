@@ -10,7 +10,9 @@ export default async function SedeTableServer({
 	mallaId: string;
 }) {
 	const malla =
-		await APIserver.mallas.getMallaWithLugaresEjecucionByMallaId(mallaId);
+		await APIserver.mallasCurriculares.getMallaWithLugaresEjecucionByMallaId(
+			mallaId,
+		);
 
 	if (!malla.data) return notFound();
 
@@ -18,7 +20,7 @@ export default async function SedeTableServer({
 		l =>
 			({
 				codigo: l.codigo || "",
-				sede: l.institucion.nombre,
+				sede: l.sede.nombre,
 				inscritos: 0,
 				egresados: 0,
 				graduados: 0,

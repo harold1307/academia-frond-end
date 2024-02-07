@@ -21,62 +21,70 @@ type AddVarianteProps = {
 	cursoId: string;
 };
 
-type CreateVarianteCursoSchema = Omit<
-	CreateVarianteCurso,
-	"edadMinima" | "edadMaxima"
-> & {
-	edadMinima?: number;
-	edadMaxima?: number;
-	verificarEdad: boolean;
-};
-
-export const varianteCursoSchema = z.object<
-	ZodInferSchema<CreateVarianteCursoSchema>
+export const createVarianteCursoSchema = z.object<
+	ZodInferSchema<
+		Omit<CreateVarianteCurso, "edadMinima" | "edadMaxima"> & {
+			verificarEdad: boolean;
+			// react-hook-form doesnt submit values if the fields are not visible and
+			// these depends on "verificarEdad" field to be shown. So, hard-coding optional is necessary
+			edadMinima?: number | null;
+			edadMaxima?: number | null;
+		}
+	>
 >({
 	nombre: z.string(),
 	codigoBase: z.string(),
 	descripcion: z.string(),
 	registroExterno: z.boolean(),
 	registroInterno: z.boolean(),
-	verificarSesion: z.boolean(),
+	verificaSesion: z.boolean(),
 	verificarEdad: z.boolean(),
-	edadMinima: z.number().optional(),
-	edadMaxima: z.number().optional(),
+	edadMinima: z.number().nullable().optional(),
+	edadMaxima: z.number().nullable().optional(),
 	fechaAprobacion: z.date().transform(date => date.toISOString()),
 	registroDesdeOtraSede: z.boolean(),
 	costoPorMateria: z.boolean(),
 	cumpleRequisitosMalla: z.boolean(),
 	pasarRecord: z.boolean(),
-	aprobarCursoPrevio: z.boolean(),
+	costoPorCantidadMateria: z.boolean(),
 });
 
 export default function AddVariante({ cursoId }: AddVarianteProps) {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
-		schema: varianteCursoSchema,
-		mutationFn: async data => {
+		schema: createVarianteCursoSchema,
+		mutationFn: async ({ verificarEdad, ...data }) => {
 			return API.cursos.createVarianteCurso(cursoId, {
 				...data,
-				edadMinima: data.edadMaxima || null,
-				edadMaxima: data.edadMaxima || null,
+				edadMinima: verificarEdad ? data.edadMaxima ?? null : null,
+				edadMaxima: verificarEdad ? data.edadMaxima ?? null : null,
 			});
 		},
 		onError: console.error,
 		onSuccess: response => {
-			router.refresh();
 			console.log({ response });
+			router.refresh();
 		},
 		hookFormProps: {
 			defaultValues: {
 				registroExterno: false,
 				registroInterno: false,
-				verificarSesion: false,
+				verificaSesion: false,
+				registroDesdeOtraSede: false,
+				costoPorMateria: false,
+				cumpleRequisitosMalla: false,
+				pasarRecord: false,
+				costoPorCantidadMateria: false,
+
 				verificarEdad: false,
 			},
 		},
 	});
-	const seeData = () => console.log("DATA: ", mutation.data);
-	console.log(form.formState.errors);
+	// const seeData = () => console.log("DATA: ", mutation.data);
+	// console.log(form.formState.errors);
+
+	const { costoPorMateria } = form.watch();
+
 	return (
 		<section>
 			<MutateModal
@@ -181,7 +189,45 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				</div>
 				<div className='flex w-full flex-wrap items-center justify-between gap-8 px-8'>
 					{varianteCursoFields.map(f =>
-						f.inputType === "checkbox" ? (
+						f.name === "costoPorCantidadMateria" ? (
+							<FormField
+								control={form.control}
+								name={f.name}
+								key={f.name}
+								defaultValue={false}
+								rules={{
+									validate: costoPorCantidadMateria => {
+										return !(!costoPorMateria && costoPorCantidadMateria);
+									},
+								}}
+								render={({ field }) => {
+									return (
+										<FormItem
+											className='flex h-16 w-60 items-center justify-between gap-4 space-y-0 rounded-2xl border-2 p-4'
+											style={{
+												boxShadow: "0 0 20px rgba(67, 84, 234, .7)",
+											}}
+										>
+											<FormLabel className='col-span-3 text-start'>
+												{f.label}
+											</FormLabel>
+											<FormControl>
+												<Input
+													{...field}
+													value={
+														typeof field.value === "boolean"
+															? undefined
+															: field.value || undefined
+													}
+													disabled={!costoPorMateria}
+													type={f.inputType}
+												/>
+											</FormControl>
+										</FormItem>
+									);
+								}}
+							/>
+						) : f.inputType === "checkbox" ? (
 							<FormField
 								control={form.control}
 								name={f.name}
@@ -257,7 +303,12 @@ export const varianteCursoFields = [
 		inputType: "checkbox",
 		label: "Costo por Materia",
 	},
-	{ name: "verificarSesion", inputType: "checkbox", label: "Verifica Sesion" },
+	{
+		name: "costoPorCantidadMateria",
+		inputType: "checkbox",
+		label: "Costo por cant. Materia",
+	},
+	{ name: "verificaSesion", inputType: "checkbox", label: "Verifica Sesion" },
 	{
 		name: "verificarEdad",
 		inputType: "checkbox",
@@ -274,11 +325,6 @@ export const varianteCursoFields = [
 		label: "Pasar el Record",
 	},
 	{
-		name: "aprobarCursoPrevio",
-		inputType: "checkbox",
-		label: "Aprobar curso Previo",
-	},
-	{
 		name: "edadMinima",
 		inputType: "number",
 		label: "Edad minima",
@@ -293,4 +339,4 @@ export const varianteCursoFields = [
 		inputType: "custom-text-area",
 		label: "Descripcion",
 	},
-] satisfies Field<keyof CreateVarianteCursoSchema>[];
+] satisfies Field<keyof z.infer<typeof createVarianteCursoSchema>>[];

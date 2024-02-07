@@ -1,4 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import { FileSignature, X } from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -7,16 +8,13 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import { FileSignature, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/core/routes";
-import { getParamName } from "@/utils";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
 export type AsignaturaTableItem = {
 	id: string;
 	nombre: string;
 	codigo: string | null;
-	isUsed: boolean; // si esta ligada a una malla
+	enUso: boolean; // si esta ligada a una malla
 };
 
 const helper = createColumnHelper<AsignaturaTableItem>();
@@ -29,7 +27,7 @@ export const columns = [
 	helper.accessor("codigo", {
 		header: "Codigo",
 	}),
-	helper.accessor("isUsed", {
+	helper.accessor("enUso", {
 		header: "Uso",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
@@ -37,15 +35,21 @@ export const columns = [
 		id: "actions",
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
-			const isUsed = row.getValue("isUsed") as string;
+			const enUso = row.getValue("enUso") as string;
 
-			return <Actions asignaturaId={id} showDelete={!isUsed} />;
+			return <Actions asignaturaId={id} showDelete={!enUso} />;
 		},
 	}),
 ];
 
+export const asignaturasParams = {
+	update: "actualizarAsignatura",
+	delete: "eliminarAsignatura",
+};
+
 function Actions(props: { asignaturaId: string; showDelete: boolean }) {
-	const router = useRouter();
+	const { replaceSet } = useMutateSearchParams();
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -54,13 +58,7 @@ function Actions(props: { asignaturaId: string; showDelete: boolean }) {
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
 					onClick={() =>
-						router.replace(
-							ROUTES.asignatura +
-								`?${getParamName({
-									action: "actualizar",
-									module: "Asignatura",
-								})}=${props.asignaturaId}`,
-						)
+						replaceSet(asignaturasParams.update, props.asignaturaId)
 					}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
@@ -69,13 +67,7 @@ function Actions(props: { asignaturaId: string; showDelete: boolean }) {
 				{props.showDelete && (
 					<DropdownMenuItem
 						onClick={() =>
-							router.replace(
-								ROUTES.asignatura +
-									`?${getParamName({
-										action: "eliminar",
-										module: "Asignatura",
-									})}=${props.asignaturaId}`,
-							)
+							replaceSet(asignaturasParams.delete, props.asignaturaId)
 						}
 					>
 						<X className='mr-2 h-4 w-4' />

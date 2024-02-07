@@ -40,7 +40,7 @@ export default function CamposFormacionTable({
 }
 
 const schema = z.object<
-	ZodInferSchema<Parameters<CampoFormacionClass["update"]>[0]["campoFormacion"]>
+	ZodInferSchema<Parameters<CampoFormacionClass["update"]>[0]["data"]>
 >({
 	nombre: z.string().optional(),
 });
@@ -58,7 +58,7 @@ export function UpdateCampoFormacion({
 			id: string;
 			data: z.infer<typeof schema>;
 		}) => {
-			return API.camposFormacion.update({ id, campoFormacion: data });
+			return API.camposFormacion.update({ id, data });
 		},
 		onError: console.error,
 		onSuccess: response => {

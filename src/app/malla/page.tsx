@@ -1,5 +1,6 @@
 import React from "react";
 
+import { APIserver } from "@/core/api-server";
 import AddMalla from "./add-malla";
 import AddArea from "./areas-conocimiento/add-area";
 import AreasConocimientoTableServer from "./areas-conocimiento/table/server";
@@ -7,12 +8,13 @@ import AddCampo from "./campos-formacion/add-campo";
 import CamposFormacionTableServer from "./campos-formacion/table/server";
 import AddEje from "./ejes-formativos/add-eje";
 import EjesFormativosTableServer from "./ejes-formativos/table/server";
-import MallaCurricularTable from "./table";
+import SelectPrograma from "./select-programa";
+import MallaCurricularTableServer from "./table/server";
 
 export const dynamic = "force-dynamic";
 
 type Context = {
-	searchParams: { [key: string]: string | string[] | undefined };
+	searchParams: { [key: string]: string | undefined };
 };
 
 export default async function MallaPage({ searchParams }: Context) {
@@ -57,11 +59,19 @@ export default async function MallaPage({ searchParams }: Context) {
 		);
 	}
 
+	const programaId = searchParams.programaId;
+
+	const programas = await APIserver.programas.getMany();
+
 	return (
 		<>
 			<div className='mt-4'>
-				<AddMalla />
-				<MallaCurricularTable />
+				<AddMalla programaId={programaId} />
+				<SelectPrograma
+					programas={programas.data.map(p => ({ id: p.id, nombre: p.nombre }))}
+					programaId={programaId}
+				/>
+				<MallaCurricularTableServer programaId={programaId} />
 			</div>
 		</>
 	);

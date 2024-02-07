@@ -1,6 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TipoInstitucion } from "@prisma/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
@@ -26,13 +25,6 @@ import {
 	FormMessage,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
 import { ROUTES } from "@/core/routes";
 import { institucionParams } from "../add-institucion";
@@ -44,7 +36,7 @@ export default function InstitucionTable() {
 	const { data, isLoading } = useQuery({
 		queryKey: INSTITUCION_KEYS.lists(),
 		queryFn: async () => {
-			const data = await API.instituciones.getMany();
+			const data = await API.sedes.getMany();
 
 			return data.data.map(({ createdAt: _, ...rest }) => ({
 				...rest,
@@ -74,7 +66,6 @@ export default function InstitucionTable() {
 
 const createInstitucionSchema = z.object({
 	nombre: z.string(),
-	tipo: z.nativeEnum(TipoInstitucion),
 	pais: z.string(),
 	provincia: z.string(),
 	canton: z.string(),
@@ -92,7 +83,7 @@ function UpdateInstitucionTableModal(props: {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async ({ data, id }: { data: Data; id: string }) => {
-			return API.instituciones.update({ institucion: data, id });
+			return API.sedes.update({ data: data, id });
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -167,7 +158,7 @@ function UpdateInstitucionTableModal(props: {
 								</FormItem>
 							)}
 						/>
-						<FormField
+						{/* <FormField
 							control={form.control}
 							name='tipo'
 							defaultValue={selectedInstitucion.tipo}
@@ -196,7 +187,7 @@ function UpdateInstitucionTableModal(props: {
 									<FormMessage />
 								</FormItem>
 							)}
-						/>
+						/> */}
 						<FormField
 							control={form.control}
 							name='pais'
@@ -289,7 +280,7 @@ function DeleteInstitucionModal(props: {
 	const queryClient = useQueryClient();
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async (id: string) => {
-			return API.instituciones.deleteById(id);
+			return API.sedes.deleteById(id);
 		},
 		onError: console.error,
 		onSuccess: response => {
