@@ -12,6 +12,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { ROUTES } from "@/core/routes";
+import { mallaParams } from "../add-malla";
 
 export type MallaCurricularTableItem = Omit<
 	MallaCurricular,
@@ -118,7 +119,7 @@ function Actions(props: { mallaId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-				// onClick={() => onClick(cursosParams.update, props.cursoId)}
+					onClick={() => {mallaParams.update, props.mallaId}}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>

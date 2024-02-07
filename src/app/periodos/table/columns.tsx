@@ -11,29 +11,11 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import { ROUTES } from "@/core/routes";
-
-export type MallaCurricularTableItem = Omit<
-	MallaCurricular,
-	"createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	credits: number;
-	coursesCount: number;
-	totalHours: number;
-	coursesHours: number;
-	approved: {
-		fechaAprobacion: Date;
-		fechaLimiteVigencia: Date;
-	};
-	isCurrent: boolean;
-	isUsed: boolean;
-	modulesCount: number;
-	onlineCoursesCount: number;
-	studentsUsingCount: number;
-};
+import { cursosParams } from "@/app/curso/add-curso";
+import { periodoParams } from "../addPeriodo";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
 const helper = createColumnHelper<any>();
-
 export const columns = [
 	helper.accessor("id", {}),
 	helper.accessor("nombreTipoCorte", {
@@ -41,27 +23,9 @@ export const columns = [
 	}),
 	helper.accessor("inicio", {
 		header: "inicio",
-		/* cell: ({ cell }) => {
-			const { fechaAprobacion, fechaLimiteVigencia } = cell.getValue();
-			return (
-				<>
-					<div>{format(fechaAprobacion, "dd/LL/yyyy")}</div>
-					<div>{format(fechaLimiteVigencia, "dd/LL/yyyy")}</div>
-				</>
-			);
-		}, */
 	}),
 	helper.accessor("fin", {
 		header: "Fin",
-		/* cell: ({ cell }) => {
-			const { fechaAprobacion, fechaLimiteVigencia } = cell.getValue();
-			return (
-				<>
-					<div>{format(fechaAprobacion, "dd/LL/yyyy")}</div>
-					<div>{format(fechaLimiteVigencia, "dd/LL/yyyy")}</div>
-				</>
-			);
-		}, */
 	}),
 	helper.accessor("inscritos", {
 		header: "Inscritos",
@@ -108,18 +72,22 @@ export const columns = [
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.accessor("AprobPlanif", {
-		header: "Notas por coordinaciòn",
+		header: "Aprob. Planificaciòn",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.accessor("NotasCoord", {
-		header: "Automat. extraordinaria",
+		header: "Notas por coordinaciòn",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.accessor("AutoExtraordinaria", {
-		header: "Automat. con arrastre",
+		header: "Automat. extraordinaria",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.accessor("AutoArrastre", {
+		header: "Automat. con arrastre",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+	}),
+	helper.accessor("AutoSecMatriculas", {
 		header: "Automat. 2das matriculas",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
@@ -160,13 +128,14 @@ export const columns = [
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
 
-			return <Actions mallaId={id} />;
+			return <Actions periodoId={id} />;
 		},
 	}),
 ];
 
-function Actions(props: { mallaId: string }) {
+function Actions(props: { periodoId: string }) {
 	const router = useRouter();
+	const { replaceSet } = useMutateSearchParams();
 
 	return (
 		<DropdownMenu>
@@ -175,32 +144,50 @@ function Actions(props: { mallaId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-				// onClick={() => onClick(cursosParams.update, props.cursoId)}
+					onClick={() => replaceSet(periodoParams.update, props.periodoId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() =>
-						router.push(ROUTES.malla.asignaturasEnMalla(props.mallaId))
-					}
-				>
-					<GripHorizontal className='mr-2 h-4 w-4' />
-					<span>Asignaturas</span>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Traducciòn</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() =>
-						router.push(ROUTES.malla.lugaresEjecucion(props.mallaId))
-					}
-				>
-					<GripHorizontal className='mr-2 h-4 w-4' />
-					<span>Lugares de ejecucion</span>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Tipos de actividades distributivo</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() => router.push(ROUTES.malla.modulos(props.mallaId))}
-				>
-					<GripHorizontal className='mr-2 h-4 w-4' />
-					<span>Modulos</span>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Formato de costos</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Cronograma matriculas</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Requisitos matricula</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Subperiodos</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Importar planificaciòn</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Habilitar matriculas</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Matriculas no legalizadas</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Actualizar calificaciones</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

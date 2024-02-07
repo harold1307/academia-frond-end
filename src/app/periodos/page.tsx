@@ -11,7 +11,7 @@ type Context = {
 export default async function MallaPage({ searchParams }: Context) {
 	const seccion = searchParams.seccion;
 
-	if (seccion === "ejesFormativos") {
+	if (seccion === "cortes") {
 		return (
 			<>
 				<div className='mt-4'>

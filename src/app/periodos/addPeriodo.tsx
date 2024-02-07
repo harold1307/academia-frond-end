@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TipoDuracion, type MallaCurricular } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusCircle } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -45,11 +45,12 @@ import {
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
 
-export const mallaParams = {
-	update: "actualizarMalla",
+export const periodoParams = {
+	add: "agregarPeriodo",
+	update: "actualizarPeriodo",
 };
 
-type CreateMallaCurricularInput = Omit<
+type CreatePeriodoInput = Omit<
 	MallaCurricular,
 	| "id"
 	| "createdAt"
@@ -62,7 +63,7 @@ type CreateMallaCurricularInput = Omit<
 	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
 };
 
-type CreateMallaCurricularOutput = Omit<
+type CreatePeriodoOutput = Omit<
 	MallaCurricular,
 	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
 > & {
@@ -70,46 +71,19 @@ type CreateMallaCurricularOutput = Omit<
 	fechaLimiteVigencia: string;
 };
 
-const createMallaSchema: z.ZodType<
-	CreateMallaCurricularOutput,
+const createPeriodoSchema: z.ZodType<
+	CreatePeriodoOutput,
 	z.ZodTypeDef,
-	CreateMallaCurricularInput
-> = z.object({
-	modalidadId: z.string(),
-	tituloObtenido: z.string(),
-	tipoDuracion: z.nativeEnum(TipoDuracion),
-	fechaAprobacion: z.date().transform(date => date.toISOString()),
-	fechaLimiteVigencia: z.date().transform(date => date.toISOString()),
-	niveles: z.number(),
-	maximoMateriasMatricula: z.number(),
-	cantidadLibreOpcionEgreso: z.number(),
-	cantidadOptativasEgreso: z.number(),
-	cantidadArrastres: z.number(),
-	practicasLigadasMaterias: z.boolean(),
-	horasPractica: z.number(),
-	registroPracticasDesde: z
-		.enum(NIVELES_PREFIXES)
-		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
-	horasVinculacion: z.number(),
-	registroVinculacionDesde: z
-		.enum(NIVELES_PREFIXES)
-		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
-	registroProyectosDesde: z
-		.enum(NIVELES_PREFIXES)
-		.transform(v => NIVELES_PREFIXES.findIndex(i => i === v) + 1),
-	usaNivelacion: z.boolean(),
-	plantillasSilabo: z.boolean(),
-	perfilEgreso: z.string(),
-	observaciones: z.string(),
-});
+	CreatePeriodoInput
+> = z.object({});
 
 export default function AddPeriodo() {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: CreateMallaCurricularOutput) => {
-			return API.mallas.create(data);
+		mutationFn: async (data: createPeriodoSchema) => {
+			return API.periodos.create(data);
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -119,15 +93,9 @@ export default function AddPeriodo() {
 		},
 	});
 
-	const form = useForm<CreateMallaCurricularOutput>({
-		resolver: zodResolver(createMallaSchema),
-		defaultValues: {
-			practicasLigadasMaterias: false,
-			plantillasSilabo: false,
-			usaNivelacion: false,
-			perfilEgreso: "",
-			observaciones: "",
-		},
+	const form = useForm({
+		resolver: zodResolver(createPeriodoSchema),
+		defaultValues: {},
 		disabled: isSubmitting,
 		shouldUnregister: true,
 	});
@@ -137,7 +105,8 @@ export default function AddPeriodo() {
 			<h1 className='text-2xl font-semibold'>Adicionar Periodo</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant='success'>Agregar</Button>
+					<button className="border border-slate-400 rounded-md p-2 flex flex-row gap-2 items-center hover:bg-slate-200 hover:text-slate-800">
+						<PlusCircle /> Agregar</button>
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
@@ -243,7 +212,7 @@ export default function AddPeriodo() {
 																</SelectTrigger>
 															</FormControl>
 															<SelectContent>
-																{options.map(o =>
+																{options?.map(o =>
 																	typeof o === "string" ? (
 																		<SelectItem value={o} key={o}>
 																			{o}
@@ -344,93 +313,197 @@ export default function AddPeriodo() {
 
 const fields = [
 	{
-		name: "modalidadId",
-		inputType: "custom-select",
-		options: ["Modalidad1", "Modalidad2"],
-		placeholder: "------------",
-		label: "Modalidad",
+		name: "Nombre",
+		inputType: "text",
+		placeholder: "",
+		label: "Nombre",
 	},
-	{ name: "tituloObtenido", inputType: "text", label: "Titulo obtenido" },
+	{ name: "Inicio", inputType: "custom-date", label: "Inicio" },
+	{ name: "Fin", inputType: "custom-date", label: "Fin" },
 	{
-		name: "tipoDuracion",
-		inputType: "custom-select",
-		placeholder: "------------",
-		options: Object.keys(TipoDuracion),
-		label: "Tipo duracion",
-	},
-	{
-		name: "fechaAprobacion",
-		inputType: "custom-date",
-		label: "Fecha de aprobacion",
-	},
-	{
-		name: "fechaLimiteVigencia",
-		inputType: "custom-date",
-		label: "Fecha de limite de vigencia",
-	},
-	{ name: "niveles", inputType: "number", label: "Niveles de la malla" },
-	{
-		name: "maximoMateriasMatricula",
+		name: "inscritos",
 		inputType: "number",
-		label: "Maximo de materias en matricula",
+		placeholder: "",
+		label: "Inscritos",
 	},
 	{
-		name: "cantidadLibreOpcionEgreso",
+		name: "Materias",
 		inputType: "number",
-		label: "Cantidad de libre opcion para egresar",
+		placeholder: "",
+		label: "Materias",
 	},
 	{
-		name: "cantidadOptativasEgreso",
+		name: "Matriculas",
 		inputType: "number",
-		label: "Cantidad de optativas para egresar",
+		placeholder: "",
+		label: "Matriculas",
 	},
 	{
-		name: "cantidadArrastres",
-		inputType: "number",
-		label: "Cantidad de arrastres",
-	},
-	{
-		name: "practicasLigadasMaterias",
-		inputType: "checkbox",
-		label: "Practicas ligadas a materias",
-	},
-	{ name: "horasPractica", inputType: "number", label: "Horas practica" },
-	{
-		name: "registroPracticasDesde",
+		name: "fechaMatriculas",
 		inputType: "custom-select",
-		placeholder: "------------",
-		options: "niveles",
-		label: "Registro de practicas desde",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Fecha de Matriculas",
 	},
-	{ name: "horasVinculacion", inputType: "number", label: "Horas vinculacion" },
 	{
-		name: "registroVinculacionDesde",
+		name: "matriculacion",
 		inputType: "custom-select",
-		placeholder: "------------",
-		options: "niveles",
-		label: "Registro de vinculacion desde",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Matriculaciòn",
 	},
 	{
-		name: "registroProyectosDesde",
+		name: "estrucuraNivel",
 		inputType: "custom-select",
-		placeholder: "------------",
-		options: "niveles",
-		label: "Registro de proyectos desde",
-	},
-	{ name: "usaNivelacion", inputType: "checkbox", label: "Usa nivelacion" },
-	{
-		name: "plantillasSilabo",
-		inputType: "checkbox",
-		label: "Plantillas de silabo",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Estructura por nivel",
 	},
 	{
-		name: "perfilEgreso",
-		inputType: "custom-text-area",
-		label: "Perfil de egreso",
+		name: "nivelacion",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Nivelaciòn",
 	},
 	{
-		name: "observaciones",
-		inputType: "custom-text-area",
-		label: "Observaciones",
+		name: "legalizarMatricula",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Legalizar Matricula",
 	},
-] satisfies Field<keyof CreateMallaCurricularInput>[];
+	{
+		name: "legalizacionPago",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Legalizaciòn por pago",
+	},
+	{
+		name: "cerrado",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Cerrado",
+	},
+	{
+		name: "vigente",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Vigente",
+	},
+	{
+		name: "planifCargaHoraria",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Planif. carga horaria",
+	},
+	{
+		name: "planifProfObl",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Planif. profesores obl.",
+	},
+	{
+		name: "planifProfTotal",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Planif. profesores total",
+	},
+	{
+		name: "AprobPlanif",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Aprob. Planificaciòn",
+	},
+	{
+		name: "NotasCoord",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Notas por coordinaciòn",
+	},
+	{
+		name: "AutoExtraordinaria",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Automat. extraordinaria",
+	},
+	{
+		name: "AutoArrastre",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Automat. con arrastre",
+	},
+	{
+		name: "AutoSecMatriculas",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Automat. 2das matriculas",
+	},
+	{
+		name: "matricula",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "# Matricula",
+	},
+	{
+		name: "AutoMatriculas",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "# matricula automatica",
+	},
+	{
+		name: "matriculaLegal",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "# matricula al legalizar",
+	},
+	{
+		name: "Secuencia",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Secuencia",
+	},
+	{
+		name: "EvaluacionDocente",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Evaluaciòn al docente",
+	},
+	{
+		name: "CostoSeccion",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Costos por sesiòn",
+	},
+	{
+		name: "PlanCostos",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Plan de costos",
+	},
+	{
+		name: "Activo",
+		inputType: "custom-select",
+		placeholder: "-----------",
+		options: ["si", "no"],
+		label: "Activo",
+	},
+];
