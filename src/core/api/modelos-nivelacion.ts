@@ -1,13 +1,9 @@
 import type { ModeloNivelacion } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type ModeloNivelacionFromAPI = ReplaceDateToString<
 	ModeloNivelacion & {
@@ -43,12 +39,15 @@ export const modeloNivelacionSchema = z
 	.strict();
 
 export class ModeloNivelacionClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(
 		params: UpdateModeloNivelacionParams,
 	): Promise<APIResponse<ModeloNivelacionFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modeloNivelacionSchema,
 				message: z.string(),
@@ -85,7 +84,7 @@ export class ModeloNivelacionClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<ModeloNivelacionFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modeloNivelacionSchema.array(),
 				message: z.string(),
@@ -99,7 +98,7 @@ export class ModeloNivelacionClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<ModeloNivelacionFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modeloNivelacionSchema.nullable(),
 				message: z.string(),

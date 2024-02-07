@@ -1,13 +1,9 @@
 import type { PerfilPractica } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type PerfilPracticaFromAPI = ReplaceDateToString<
 	PerfilPractica & {
@@ -40,13 +36,16 @@ export const perfilPracticaSchema = z
 	.strict();
 
 export class PerfilPracticaClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		id,
 		data,
 	}: UpdatePerfilPracticaParams): Promise<APIResponse<PerfilPracticaFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: perfilPracticaSchema,
 				message: z.string(),
@@ -83,7 +82,7 @@ export class PerfilPracticaClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<PerfilPracticaFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: perfilPracticaSchema.array(),
 				message: z.string(),
@@ -97,7 +96,7 @@ export class PerfilPracticaClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<PerfilPracticaFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: perfilPracticaSchema.nullable(),
 				message: z.string(),

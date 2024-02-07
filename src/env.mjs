@@ -14,6 +14,7 @@ export const env = createEnv({
     AZURE_AD_CLIENT_SECRET: z.string(),
     NEXTAUTH_SECRET: z.string(),
     NEXTAUTH_URL: z.string(),
+    SKIP_FETCH_PARSE: z.boolean({ coerce: true }).optional(),
   },
 
   /**
@@ -25,6 +26,7 @@ export const env = createEnv({
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
     NEXT_PUBLIC_API_URL: z.string(),
     NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID: z.string(),
+    NEXT_PUBLIC_SKIP_FETCH_PARSE: z.boolean({ coerce: true }).optional(),
   },
 
   /**
@@ -41,7 +43,9 @@ export const env = createEnv({
     AZURE_AD_CLIENT_SECRET: process.env.AZURE_AD_CLIENT_SECRET,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    SKIP_FETCH_PARSE: process.env.SKIP_FETCH_PARSE,
 
+    NEXT_PUBLIC_SKIP_FETCH_PARSE: process.env.NEXT_PUBLIC_SKIP_FETCH_PARSE,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID: process.env.NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID,
   },

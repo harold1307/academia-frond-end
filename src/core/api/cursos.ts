@@ -1,13 +1,9 @@
 import type { Curso } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import {
 	varianteCursoSchema,
 	type VarianteCursoFromAPI,
@@ -53,7 +49,10 @@ const schemaWithVariantes = cursoSchema
 	.strict();
 
 export class CursoClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
@@ -61,7 +60,7 @@ export class CursoClass {
 			Omit<CursoFromAPI, "id" | "createdAt" | "updatedAt" | "variantesCount">
 		>;
 	}): Promise<APIResponse<CursoFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: cursoSchema,
 				message: z.string(),
@@ -97,7 +96,7 @@ export class CursoClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<CursoFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: cursoSchema.array(),
 				message: z.string(),
@@ -109,7 +108,7 @@ export class CursoClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<CursoFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: cursoSchema.nullable(),
 				message: z.string(),
@@ -136,7 +135,7 @@ export class CursoClass {
 	async getCursoWithVariantesByCursoId(
 		cursoId: string,
 	): Promise<APIResponse<CursoWithVariantes>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: schemaWithVariantes,
 				message: z.string(),

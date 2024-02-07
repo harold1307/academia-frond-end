@@ -1,13 +1,9 @@
 import type { Sede } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateCoordinacion } from "./coordinaciones";
 
 export type SedeFromAPI = ReplaceDateToString<
@@ -36,7 +32,10 @@ export const sedeSchema = z
 	.strict();
 
 export class SedeClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
@@ -44,7 +43,7 @@ export class SedeClass {
 			Omit<SedeFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
 		>;
 	}): Promise<APIResponse<SedeFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object<ZodInferSchema<APIResponse<SedeFromAPI>>>({
 				data: sedeSchema,
 				message: z.string(),
@@ -80,7 +79,7 @@ export class SedeClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<SedeFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object<ZodInferSchema<APIResponse<SedeFromAPI[]>>>({
 				data: sedeSchema.array(),
 				message: z.string(),
@@ -92,7 +91,7 @@ export class SedeClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<SedeFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object<ZodInferSchema<APIResponse<SedeFromAPI | null>>>({
 				data: sedeSchema.nullable(),
 				message: z.string(),
