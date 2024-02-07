@@ -16,6 +16,7 @@ export default async function MallaPage({ searchParams }: Context) {
 			<>
 				<div className='mt-4'>
 					<React.Suspense fallback={"Cargando tabla..."}>
+						Cortes
 					</React.Suspense>
 				</div>
 			</>

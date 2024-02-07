@@ -1,8 +1,13 @@
-import type { MallaCurricular } from "@prisma/client";
 import { createColumnHelper } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { FileSignature, GripHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
+import {
+	Banknote,
+	Clock3,
+	FileSignature,
+	List,
+	RefreshCw,
+	Repeat2,
+	UnlockKeyhole,
+} from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -11,9 +16,10 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import { cursosParams } from "@/app/curso/add-curso";
 import { periodoParams } from "../addPeriodo";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "@/core/routes";
 
 const helper = createColumnHelper<any>();
 export const columns = [
@@ -134,8 +140,8 @@ export const columns = [
 ];
 
 function Actions(props: { periodoId: string }) {
-	const router = useRouter();
 	const { replaceSet } = useMutateSearchParams();
+	const router = useRouter();
 
 	return (
 		<DropdownMenu>
@@ -149,44 +155,58 @@ function Actions(props: { periodoId: string }) {
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+				<DropdownMenuItem
+					onClick={() =>
+						router.push(ROUTES.periodo.traduccion(props.periodoId))
+					}
+				>
+					<List className='mr-2 h-4 w-4' />
 					<span>Traducciòn</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+				<DropdownMenuItem
+					onClick={() => replaceSet(periodoParams.actividades, props.periodoId)}
+				>
+					<FileSignature className='mr-2 h-5 w-5' />
 					<span>Tipos de actividades distributivo</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+				<DropdownMenuItem
+					onClick={() => replaceSet(periodoParams.costos, props.periodoId)}
+				>
+					<Banknote className='mr-2 h-4 w-4' />
 					<span>Formato de costos</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+					<Clock3 className='mr-2 h-4 w-4' />
 					<span>Cronograma matriculas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+					<List className='mr-2 h-4 w-4' />
 					<span>Requisitos matricula</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+					<List className='mr-2 h-4 w-4' />
 					<span>Subperiodos</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+				<DropdownMenuItem
+					onClick={() => replaceSet(periodoParams.importar, props.periodoId)}
+				>
+					<Repeat2 className='mr-2 h-4 w-4' />
 					<span>Importar planificaciòn</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+				<DropdownMenuItem
+					onClick={() => replaceSet(periodoParams.habilitar, props.periodoId)}
+				>
+					<UnlockKeyhole className='mr-2 h-4 w-4' />
 					<span>Habilitar matriculas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+					<Banknote className='mr-2 h-4 w-4' />
 					<span>Matriculas no legalizadas</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<FileSignature className='mr-2 h-4 w-4' />
+				<DropdownMenuItem
+					onClick={() => replaceSet(periodoParams.actualizarCalif, props.periodoId)}
+				>
+					<RefreshCw className='mr-2 h-4 w-4' />
 					<span>Actualizar calificaciones</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>

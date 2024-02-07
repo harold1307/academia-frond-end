@@ -1,13 +1,9 @@
 import type { ProyectoIntegrador } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateCampoProyectoIntegrador } from "./campos-proyectos-integradores";
 
 export type ProyectoIntegradorFromAPI = ReplaceDateToString<
@@ -45,7 +41,10 @@ export const proyectoProyectoIntegradorSchema = z
 	.strict();
 
 export class ProyectoIntegradorClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		proyectoIntegradorId,
@@ -53,7 +52,7 @@ export class ProyectoIntegradorClass {
 	}: UpdateProyectoIntegradorParams): Promise<
 		APIResponse<ProyectoIntegradorFromAPI>
 	> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: proyectoProyectoIntegradorSchema,
 				message: z.string(),
@@ -90,7 +89,7 @@ export class ProyectoIntegradorClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<ProyectoIntegradorFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: proyectoProyectoIntegradorSchema.array(),
 				message: z.string(),
@@ -104,7 +103,7 @@ export class ProyectoIntegradorClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<ProyectoIntegradorFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: proyectoProyectoIntegradorSchema.nullable(),
 				message: z.string(),

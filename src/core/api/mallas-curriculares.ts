@@ -8,18 +8,14 @@ import type {
 	PracticaPreProfesionalEnMalla,
 } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type {
 	NonNullableObject,
 	ReplaceDateToString,
 	ZodInferSchema,
 } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import {
 	areaConocimientoSchema,
 	type AreaConocimientoFromAPI,
@@ -379,13 +375,16 @@ const mallaWithLugaresEjecucion: z.ZodType<MallaCurricularWithLugaresEjecucionFr
 		.strict();
 
 export class MallaCurricularClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
 		data: UpdateMallaData;
 	}): Promise<APIResponse<MallaCurricularFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema,
 				message: z.string(),
@@ -414,7 +413,7 @@ export class MallaCurricularClass {
 			searchParams.append(key, `${value}`);
 		});
 
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema.array(),
 				message: z.string(),
@@ -428,7 +427,7 @@ export class MallaCurricularClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<MallaCurricularFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema.nullable(),
 				message: z.string(),
@@ -517,7 +516,7 @@ export class MallaCurricularClass {
 			searchParams.set(f, `${v}`);
 		});
 
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema.nullable(),
 				message: z.string(),
@@ -555,7 +554,7 @@ export class MallaCurricularClass {
 	async getMallaWithLugaresEjecucionByMallaId(
 		id: string,
 	): Promise<APIResponse<MallaCurricularWithLugaresEjecucionFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaWithLugaresEjecucion.nullable(),
 				message: z.string(),

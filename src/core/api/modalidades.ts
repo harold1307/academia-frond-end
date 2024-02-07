@@ -1,13 +1,9 @@
 import type { Modalidad } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type ModalidadFromAPI = ReplaceDateToString<
 	Modalidad & {
@@ -39,13 +35,16 @@ const modalidadSchema = z
 
 // el ID de las modalidades son el nombre mismo
 export class ModalidadClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		data,
 		id,
 	}: UpdateModalidadParams): Promise<APIResponse<ModalidadFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modalidadSchema,
 				message: z.string(),
@@ -83,7 +82,7 @@ export class ModalidadClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<ModalidadFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modalidadSchema.array(),
 				message: z.string(),
@@ -95,7 +94,7 @@ export class ModalidadClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<ModalidadFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: modalidadSchema.nullable(),
 				message: z.string(),

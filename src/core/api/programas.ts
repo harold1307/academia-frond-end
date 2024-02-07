@@ -1,13 +1,9 @@
 import type { Programa } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import {
 	detalleNivelTitulacionSchema,
 	type DetalleNivelTitulacionFromAPI,
@@ -58,13 +54,16 @@ const programaSchema = z
 
 // el ID de los programas son el nombre mismo
 export class ProgramaClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		data,
 		id,
 	}: UpdateProgramaParams): Promise<APIResponse<ProgramaFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: programaSchema,
 				message: z.string(),
@@ -100,7 +99,7 @@ export class ProgramaClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<ProgramaFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: programaSchema.array(),
 				message: z.string(),
@@ -112,7 +111,7 @@ export class ProgramaClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<ProgramaFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: programaSchema.nullable(),
 				message: z.string(),

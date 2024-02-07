@@ -48,6 +48,11 @@ import { Textarea } from "../_components/ui/textarea";
 export const periodoParams = {
 	add: "agregarPeriodo",
 	update: "actualizarPeriodo",
+	actividades: "actividadesHabilitadas",
+	costos: "formatoCostos",
+	habilitar: "habilitarMatricula",
+	importar: "importarPlanificacion",
+	actualizarCalif: "actualizarCalificaciones"
 } as const;
 
 type CreatePeriodoInput = Omit<
