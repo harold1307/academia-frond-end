@@ -34,23 +34,23 @@ import { API } from "@/core/api-client";
 import { cn } from "@/utils";
 import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
 import { useRouter } from "next/navigation";
-import { Button } from "@/app/_components/ui/button";
-import { Calendar } from "@/app/_components/ui/calendar";
-import { Checkbox } from "@/app/_components/ui/checkbox";
-import { Input } from "@/app/_components/ui/input";
+import { Button } from "../../../_components/ui/button";
+import { Calendar } from "../../../_components/ui/calendar";
+import { Checkbox } from "../../../_components/ui/checkbox";
+import { Input } from "../../../_components/ui/input";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-} from "@/app/_components/ui/popover";
-import { Textarea } from "@/app/_components/ui/textarea";
+} from "../../../_components/ui/popover";
+import { Textarea } from "../../../_components/ui/textarea";
 
-export const cortesParams = {
+export const subperiodoParams = {
 	add: "agregarCorte",
 	update: "actualizarCorte",
 } as const;
 
-type CreateCortesInput = Omit<
+type CreateReqInput = Omit<
 	MallaCurricular,
 	| "id"
 	| "createdAt"
@@ -63,7 +63,7 @@ type CreateCortesInput = Omit<
 	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
 };
 
-type CreateCortesOutput = Omit<
+type CreateReqOutput = Omit<
 	MallaCurricular,
 	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
 > & {
@@ -71,18 +71,18 @@ type CreateCortesOutput = Omit<
 	fechaLimiteVigencia: string;
 };
 
-const createCortesSchema: z.ZodType<
-	CreateCortesOutput,
+const createReqSchema: z.ZodType<
+	CreateReqOutput,
 	z.ZodTypeDef,
-	CreateCortesInput
+	CreateReqInput
 > = z.object({});
 
-export default function AddCortes() {
+export default function AddSubperiodo() {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: createCortesSchema) => {
+		mutationFn: async (data: createReqSchema) => {
 			return API.periodos.create(data);
 		},
 		onError: console.error,
@@ -94,15 +94,15 @@ export default function AddCortes() {
 	});
 
 	const form = useForm({
-		resolver: zodResolver(createCortesSchema),
+		resolver: zodResolver(createReqSchema),
 		defaultValues: {},
 		disabled: isSubmitting,
 		shouldUnregister: true,
 	});
 
 	return (
-		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar corte</h1>
+		<section className='my-4'>
+			<h1 className='my-2 text-2xl font-semibold'>Subperiodos</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<button className='flex flex-row items-center gap-2 rounded-md border border-slate-400 p-2 hover:bg-slate-200 hover:text-slate-800'>
@@ -111,7 +111,7 @@ export default function AddCortes() {
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar periodo</DialogTitle>
+						<DialogTitle>Adicionar subperiodo</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form
@@ -320,10 +320,9 @@ const fields = [
 		label: "Nombre",
 	},
 	{
-		name: "inscritos",
-		inputType: "number",
-		placeholder: "",
-		label: "Inscritos",
+		name: "inicio",
+		inputType: "custom-date",
+		label: "Fecha inicio",
 	},
-	{ name: "matriculas", inputType: "number", label: "Matriculas" },
+	{ name: "fin", inputType: "custom-date", label: "Fecha fin" },
 ];

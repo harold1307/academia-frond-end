@@ -7,19 +7,12 @@ import AddReq from "./addReq";
 export const dynamic = "force-dynamic";
 
 export default function RequisitoPage({ params }: any) {
-	//const traduccion = await APIserver.periodos.getMany();
-	const malla = MuFieldReq.filter(res => res.id == params.periodoId);
-
-	if (!malla) {
-		console.log("Malla no existe");
-		return notFound();
-	}
 	return (
 		<>
 			<div className='mt-4'>
 				<React.Suspense fallback={"Cargando tabla..."}>
-                    <AddReq />
-					<RequisitoTable mallas={malla} />
+					<AddReq />
+					<RequisitoTable mallas={MuFieldReq} />
 				</React.Suspense>
 			</div>
 		</>

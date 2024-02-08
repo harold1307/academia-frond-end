@@ -1,5 +1,3 @@
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
 import {
 	Dialog,
 	DialogContent,
@@ -37,24 +35,26 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import React from "react";
-import { cronogramaParams } from "../addCronograma";
 import { API } from "@/core/api-client";
 import { ROUTES } from "@/core/routes";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { cn } from "@/utils";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { subperiodoParams } from "../add-subperiodo";
 
-export default function CronogramaTable({ mallas }) {
+export default function SubperiodosTable({ mallas }) {
 	return (
 		<section>
 			<DataTable columns={columns} data={mallas} />
-			<UpdateCronograma cronograma={mallas} />
+			<UpdateSubperiodo requisito={mallas} />
 		</section>
 	);
 }
 
-function UpdateCronograma(props) {
+function UpdateSubperiodo(props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -70,7 +70,7 @@ function UpdateCronograma(props) {
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			router.replace(ROUTES.periodo.cronograma(props.id));
+			router.replace(ROUTES.periodo.subperiodos(props.id));
 			router.refresh();
 		},
 	});
@@ -83,18 +83,18 @@ function UpdateCronograma(props) {
 	});
 
 	const paramPeriodoId = React.useMemo(
-		() => searchParams.get(cronogramaParams.update),
+		() => searchParams.get(subperiodoParams.update),
 		[searchParams],
 	);
 	if (!paramPeriodoId) return null;
 
-	const selectedPeriodo = props.cronograma.find(i => i.id === paramPeriodoId);
+	const selectedPeriodo = props.requisito.find(i => i.id === paramPeriodoId);
 
 	if (!selectedPeriodo) {
 		return (
 			<ModalFallback
 				action='update'
-				redirectTo={() => router.replace(ROUTES.periodo.cronograma(props.id))}
+				redirectTo={() => router.replace(ROUTES.periodo.subperiodos(props.id))}
 			/>
 		);
 	}
@@ -105,7 +105,7 @@ function UpdateCronograma(props) {
 			onOpenChange={open => {
 				if (isSubmitting) return;
 				if (!open) {
-					router.replace(ROUTES.periodo.cronograma(props.id));
+					router.replace(ROUTES.periodo.subperiodos(props.id));
 					return;
 				}
 			}}
@@ -294,7 +294,7 @@ function UpdateCronograma(props) {
 								variant='destructive'
 								type='button'
 								onClick={() =>
-									router.replace(ROUTES.periodo.cronograma(props.id))
+									router.replace(ROUTES.periodo.subperiodos(props.id))
 								}
 							>
 								Cancelar
@@ -309,17 +309,15 @@ function UpdateCronograma(props) {
 
 const fields = [
 	{
-		name: "sede",
+		name: "nombre",
 		inputType: "text",
-		label: "Sede",
+		placeholder: "",
+		label: "Nombre",
 	},
 	{
-		name: "programa",
-		inputType: "text",
-		label: "Programa",
+		name: "inicio",
+		inputType: "custom-date",
+		label: "Fecha inicio",
 	},
-	{ name: "modalidad", inputType: "text", label: "Modalidad" },
-	{ name: "nivel", inputType: "text", label: "Nivel" },
-	{ name: "inicio", inputType: "custom-date", label: "Fecha Inicio" },
-	{ name: "fin", inputType: "custom-date", label: "Fecha Fin" },
+	{ name: "fin", inputType: "custom-date", label: "Fecha fin" },
 ];

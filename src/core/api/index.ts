@@ -28,7 +28,7 @@ import { TipoDocumentoEnProgramaClass } from "./tipos-documento-programas";
 import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { VarianteCursoClass } from "./variantes-curso";
-import { CronogramaMatriculas, PeriodosLectivosClass } from "./periodos-lectivos";
+import { CronogramaMatriculas, PeriodosLectivosClass, TraduccionPeriodosClass } from "./periodos-lectivos";
 
 export type APIResponse<D> = {
 	data: D;
@@ -84,6 +84,10 @@ export class APIClass {
 
 	get cronograma() {
 		return new CronogramaMatriculas(this._apiUrl ,this._fetcher);
+	}
+
+	get traduccion() {
+		return new TraduccionPeriodosClass(this._apiUrl ,this._fetcher);
 	}
 
 	get asignaturas() {

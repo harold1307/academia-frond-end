@@ -127,3 +127,28 @@ export class CronogramaMatriculas {
 		return res;
 	}
 }
+
+export class TraduccionPeriodosClass {
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
+
+	async update(params: { traduccion: { data: any; id: string } }) {
+		const res = zodFetcher(
+			z.object({
+				cronograma: PeriodoClass,
+			}),
+			`/api/periodos-lectivos/traduccion/${params.traduccion.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.traduccion.data),
+			},
+		);
+
+		return res;
+	}
+}

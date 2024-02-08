@@ -45,12 +45,12 @@ import {
 } from "@/app/_components/ui/popover";
 import { Textarea } from "@/app/_components/ui/textarea";
 
-export const cortesParams = {
-	add: "agregarCorte",
-	update: "actualizarCorte",
+export const traduccionParams = {
+	add: "agregarTraduccion",
+	update: "actualizarTraduccion",
 } as const;
 
-type CreateCortesInput = Omit<
+type CreateReqInput = Omit<
 	MallaCurricular,
 	| "id"
 	| "createdAt"
@@ -63,7 +63,7 @@ type CreateCortesInput = Omit<
 	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
 };
 
-type CreateCortesOutput = Omit<
+type CreateReqOutput = Omit<
 	MallaCurricular,
 	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
 > & {
@@ -71,18 +71,18 @@ type CreateCortesOutput = Omit<
 	fechaLimiteVigencia: string;
 };
 
-const createCortesSchema: z.ZodType<
-	CreateCortesOutput,
+const createReqSchema: z.ZodType<
+	CreateReqOutput,
 	z.ZodTypeDef,
-	CreateCortesInput
+	CreateReqInput
 > = z.object({});
 
-export default function AddCortes() {
+export default function AddTrad() {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: createCortesSchema) => {
+		mutationFn: async (data: createReqSchema) => {
 			return API.periodos.create(data);
 		},
 		onError: console.error,
@@ -94,15 +94,17 @@ export default function AddCortes() {
 	});
 
 	const form = useForm({
-		resolver: zodResolver(createCortesSchema),
+		resolver: zodResolver(createReqSchema),
 		defaultValues: {},
 		disabled: isSubmitting,
 		shouldUnregister: true,
 	});
 
 	return (
-		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar corte</h1>
+		<section className='my-4'>
+			<h1 className='my-2 text-2xl font-semibold'>
+				Traducción
+			</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<button className='flex flex-row items-center gap-2 rounded-md border border-slate-400 p-2 hover:bg-slate-200 hover:text-slate-800'>
@@ -111,7 +113,7 @@ export default function AddCortes() {
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar periodo</DialogTitle>
+						<DialogTitle>Adicionar requisito de matriculacion</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form
@@ -123,9 +125,7 @@ export default function AddCortes() {
 									control={form.control}
 									name={f.name}
 									key={
-										f.name.includes("Desde")
-											? f.name + form.watch().niveles
-											: f.name
+										f.name.includes("Desde") ? f.name + form.watch() : f.name
 									}
 									render={({ field }) => {
 										switch (f.inputType) {
@@ -320,10 +320,9 @@ const fields = [
 		label: "Nombre",
 	},
 	{
-		name: "inscritos",
-		inputType: "number",
+		name: "idioma",
+		inputType: "text",
 		placeholder: "",
-		label: "Inscritos",
+		label: "Idioma",
 	},
-	{ name: "matriculas", inputType: "number", label: "Matriculas" },
 ];

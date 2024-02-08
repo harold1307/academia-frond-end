@@ -9,6 +9,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { reqParams } from "../addReq";
 
 const helper = createColumnHelper<any>();
 
@@ -69,7 +70,7 @@ function Actions(props: { periodoId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-				//onClick={() => replaceSet(periodoParams.update, props.periodoId)}
+					onClick={() => replaceSet(reqParams.update, props.periodoId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>

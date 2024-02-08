@@ -9,7 +9,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { cortesParams } from "../addCortes";
+import { subperiodoParams } from "../add-subperiodo";
 
 const helper = createColumnHelper<any>();
 
@@ -18,11 +18,11 @@ export const columns = [
 	helper.accessor("nombre", {
 		header: "Nombre",
 	}),
-	helper.accessor("inscritos", {
-		header: "Inscritos",
+	helper.accessor("inicio", {
+		header: "Fecha inicio",
 	}),
-	helper.accessor("matriculas", {
-		header: "Matriculas",
+	helper.accessor("fin", {
+		header: "Fecha fin",
 	}),
 	helper.display({
 		id: "actions",
@@ -44,7 +44,7 @@ function Actions(props: { periodoId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => replaceSet(cortesParams.update, props.periodoId)}
+					onClick={() => replaceSet(subperiodoParams.update, props.periodoId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>

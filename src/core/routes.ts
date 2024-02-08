@@ -39,11 +39,16 @@ export const ROUTES = {
 	},
 	periodo: {
 		path: "/periodos",
+		cortes: "/periodos?seccion=cortes",
 		traduccion: (periodoId: string) =>
 			ROUTES.periodo.path + `/${periodoId}/traduccion`,
 		cronograma: (periodoId: string) =>
 			ROUTES.periodo.path + `/${periodoId}/cronograma`,
 		requisito: (periodoId: string) =>
 			ROUTES.periodo.path + `/${periodoId}/requisito`,
+		subperiodos: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/subperiodos`,
+		matriculas: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/matriculas`,
 	},
 } as const;

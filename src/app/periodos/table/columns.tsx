@@ -190,7 +190,9 @@ function Actions(props: { periodoId: string }) {
 					<span>Requisitos matricula</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => replaceSet(periodoParams.subPeriodos, props.periodoId)}
+					onClick={() =>
+						router.push(ROUTES.periodo.subperiodos(props.periodoId))
+					}
 				>
 					<List className='mr-2 h-4 w-4' />
 					<span>Subperiodos</span>
@@ -207,7 +209,11 @@ function Actions(props: { periodoId: string }) {
 					<UnlockKeyhole className='mr-2 h-4 w-4' />
 					<span>Habilitar matriculas</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						router.push(ROUTES.periodo.matriculas(props.periodoId))
+					}
+				>
 					<Banknote className='mr-2 h-4 w-4' />
 					<span>Matriculas no legalizadas</span>
 				</DropdownMenuItem>
