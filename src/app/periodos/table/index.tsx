@@ -47,10 +47,11 @@ import { cn } from "@/utils";
 import { format } from "date-fns";
 import { Calendar, CalendarIcon } from "lucide-react";
 import { FormInputFile } from "@/app/_components/ui/form-input-file";
+import ToggleSwitch from "@/app/_components/ui/toggle";
 
 export default function PeriodosLectivosTables() {
 	return (
-		<section className="my-2">
+		<section className='my-2'>
 			<DataTable columns={columns} data={MUPeriodos} />
 			<UpdatePeriodoTableModal periodos={MUPeriodos} />
 			<TiposActividades periodos={MUPeriodos} />
@@ -263,6 +264,16 @@ function UpdatePeriodoTableModal(props) {
 															onCheckedChange={field.onChange}
 														/>
 													</FormControl>
+												</FormItem>
+											);
+										}
+										case "toggle": {
+											return (
+												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+													<FormLabel className='col-span-3 text-end'>
+														{f.label}
+													</FormLabel>
+													<ToggleSwitch value={f.options} />
 												</FormItem>
 											);
 										}
@@ -1110,170 +1121,146 @@ const fields = [
 	},
 	{
 		name: "fechaMatriculas",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Fecha de Matriculas",
 	},
 	{
 		name: "matriculacion",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Matriculaciòn",
 	},
 	{
 		name: "estrucuraNivel",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Estructura por nivel",
 	},
 	{
 		name: "nivelacion",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Nivelaciòn",
 	},
 	{
 		name: "legalizarMatricula",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Legalizar Matricula",
 	},
 	{
 		name: "legalizacionPago",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Legalizaciòn por pago",
 	},
 	{
 		name: "cerrado",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Cerrado",
 	},
 	{
 		name: "vigente",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Vigente",
 	},
 	{
 		name: "planifCargaHoraria",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Planif. carga horaria",
 	},
 	{
 		name: "planifProfObl",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Planif. profesores obl.",
 	},
 	{
 		name: "planifProfTotal",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Planif. profesores total",
 	},
 	{
 		name: "AprobPlanif",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Aprob. Planificaciòn",
 	},
 	{
 		name: "NotasCoord",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Notas por coordinaciòn",
 	},
 	{
 		name: "AutoExtraordinaria",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Automat. extraordinaria",
 	},
 	{
 		name: "AutoArrastre",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Automat. con arrastre",
 	},
 	{
 		name: "AutoSecMatriculas",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Automat. 2das matriculas",
 	},
 	{
 		name: "matricula",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "# Matricula",
 	},
 	{
 		name: "AutoMatriculas",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "# matricula automatica",
 	},
 	{
 		name: "matriculaLegal",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "# matricula al legalizar",
 	},
 	{
 		name: "Secuencia",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Secuencia",
 	},
 	{
 		name: "EvaluacionDocente",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Evaluaciòn al docente",
 	},
 	{
 		name: "CostoSeccion",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Costos por sesiòn",
 	},
 	{
 		name: "PlanCostos",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Plan de costos",
 	},
 	{
 		name: "Activo",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
+		options: "SI",
 		label: "Activo",
 	},
 ];
