@@ -52,7 +52,8 @@ export const periodoParams = {
 	costos: "formatoCostos",
 	habilitar: "habilitarMatricula",
 	importar: "importarPlanificacion",
-	actualizarCalif: "actualizarCalificaciones"
+	actualizarCalif: "actualizarCalificaciones",
+	subPeriodos: "actualizarSubperiodos"
 } as const;
 
 type CreatePeriodoInput = Omit<

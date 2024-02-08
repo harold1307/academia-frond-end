@@ -184,14 +184,14 @@ function Actions(props: { periodoId: string }) {
 					<span>Cronograma matriculas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() =>
-						router.push(ROUTES.periodo.requisito(props.periodoId))
-					}
+					onClick={() => router.push(ROUTES.periodo.requisito(props.periodoId))}
 				>
 					<List className='mr-2 h-4 w-4' />
 					<span>Requisitos matricula</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(periodoParams.subPeriodos, props.periodoId)}
+				>
 					<List className='mr-2 h-4 w-4' />
 					<span>Subperiodos</span>
 				</DropdownMenuItem>

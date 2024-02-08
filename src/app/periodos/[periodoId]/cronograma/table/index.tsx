@@ -6,7 +6,6 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/app/_components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 import {
@@ -85,10 +84,10 @@ function UpdateCronograma(props) {
 		() => searchParams.get(cronogramaParams.update),
 		[searchParams],
 	);
-
 	if (!paramPeriodoId) return null;
 
 	const selectedPeriodo = props.cronograma.find(i => i.id === paramPeriodoId);
+	console.log(selectedPeriodo);
 
 	if (!selectedPeriodo) {
 		return (
@@ -99,6 +98,7 @@ function UpdateCronograma(props) {
 		);
 	}
 	<Dialog
+		open={true}
 		defaultOpen={true}
 		onOpenChange={open => {
 			if (isSubmitting) return;
