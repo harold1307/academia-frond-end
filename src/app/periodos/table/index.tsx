@@ -50,8 +50,7 @@ import { FormInputFile } from "@/app/_components/ui/form-input-file";
 
 export default function PeriodosLectivosTables() {
 	return (
-		<section>
-			<h1 className='text-2xl font-semibold'>Periodos lectivos</h1>
+		<section className="my-2">
 			<DataTable columns={columns} data={MUPeriodos} />
 			<UpdatePeriodoTableModal periodos={MUPeriodos} />
 			<TiposActividades periodos={MUPeriodos} />
@@ -122,7 +121,7 @@ function UpdatePeriodoTableModal(props) {
 		>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>Adicionar periodo</DialogTitle>
+					<DialogTitle>Actualizar periodo</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form
@@ -1050,7 +1049,7 @@ function ActualizarCalificaciones(props) {
 		>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>Habilitar matricula</DialogTitle>
+					<DialogTitle>Actualizar calificaciones</DialogTitle>
 					<DialogDescription>
 						Esta seguro(a) que desea actualizar calificaciones en el record
 						academico de los matriculados del periodo

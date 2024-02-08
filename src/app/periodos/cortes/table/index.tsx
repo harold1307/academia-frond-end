@@ -52,8 +52,7 @@ import { cortesParams } from "../addCortes";
 
 export default function CortesTable({ mallas }) {
 	return (
-		<section>
-			<h1 className='mb-5 text-2xl font-semibold'>Cortes</h1>
+		<section className="my-2">
 			<DataTable columns={columns} data={mallas} />
 			<UpdateCortes cortes={mallas} />
 		</section>
@@ -123,7 +122,7 @@ function UpdateCortes(props) {
 			</DialogTrigger>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>Adicionar periodo</DialogTitle>
+					<DialogTitle>Actualizar cortes</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form

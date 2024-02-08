@@ -115,7 +115,7 @@ function UpdateTrad(props) {
 		>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>Editar traduccion</DialogTitle>
+					<DialogTitle>Editar traducción</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form

@@ -113,7 +113,7 @@ export default function AddReq() {
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar requisito de matriculacion</DialogTitle>
+						<DialogTitle>Adicionar requisito de matriculación</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form

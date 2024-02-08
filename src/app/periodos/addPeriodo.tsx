@@ -108,7 +108,7 @@ export default function AddPeriodo() {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar Periodo</h1>
+			<h1 className='text-2xl font-semibold'>Periodos lectivos</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<button className="border border-slate-400 rounded-md p-2 flex flex-row gap-2 items-center hover:bg-slate-200 hover:text-slate-800">

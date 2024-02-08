@@ -111,7 +111,7 @@ export default function AddCronograma() {
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar cronograma de matriculas</DialogTitle>
+						<DialogTitle>Adicionar cronograma de matriculación</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form

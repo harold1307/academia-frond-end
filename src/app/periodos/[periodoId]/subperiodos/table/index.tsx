@@ -112,7 +112,7 @@ function UpdateSubperiodo(props) {
 		>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>Adicionar cronograma de matriculas</DialogTitle>
+					<DialogTitle>Actualizar subperiodo</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form

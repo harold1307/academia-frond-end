@@ -113,7 +113,7 @@ export default function AddTrad() {
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar requisito de matriculacion</DialogTitle>
+						<DialogTitle>Adicionar traducción</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form

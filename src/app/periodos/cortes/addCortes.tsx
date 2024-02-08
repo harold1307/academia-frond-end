@@ -102,7 +102,7 @@ export default function AddCortes() {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar corte</h1>
+			<h1 className='text-2xl font-semibold'>Cortes</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<button className='flex flex-row items-center gap-2 rounded-md border border-slate-400 p-2 hover:bg-slate-200 hover:text-slate-800'>
@@ -111,7 +111,7 @@ export default function AddCortes() {
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar periodo</DialogTitle>
+						<DialogTitle>Adicionar cortes</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form
