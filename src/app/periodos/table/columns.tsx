@@ -175,11 +175,19 @@ function Actions(props: { periodoId: string }) {
 					<Banknote className='mr-2 h-4 w-4' />
 					<span>Formato de costos</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						router.push(ROUTES.periodo.cronograma(props.periodoId))
+					}
+				>
 					<Clock3 className='mr-2 h-4 w-4' />
 					<span>Cronograma matriculas</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						router.push(ROUTES.periodo.requisito(props.periodoId))
+					}
+				>
 					<List className='mr-2 h-4 w-4' />
 					<span>Requisitos matricula</span>
 				</DropdownMenuItem>
@@ -204,7 +212,9 @@ function Actions(props: { periodoId: string }) {
 					<span>Matriculas no legalizadas</span>
 				</DropdownMenuItem>
 				<DropdownMenuItem
-					onClick={() => replaceSet(periodoParams.actualizarCalif, props.periodoId)}
+					onClick={() =>
+						replaceSet(periodoParams.actualizarCalif, props.periodoId)
+					}
 				>
 					<RefreshCw className='mr-2 h-4 w-4' />
 					<span>Actualizar calificaciones</span>

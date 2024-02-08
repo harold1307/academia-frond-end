@@ -102,3 +102,28 @@ export class PeriodosLectivosClass {
 		return res;
 	}
 }
+
+export class CronogramaMatriculas {
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
+
+	async update(params: { cronograma: { data: any; id: string } }) {
+		const res = zodFetcher(
+			z.object({
+				cronograma: PeriodoClass,
+			}),
+			`/api/periodos-lectivos/cronograma/${params.cronograma.id}`,
+			{
+				method: "PATCH",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(params.cronograma.data),
+			},
+		);
+
+		return res;
+	}
+}

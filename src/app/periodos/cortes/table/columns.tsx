@@ -1,8 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import {
-	FileSignature,
-	XCircle,
-} from "lucide-react";
+import { FileSignature, XCircle } from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -21,8 +18,11 @@ export const columns = [
 	helper.accessor("nombre", {
 		header: "Nombre",
 	}),
-	helper.accessor("idioma", {
-		header: "Idioma",
+	helper.accessor("inscritos", {
+		header: "Inscritos",
+	}),
+	helper.accessor("matriculas", {
+		header: "Matriculas",
 	}),
 	helper.display({
 		id: "actions",

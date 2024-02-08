@@ -41,7 +41,9 @@ export const ROUTES = {
 		path: "/periodos",
 		traduccion: (periodoId: string) =>
 			ROUTES.periodo.path + `/${periodoId}/traduccion`,
-		actividades: (periodoId: string) =>
-			ROUTES.periodo.path + `/${periodoId}/actividades`,
+		cronograma: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/cronograma`,
+		requisito: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/requisito`,
 	},
 } as const;

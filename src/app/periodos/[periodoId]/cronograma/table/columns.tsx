@@ -1,8 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import {
-	FileSignature,
-	XCircle,
-} from "lucide-react";
+import { FileSignature, XCircle } from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
 import {
@@ -13,16 +10,29 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { periodoParams } from "@/app/periodos/addPeriodo";
+import { cronogramaParams } from "../addCronograma";
 
 const helper = createColumnHelper<any>();
 
 export const columns = [
 	helper.accessor("id", {}),
-	helper.accessor("nombre", {
-		header: "Nombre",
+	helper.accessor("sede", {
+		header: "Sede",
 	}),
-	helper.accessor("idioma", {
-		header: "Idioma",
+	helper.accessor("programa", {
+		header: "Programa",
+	}),
+	helper.accessor("modalidad", {
+		header: "Modalidad",
+	}),
+	helper.accessor("nivel", {
+		header: "Nivel",
+	}),
+	helper.accessor("inicio", {
+		header: "Inicio",
+	}),
+	helper.accessor("fin", {
+		header: "Fin",
 	}),
 	helper.display({
 		id: "actions",
@@ -44,7 +54,7 @@ function Actions(props: { periodoId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => replaceSet(periodoParams.update, props.periodoId)}
+					onClick={() => replaceSet(cronogramaParams.update, props.periodoId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>

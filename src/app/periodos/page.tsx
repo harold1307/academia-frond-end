@@ -1,6 +1,7 @@
 import React from "react";
 import PeriodosLectivosTables from "./table";
 import AddPeriodo from "./addPeriodo";
+import CortesPage from "./cortes/page";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export default async function MallaPage({ searchParams }: Context) {
 			<>
 				<div className='mt-4'>
 					<React.Suspense fallback={"Cargando tabla..."}>
-						Cortes
+						<CortesPage />
 					</React.Suspense>
 				</div>
 			</>
