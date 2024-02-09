@@ -34,6 +34,6 @@
 		"**/*.mjs",
 		".next/types/**/*.ts",
 		"tailwind.config.js"
-	],
+, "src/app/periodosevaluacion/materias-cursos/add-materia"	],
 	"exclude": ["node_modules", ".next"]
 }

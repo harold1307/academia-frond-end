@@ -16,6 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
+
 import { MateriasDeNivelColumns, MateriasDeNivelTableItem } from "./columns";
 
 interface DataTableProps {

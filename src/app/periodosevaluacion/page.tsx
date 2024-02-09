@@ -1,6 +1,5 @@
 import React from "react";
 import MateriasDeNivelTableServer from "./table/server";
-//import CamposModelosEvaluativosTableServer from "./table/server";
 
 
 type Context = {
@@ -15,7 +14,7 @@ export default function PeriodoEvaluacion({ searchParams } : Context) {
             <div>
                 Periodo de Evaluación
                 <React.Suspense fallback={<h1>Cargando tabla...</h1>} >
-                    <MateriasDeNivelTableServer />
+                <MateriasDeNivelTableServer />
                 </React.Suspense>
             </div>
         )
