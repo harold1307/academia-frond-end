@@ -47,7 +47,7 @@ export default function MutateModal({
 	withTrigger,
 }: React.PropsWithChildren<MutateModalProps>) {
 	return (
-		<Dialog {...dialogProps} >
+		<Dialog {...dialogProps}>
 			{withTrigger && (
 				<DialogTrigger asChild>
 					<Button variant='success'>{triggerLabel}</Button>

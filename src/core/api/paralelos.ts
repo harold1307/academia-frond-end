@@ -1,13 +1,9 @@
 import type { Paralelo } from "@prisma/client";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { z } from "zod";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type ParaleloFromAPI = ReplaceDateToString<
 	Paralelo & {
@@ -38,13 +34,16 @@ const paraleloSchema = z
 
 // el ID de los paralelos son el nombre mismo
 export class ParaleloClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update({
 		data,
 		id,
 	}: UpdateParaleloParams): Promise<APIResponse<ParaleloFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: paraleloSchema,
 				message: z.string(),
@@ -80,7 +79,7 @@ export class ParaleloClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<ParaleloFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: paraleloSchema.array(),
 				message: z.string(),
@@ -92,7 +91,7 @@ export class ParaleloClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<ParaleloFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: paraleloSchema.nullable(),
 				message: z.string(),

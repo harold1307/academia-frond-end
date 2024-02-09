@@ -28,8 +28,8 @@ export const columns = [
 	columnHelper.accessor("canton", {
 		header: "Canton",
 	}),
-	columnHelper.accessor("codigo", {
-		header: "Codigo",
+	columnHelper.accessor("alias", {
+		header: "Alias",
 	}),
 	// TODO: esto debe ser dependiendo si la institucion esta en uso - como una institucion esta en uso??
 	columnHelper.accessor("enUso", {

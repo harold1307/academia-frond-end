@@ -1,15 +1,17 @@
-"use client"
+"use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { Incidencias, IncidenciasTableItem, incidenciasColumn } from "./columns";
+import {
+	Incidencias,
+	IncidenciasTableItem,
+	incidenciasColumn,
+} from "./columns";
 
 interface IncidenciasTableProps {
-	data: Incidencias[]
+	data: Incidencias[];
 }
 
-
-export default function IncidenciasTable({ data }:IncidenciasTableProps) {
-
+export default function IncidenciasTable({ data }: IncidenciasTableProps) {
 	const incidencias = React.useMemo(() => {
 		return data?.map(
 			incidencia =>

@@ -1,13 +1,9 @@
 import type { AreaConocimiento } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type AreaConocimientoFromAPI = ReplaceDateToString<
 	AreaConocimiento & {
@@ -28,7 +24,10 @@ export const areaConocimientoSchema = z
 	.strict();
 
 export class AreaConocimientoClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
@@ -36,7 +35,7 @@ export class AreaConocimientoClass {
 			Omit<AreaConocimientoFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
 		>;
 	}): Promise<APIResponse<AreaConocimientoFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: areaConocimientoSchema,
 				message: z.string(),
@@ -78,7 +77,7 @@ export class AreaConocimientoClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<AreaConocimientoFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: areaConocimientoSchema.array(),
 				message: z.string(),
@@ -92,7 +91,7 @@ export class AreaConocimientoClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<AreaConocimientoFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: areaConocimientoSchema.nullable(),
 				message: z.string(),

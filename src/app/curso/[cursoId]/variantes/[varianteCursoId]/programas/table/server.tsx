@@ -5,25 +5,27 @@ import { ProgramaSchema } from "../add-programa";
 import ProgramasTable from ".";
 
 interface MockUpDataI {
-	programas:ProgramaSchema[]
+	programas: ProgramaSchema[];
 }
-const data:MockUpDataI = {
+const data: MockUpDataI = {
 	programas: [
 		{
-			id: '1',	
+			id: "1",
 			todosLosProgramas: false,
-			programa: 'programaA',
-			modalidad: 'PRESENCIAL',
-			malla: 'MallaB',
-			registroExterno: true
-		}
-	]
-}
+			programa: "programaA",
+			modalidad: "PRESENCIAL",
+			malla: "MallaB",
+			registroExterno: true,
+		},
+	],
+};
 
 interface ProgramasTableServerProps {
-    varianteId:string
+	varianteId: string;
 }
-export default async function ProgramasTableServer({ varianteId }:ProgramasTableServerProps) {
+export default async function ProgramasTableServer({
+	varianteId,
+}: ProgramasTableServerProps) {
 	//Fetch programas
 
 	// if (!programas.data) return notFound();

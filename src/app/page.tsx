@@ -22,15 +22,15 @@ const modulos = [
 	},
 	{
 		label: "Modelos Evaluativos",
-		href: ROUTES.modelosEvaluativos.path + '?section=0',
+		href: ROUTES.modelosEvaluativos.path + "?section=0",
 	},
 	{
 		label: "Mis Horarios (profesor)",
-		href: ROUTES.proHorarios.path
+		href: ROUTES.proHorarios.path,
 	},
 	{
 		label: "Mis Horarios (admin)",
-		href: ROUTES.admHorarios.path
+		href: ROUTES.admHorarios.path,
 	},
 	{
 		label: "Periodos de Evaluación",

@@ -1,13 +1,9 @@
 import type { DetalleNivelTitulacion } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type DetalleNivelTitulacionFromAPI = ReplaceDateToString<
 	DetalleNivelTitulacion & {
@@ -28,7 +24,10 @@ export const detalleNivelTitulacionSchema = z
 	.strict();
 
 export class DetalleNivelTitulacionClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
@@ -39,7 +38,7 @@ export class DetalleNivelTitulacionClass {
 			>
 		>;
 	}): Promise<APIResponse<DetalleNivelTitulacionFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: detalleNivelTitulacionSchema,
 				message: z.string(),
@@ -60,7 +59,7 @@ export class DetalleNivelTitulacionClass {
 	async getMany(
 		_: void,
 	): Promise<APIResponse<DetalleNivelTitulacionFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: detalleNivelTitulacionSchema.array(),
 				message: z.string(),
@@ -74,7 +73,7 @@ export class DetalleNivelTitulacionClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<DetalleNivelTitulacionFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: detalleNivelTitulacionSchema.nullable(),
 				message: z.string(),

@@ -1,13 +1,9 @@
 import type { Sesion } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateTurno } from "./turnos";
 
 export type SesionFromAPI = ReplaceDateToString<
@@ -50,12 +46,15 @@ export const sesionSchema = z
 	.strict();
 
 export class SesionClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(
 		params: UpdateSesionParams,
 	): Promise<APIResponse<SesionFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: sesionSchema,
 				message: z.string(),
@@ -91,7 +90,7 @@ export class SesionClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<SesionFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: sesionSchema.array(),
 				message: z.string(),
@@ -103,7 +102,7 @@ export class SesionClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<SesionFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: sesionSchema.nullable(),
 				message: z.string(),

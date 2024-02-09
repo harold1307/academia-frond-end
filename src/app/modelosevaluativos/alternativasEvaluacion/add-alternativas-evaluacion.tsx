@@ -12,17 +12,15 @@ import type { Field } from "@/utils/forms";
 
 //Esquema de MockUp hasta tener el esquema de Prisma
 export type AlternativasEvaluacionSchema = {
-	id:string	
-	nombre: string
-    codigo: string
-}
+	id: string;
+	nombre: string;
+	codigo: string;
+};
 
 export default function AddAlternativaEvaluacion() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		// schema: ModeloEvaluativoSchema,
-		mutationFn: async data => {
-
-        },
+		mutationFn: async data => {},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
@@ -38,41 +36,41 @@ export default function AddAlternativaEvaluacion() {
 				}}
 				disabled={mutation.isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => 
-					console.log('Falta implementar lógica', data)
+				onSubmit={form.handleSubmit(
+					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
 				title={`Adicionar Alternativa Evaluación`}
 				withTrigger
 				triggerLabel='Adicionar alternativa evaluación'
 			>
-				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
+				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
 					{alternativaEvaluacionFields.map(f => (
-                        <FormField
-                            control={form.control}
-                            name={f.name}
-                            key={f.name}
-                            render={({ field }) => {
-                                return (
-                                    <FormItem className='flex w-full items-center justify-start gap-2'>
-                                        <FormLabel className='text-md col-span-3 w-[12%] text-start'>
-                                            {f.label}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                value={
-                                                    typeof field.value === "boolean"
-                                                        ? undefined
-                                                        : field.value || undefined
-                                                }
-                                                type={f.inputType}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                );
-                            }}
-                        />
+						<FormField
+							control={form.control}
+							name={f.name}
+							key={f.name}
+							render={({ field }) => {
+								return (
+									<FormItem className='flex w-full items-center justify-start gap-2'>
+										<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+											{f.label}
+										</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												value={
+													typeof field.value === "boolean"
+														? undefined
+														: field.value || undefined
+												}
+												type={f.inputType}
+											/>
+										</FormControl>
+									</FormItem>
+								);
+							}}
+						/>
 					))}
 				</div>
 			</MutateModal>

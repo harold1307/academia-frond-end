@@ -1,13 +1,9 @@
 import type { Turno } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type TurnoFromAPI = ReplaceDateToString<
 	Turno & {
@@ -45,10 +41,13 @@ export const turnoSchema = z
 	.strict();
 
 export class TurnoClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: UpdateTurnoParams): Promise<APIResponse<TurnoFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: turnoSchema,
 				message: z.string(),
@@ -67,7 +66,7 @@ export class TurnoClass {
 	}
 
 	async getMany(_: void): Promise<APIResponse<TurnoFromAPI[]>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: turnoSchema.array(),
 				message: z.string(),
@@ -79,7 +78,7 @@ export class TurnoClass {
 	}
 
 	async getById(id: string): Promise<APIResponse<TurnoFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: turnoSchema.nullable(),
 				message: z.string(),

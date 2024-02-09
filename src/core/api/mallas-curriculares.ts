@@ -1,5 +1,4 @@
 import type {
-	AsignaturaEnNivelMalla,
 	AsignaturaModuloEnMalla,
 	LugarEjecucion,
 	MallaCurricular,
@@ -8,31 +7,22 @@ import type {
 	PracticaPreProfesionalEnMalla,
 } from "@prisma/client";
 import { z } from "zod";
+import type { ZodFetcher } from "zod-fetch";
 
 import type {
 	NonNullableObject,
 	ReplaceDateToString,
 	ZodInferSchema,
 } from "@/utils/types";
-import {
-	APIError,
-	zodFetcher,
-	type APIResponse,
-	type SimpleAPIResponse,
-} from ".";
-import {
-	areaConocimientoSchema,
-	type AreaConocimientoFromAPI,
-} from "./areas-conocimiento";
+import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { AreaConocimientoFromAPI } from "./areas-conocimiento";
 import { asignaturaSchema, type AsignaturaFromAPI } from "./asignaturas";
 import {
-	campoFormacionSchema,
-	type CampoFormacionFromAPI,
-} from "./campos-formacion";
-import {
-	ejeFormativoSchema,
-	type EjeFormativoFromAPI,
-} from "./ejes-formativos";
+	asignaturaEnNivelMallaSchema,
+	type AsignaturaEnNivelMallaFromAPI,
+} from "./asignaturas-niveles-malla";
+import type { CampoFormacionFromAPI } from "./campos-formacion";
+import { baseNivelMallaSchema } from "./niveles-malla";
 import { sedeSchema, type SedeFromAPI } from "./sede";
 import {
 	tituloObtenidoSchema,
@@ -46,15 +36,6 @@ export type LugarEjecucionFromAPI = ReplaceDateToString<
 >;
 
 export type NivelMallaFromAPI = ReplaceDateToString<NivelMalla>;
-
-export type AsignaturaEnNivelMallaFromAPI = ReplaceDateToString<
-	AsignaturaEnNivelMalla & {
-		ejeFormativo: EjeFormativoFromAPI;
-		areaConocimiento: AreaConocimientoFromAPI;
-		campoFormacion: CampoFormacionFromAPI | null;
-		asignatura: AsignaturaFromAPI;
-	}
->;
 
 export type AsignaturaModuloEnMallaFromAPI = ReplaceDateToString<
 	AsignaturaModuloEnMalla & {
@@ -223,79 +204,7 @@ const moduloSchema = z
 	})
 	.strict();
 
-const asignaturaEnNivelMallaSchema = z
-	.object<
-		ZodInferSchema<
-			MallaCurricularFromAPI["niveles"][number]["asignaturas"][number]
-		>
-	>({
-		id: z.string().uuid(),
-		tipoAsignatura: z.enum([
-			"PRACTICA",
-			"TEORICA",
-			"TEORICA_PRACTICA",
-		] as const),
-		identificacion: z.string(),
-		permiteMatriculacion: z.boolean(),
-		calculoNivel: z.boolean(),
-		validaParaCredito: z.boolean(),
-		validaParaPromedio: z.boolean(),
-		costoEnMatricula: z.boolean(),
-		requeridaParaEgresar: z.boolean(),
-		cantidadMatriculas: z.number(),
-		cantidadMatriculasAutorizadas: z.number().nullable(),
-		minimoCreditosRequeridos: z.number().nullable(),
-		maximaCantidadHorasSemanalas: z.number(),
-		horasColaborativas: z.number(),
-		horasAsistidasDocente: z.number(),
-		horasAutonomas: z.number(),
-		horasPracticas: z.number(),
-		sumaHoras: z.boolean(),
-		creditos: z.number(),
-		horasProyectoIntegrador: z.number(),
-		noValidaAsistencia: z.boolean(),
-		materiaComun: z.boolean(),
-		guiaPracticaMetodologiaObligatoria: z.boolean(),
-		aprobarGuiaPracticaMetodologica: z.boolean(),
-		descripcion: z.string().nullable(),
-		objetivoGeneral: z.string().nullable(),
-		resultadosAprendizaje: z.string().nullable(),
-		aporteAsignaturaAlPerfil: z.string().nullable(),
-		competenciaGenerica: z.string().nullable(),
-		objetivosEspecificos: z.string().nullable(),
-		observaciones: z.string().nullable(),
-
-		asignatura: asignaturaSchema,
-		ejeFormativo: ejeFormativoSchema,
-		areaConocimiento: areaConocimientoSchema,
-		campoFormacion: campoFormacionSchema.nullable(),
-
-		ejeFormativoId: z.string().uuid(),
-		nivelMallaId: z.string().uuid(),
-		asignaturaId: z.string().uuid(),
-		areaConocimientoId: z.string().uuid(),
-		campoFormacionId: z.string().uuid().nullable(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
-const nivelMallaSchema = z
-	.object<ZodInferSchema<MallaCurricularFromAPI["niveles"][number]>>({
-		id: z.string().uuid(),
-		nivel: z.number(),
-		mallaId: z.string().uuid(),
-		tituloObtenidoId: z.string().uuid().nullable(),
-
-		asignaturas: asignaturaEnNivelMallaSchema.array(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
-const mallaSchema = z
+export const mallaSchema = z
 	.object<ZodInferSchema<MallaCurricularFromAPI>>({
 		id: z.string().uuid(),
 		tipoDuracion: z
@@ -321,7 +230,12 @@ const mallaSchema = z
 		estado: z.boolean(),
 
 		modulos: moduloSchema.array(),
-		niveles: nivelMallaSchema.array(),
+		niveles: baseNivelMallaSchema
+			.extend({
+				asignaturas: asignaturaEnNivelMallaSchema.array(),
+			})
+			.array(),
+		// niveles: nivelMallaSchema.omit({}),
 		tituloObtenido: tituloObtenidoSchema.nullable(),
 		practicaComunitaria: z
 			.object({
@@ -379,13 +293,16 @@ const mallaWithLugaresEjecucion: z.ZodType<MallaCurricularWithLugaresEjecucionFr
 		.strict();
 
 export class MallaCurricularClass {
-	constructor(private apiUrl: string) {}
+	constructor(
+		private apiUrl: string,
+		private fetcher: ZodFetcher<typeof fetch>,
+	) {}
 
 	async update(params: {
 		id: string;
 		data: UpdateMallaData;
 	}): Promise<APIResponse<MallaCurricularFromAPI>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema,
 				message: z.string(),
@@ -414,7 +331,7 @@ export class MallaCurricularClass {
 			searchParams.append(key, `${value}`);
 		});
 
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema.array(),
 				message: z.string(),
@@ -428,7 +345,7 @@ export class MallaCurricularClass {
 	async getById(
 		id: string,
 	): Promise<APIResponse<MallaCurricularFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema.nullable(),
 				message: z.string(),
@@ -479,31 +396,31 @@ export class MallaCurricularClass {
 	// 	return res.json();
 	// }
 
-	async createAsignaturaEnNivelMalla({
-		data,
-		mallaCurricularId,
-		nivelMallaId,
-	}: CreateAsignaturaEnNivelMallaParams): Promise<SimpleAPIResponse> {
-		const res = await fetch(
-			this.apiUrl +
-				`/api/mallas-curriculares/${mallaCurricularId}/asignaturas/${nivelMallaId}`,
-			{
-				method: "POST",
-				headers: {
-					"Context-Type": "application/json",
-				},
-				body: JSON.stringify(data),
-			},
-		);
+	// async createAsignaturaEnNivelMalla({
+	// 	data,
+	// 	mallaCurricularId,
+	// 	nivelMallaId,
+	// }: CreateAsignaturaEnNivelMallaParams): Promise<SimpleAPIResponse> {
+	// 	const res = await fetch(
+	// 		this.apiUrl +
+	// 			`/api/mallas-curriculares/${mallaCurricularId}/asignaturas/${nivelMallaId}`,
+	// 		{
+	// 			method: "POST",
+	// 			headers: {
+	// 				"Context-Type": "application/json",
+	// 			},
+	// 			body: JSON.stringify(data),
+	// 		},
+	// 	);
 
-		if (!res.ok) {
-			const json = (await res.json()) as APIResponse<undefined>;
+	// 	if (!res.ok) {
+	// 		const json = (await res.json()) as APIResponse<undefined>;
 
-			throw new APIError(json.message);
-		}
+	// 		throw new APIError(json.message);
+	// 	}
 
-		return res.json();
-	}
+	// 	return res.json();
+	// }
 
 	async getMallaWithAsignaturasByMallaId(
 		id: string,
@@ -517,7 +434,7 @@ export class MallaCurricularClass {
 			searchParams.set(f, `${v}`);
 		});
 
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaSchema.nullable(),
 				message: z.string(),
@@ -555,7 +472,7 @@ export class MallaCurricularClass {
 	async getMallaWithLugaresEjecucionByMallaId(
 		id: string,
 	): Promise<APIResponse<MallaCurricularWithLugaresEjecucionFromAPI | null>> {
-		const res = zodFetcher(
+		const res = this.fetcher(
 			z.object({
 				data: mallaWithLugaresEjecucion.nullable(),
 				message: z.string(),

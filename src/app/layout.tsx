@@ -23,8 +23,8 @@ export default function RootLayout({
 			<body className={inter.className + " dark"}>
 				<Providers>
 					<main className='p-6'>
-						<div className='pl-6 pr-6 w-100 h-16 flex justify-between items-center'>
-							<Link href="/">
+						<div className='w-100 flex h-16 items-center justify-between pl-6 pr-6'>
+							<Link href='/'>
 								<Logo />
 							</Link>
 							<UserSession />
