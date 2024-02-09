@@ -69,7 +69,7 @@ const createInstitucionSchema = z.object({
 	pais: z.string(),
 	provincia: z.string(),
 	canton: z.string(),
-	codigo: z.string(),
+	alias: z.string(),
 });
 
 type Data = z.infer<typeof createInstitucionSchema>;
@@ -238,12 +238,12 @@ function UpdateInstitucionTableModal(props: {
 						/>
 						<FormField
 							control={form.control}
-							name='codigo'
-							defaultValue={selectedInstitucion.codigo}
+							name='alias'
+							defaultValue={selectedInstitucion.alias}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
-										<FormLabel>Codigo</FormLabel>
+										<FormLabel>Alias</FormLabel>
 										<FormControl>
 											<Input {...field} className='md:max-w-xs' />
 										</FormControl>

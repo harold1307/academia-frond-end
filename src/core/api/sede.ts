@@ -27,7 +27,7 @@ export const sedeSchema = z
 		canton: z.string(),
 		provincia: z.string(),
 		pais: z.string(),
-		codigo: z.string(),
+		alias: z.string(),
 	})
 	.strict();
 
