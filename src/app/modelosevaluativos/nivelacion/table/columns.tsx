@@ -12,7 +12,7 @@ import {
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { NivelacionSchema } from "../add-nivelacion";
 
-export type NivelacionTableItem = NivelacionSchema
+export type NivelacionTableItem = NivelacionSchema;
 
 const helper = createColumnHelper<NivelacionTableItem>();
 
@@ -21,7 +21,7 @@ export const nivelacionColumns = [
 	helper.accessor("nombre", {
 		header: "Nombre",
 	}),
-    // helper.accessor("fecha", {
+	// helper.accessor("fecha", {
 	// 	header: "Fecha",
 	// }),
 	helper.accessor("notaParaAprobar", {
@@ -44,9 +44,9 @@ export const nivelacionColumns = [
 ];
 
 export const nivelacionParams = {
-	update: 'actualizarnivelacion',
-	deactivate: 'desactivarnivelacion',
-}
+	update: "actualizarnivelacion",
+	deactivate: "desactivarnivelacion",
+};
 
 function Actions({ nivelacionId }: { nivelacionId: string }) {
 	const { replaceSet } = useMutateSearchParams();
@@ -57,18 +57,18 @@ function Actions({ nivelacionId }: { nivelacionId: string }) {
 				<Button>Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(nivelacionParams.update, nivelacionId)}
-                >
-                    <FileSignature className='mr-2 h-4 w-4' />
-                    <span>Editar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(nivelacionParams.deactivate, nivelacionId)}
-                >
-                    <Lock className='mr-2 h-4 w-4' />
-                    <span>Desactivar</span>
-                </DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(nivelacionParams.update, nivelacionId)}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(nivelacionParams.deactivate, nivelacionId)}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Desactivar</span>
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

@@ -12,7 +12,7 @@ import {
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { ProyectoIntegradorSchema } from "../add-proyecto-integrador";
 
-export type ProyectoIntegradorTableItem = ProyectoIntegradorSchema
+export type ProyectoIntegradorTableItem = ProyectoIntegradorSchema;
 
 const helper = createColumnHelper<ProyectoIntegradorTableItem>();
 
@@ -41,9 +41,9 @@ export const proyectoIntegradorColumns = [
 ];
 
 export const proyectoIntegradorParams = {
-	update: 'actualizarproyectointegrador',
-	deactivate: 'desactivarproyectointegrador',
-}
+	update: "actualizarproyectointegrador",
+	deactivate: "desactivarproyectointegrador",
+};
 
 function Actions({ proyectoIntegradorId }: { proyectoIntegradorId: string }) {
 	const { replaceSet } = useMutateSearchParams();
@@ -54,18 +54,25 @@ function Actions({ proyectoIntegradorId }: { proyectoIntegradorId: string }) {
 				<Button>Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(proyectoIntegradorParams.update, proyectoIntegradorId)}
-                >
-                    <FileSignature className='mr-2 h-4 w-4' />
-                    <span>Editar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(proyectoIntegradorParams.deactivate, proyectoIntegradorId)}
-                >
-                    <Lock className='mr-2 h-4 w-4' />
-                    <span>Desactivar</span>
-                </DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(proyectoIntegradorParams.update, proyectoIntegradorId)
+					}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(
+							proyectoIntegradorParams.deactivate,
+							proyectoIntegradorId,
+						)
+					}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Desactivar</span>
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

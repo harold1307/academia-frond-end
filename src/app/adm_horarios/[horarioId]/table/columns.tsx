@@ -1,17 +1,16 @@
 "use client";
-import { createColumnHelper } from "@tanstack/react-table"
-
+import { createColumnHelper } from "@tanstack/react-table";
 
 export type Week = {
-	lunes: string
-	martes: string
-	miercoles: string
-	jueves: string
-	viernes: string
-	sabado: string
-	domingo: string
-}
-export type WeekTableItem = Week
+	lunes: string;
+	martes: string;
+	miercoles: string;
+	jueves: string;
+	viernes: string;
+	sabado: string;
+	domingo: string;
+};
+export type WeekTableItem = Week;
 
 const helper = createColumnHelper<WeekTableItem>();
 

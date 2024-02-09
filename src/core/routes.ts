@@ -21,17 +21,20 @@ export const ROUTES = {
 			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
 	},
 	modelosEvaluativos: {
-		path: '/modelosevaluativos',
-		modeloCampos: (modeloEvaluativoId:string) => `/${modeloEvaluativoId}/campos`,
-		modelologica: (modeloEvaluativoId:string) => `/${modeloEvaluativoId}/logica`
+		path: "/modelosevaluativos",
+		modeloCampos: (modeloEvaluativoId: string) =>
+			`/${modeloEvaluativoId}/campos`,
+		modelologica: (modeloEvaluativoId: string) =>
+			`/${modeloEvaluativoId}/logica`,
 	},
-	proHorarios : {
-		path: '/pro_horarios',
-		detalleHorario: (horarioId:string) => ROUTES.proHorarios.path + `/${horarioId}`
+	proHorarios: {
+		path: "/pro_horarios",
+		detalleHorario: (horarioId: string) =>
+			ROUTES.proHorarios.path + `/${horarioId}`,
 	},
 	admHorarios: {
-		path: '/adm_horarios',
-		detalleHorario: (horarioId: string) => ROUTES.admHorarios.path + `/${horarioId}`
-
-	}
+		path: "/adm_horarios",
+		detalleHorario: (horarioId: string) =>
+			ROUTES.admHorarios.path + `/${horarioId}`,
+	},
 } as const;
