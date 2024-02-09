@@ -44,7 +44,7 @@ import {
 	PopoverTrigger,
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
-import ToggleSwitch from "../_components/ui/toggle";
+import { ToggleSwitch } from "../_components/ui/toggle";
 
 export const periodoParams = {
 	add: "agregarPeriodo",
@@ -273,7 +273,9 @@ export default function AddPeriodo() {
 														<FormLabel className='col-span-3 text-end'>
 															{f.label}
 														</FormLabel>
-														<ToggleSwitch value={f.options} />
+														<FormControl>
+															<ToggleSwitch value={f.options} />
+														</FormControl>
 													</FormItem>
 												);
 											}

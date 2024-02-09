@@ -47,7 +47,7 @@ import { cn } from "@/utils";
 import { format } from "date-fns";
 import { Calendar, CalendarIcon } from "lucide-react";
 import { FormInputFile } from "@/app/_components/ui/form-input-file";
-import ToggleSwitch from "@/app/_components/ui/toggle";
+import { ToggleSwitch } from "@/app/_components/ui/toggle";
 
 export default function PeriodosLectivosTables() {
 	return (
@@ -273,7 +273,9 @@ function UpdatePeriodoTableModal(props) {
 													<FormLabel className='col-span-3 text-end'>
 														{f.label}
 													</FormLabel>
-													<ToggleSwitch value={f.options} />
+													<ToggleSwitch
+														value={(f.options === "SI").toString()}
+													/>
 												</FormItem>
 											);
 										}
