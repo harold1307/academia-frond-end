@@ -33,7 +33,7 @@ const createInstitucionSchema = z.object<ZodInferSchema<CreateSede>>({
 	pais: z.string(),
 	provincia: z.string(),
 	canton: z.string(),
-	codigo: z.string(),
+	alias: z.string(),
 });
 
 type Data = z.infer<typeof createInstitucionSchema>;
@@ -174,11 +174,11 @@ export default function AddInstitucion() {
 							/>
 							<FormField
 								control={form.control}
-								name='codigo'
+								name='alias'
 								render={({ field }) => (
 									<FormItem className='mx-auto w-52 md:w-[390px]'>
 										<div className='flex items-center justify-end gap-2'>
-											<FormLabel>Codigo</FormLabel>
+											<FormLabel>Alias</FormLabel>
 											<FormControl>
 												<Input {...field} className='md:max-w-xs' />
 											</FormControl>

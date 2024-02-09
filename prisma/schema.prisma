@@ -80,7 +80,7 @@ model MallaCurricular {
 }
 
 model AsignaturaEnNivelMalla {
-  id                                 String           @id @default(uuid())
+  id                                 String                    @id @default(uuid())
   tipoAsignatura                     TipoAsignatura
   identificacion                     String
   permiteMatriculacion               Boolean
@@ -116,13 +116,14 @@ model AsignaturaEnNivelMalla {
   asignaturaId                       String
   areaConocimientoId                 String
   campoFormacionId                   String?
-  createdAt                          DateTime         @default(now())
-  updatedAt                          DateTime         @default(now()) @updatedAt
-  areaConocimiento                   AreaConocimiento @relation(fields: [areaConocimientoId], references: [id])
-  asignatura                         Asignatura       @relation(fields: [asignaturaId], references: [id])
-  campoFormacion                     CampoFormacion?  @relation(fields: [campoFormacionId], references: [id])
-  ejeFormativo                       EjeFormativo     @relation(fields: [ejeFormativoId], references: [id])
-  nivelMalla                         NivelMalla       @relation(fields: [nivelMallaId], references: [id])
+  createdAt                          DateTime                  @default(now())
+  updatedAt                          DateTime                  @default(now()) @updatedAt
+  areaConocimiento                   AreaConocimiento          @relation(fields: [areaConocimientoId], references: [id])
+  asignatura                         Asignatura                @relation(fields: [asignaturaId], references: [id])
+  campoFormacion                     CampoFormacion?           @relation(fields: [campoFormacionId], references: [id])
+  ejeFormativo                       EjeFormativo              @relation(fields: [ejeFormativoId], references: [id])
+  nivelMalla                         NivelMalla                @relation(fields: [nivelMallaId], references: [id])
+  nivelesAcademicos                  MateriaEnNivelAcademico[]
 
   @@index([areaConocimientoId], map: "asignaturas_niveles_mallas_areaConocimientoId_fkey")
   @@index([asignaturaId], map: "asignaturas_niveles_mallas_asignaturaId_fkey")
@@ -140,6 +141,7 @@ model NivelMalla {
   createdAt              DateTime                       @default(now())
   updatedAt              DateTime                       @default(now()) @updatedAt
   asignaturas            AsignaturaEnNivelMalla[]
+  nivelesAcademicos      NivelAcademico[]
   malla                  MallaCurricular                @relation(fields: [mallaId], references: [id], onDelete: Cascade)
   tituloObtenido         TituloObtenido?                @relation(fields: [tituloObtenidoId], references: [id])
   practicaComunitaria    PracticaComunitariaEnMalla?
@@ -152,7 +154,7 @@ model NivelMalla {
 }
 
 model AsignaturaModuloEnMalla {
-  id                                 String           @id @default(uuid())
+  id                                 String                    @id @default(uuid())
   tipoAsignatura                     TipoAsignatura
   identificacion                     String
   permiteMatriculacion               Boolean
@@ -184,12 +186,13 @@ model AsignaturaModuloEnMalla {
   areaConocimientoId                 String
   campoFormacionId                   String
   mallaId                            String
-  createdAt                          DateTime         @default(now())
-  updatedAt                          DateTime         @default(now()) @updatedAt
-  areaConocimiento                   AreaConocimiento @relation(fields: [areaConocimientoId], references: [id])
-  asignatura                         Asignatura       @relation(fields: [asignaturaId], references: [id])
-  campoFormacion                     CampoFormacion   @relation(fields: [campoFormacionId], references: [id])
-  malla                              MallaCurricular  @relation(fields: [mallaId], references: [id])
+  createdAt                          DateTime                  @default(now())
+  updatedAt                          DateTime                  @default(now()) @updatedAt
+  areaConocimiento                   AreaConocimiento          @relation(fields: [areaConocimientoId], references: [id])
+  asignatura                         Asignatura                @relation(fields: [asignaturaId], references: [id])
+  campoFormacion                     CampoFormacion            @relation(fields: [campoFormacionId], references: [id])
+  malla                              MallaCurricular           @relation(fields: [mallaId], references: [id], onDelete: Cascade)
+  nivelesAcademicos                  MateriaEnNivelAcademico[]
 
   @@index([areaConocimientoId], map: "asignaturas_modulo_mallas_areaConocimientoId_fkey")
   @@index([asignaturaId], map: "asignaturas_modulo_mallas_asignaturaId_fkey")
@@ -204,9 +207,9 @@ model Sede {
   pais             String
   provincia        String
   canton           String
-  codigo           String
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now()) @updatedAt
+  alias            String
   coordinaciones   Coordinacion[]
   lugaresEjecucion LugarEjecucion[]
   sesiones         Sesion[]
@@ -266,7 +269,7 @@ model LugarEjecucion {
   sedeId    String
   createdAt DateTime        @default(now())
   updatedAt DateTime        @default(now()) @updatedAt
-  malla     MallaCurricular @relation(fields: [mallaId], references: [id])
+  malla     MallaCurricular @relation(fields: [mallaId], references: [id], onDelete: Cascade)
   sede      Sede            @relation(fields: [sedeId], references: [id])
 
   @@index([sedeId], map: "lugares_ejecucion_sedeId_fkey")
@@ -361,11 +364,12 @@ model AsignaturaEnCursoEscuela {
 }
 
 model Paralelo {
-  nombre        String         @id
-  orden         Int
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now()) @updatedAt
-  cursoEscuelas CursoEscuela[]
+  nombre            String           @id
+  orden             Int
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @default(now()) @updatedAt
+  cursoEscuelas     CursoEscuela[]
+  nivelesAcademicos NivelAcademico[]
 
   @@map("paralelos")
 }
@@ -554,6 +558,8 @@ model ModeloEvaluativo {
   asignaturasEnCursoEscuela       AsignaturaEnCursoEscuela[]
   asignaturasEnVarianteCurso      AsignaturaEnVarianteCurso[]
   campos                          CampoModeloEvaluativo[]
+  materiasNivelesAcademicos       MateriaEnNivelAcademico[]
+  nivelesAcademicos               NivelAcademico[]
 
   @@map("modelos_evaluativos")
 }
@@ -609,23 +615,24 @@ model ProyectoIntegrador {
 }
 
 model Sesion {
-  id            String         @id @default(uuid())
-  estado        Boolean        @default(false)
-  nombre        String
-  alias         String
-  sedeId        String
-  lunes         Boolean
-  martes        Boolean
-  miercoles     Boolean
-  jueves        Boolean
-  viernes       Boolean
-  sabado        Boolean
-  domingo       Boolean
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now()) @updatedAt
-  cursoEscuelas CursoEscuela[]
-  sede          Sede           @relation(fields: [sedeId], references: [id])
-  turnos        Turno[]
+  id                String           @id @default(uuid())
+  estado            Boolean          @default(false)
+  nombre            String
+  alias             String
+  sedeId            String
+  lunes             Boolean
+  martes            Boolean
+  miercoles         Boolean
+  jueves            Boolean
+  viernes           Boolean
+  sabado            Boolean
+  domingo           Boolean
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @default(now()) @updatedAt
+  cursoEscuelas     CursoEscuela[]
+  nivelesAcademicos NivelAcademico[]
+  sede              Sede             @relation(fields: [sedeId], references: [id])
+  turnos            Turno[]
 
   @@index([sedeId], map: "sesiones_sedeId_fkey")
   @@map("sesiones")
@@ -795,6 +802,97 @@ model Programa {
   @@map("programas")
 }
 
+model MateriaEnNivelAcademico {
+  id                       String                   @id @default(uuid())
+  numero                   Int                      @unique @default(autoincrement())
+  alias                    String?
+  materiaExterna           Boolean                  @default(false)
+  practicasPermitidas      Boolean                  @default(false)
+  validaParaCreditos       Boolean
+  validaParaPromedio       Boolean
+  sumaHorasProfesor        Boolean                  @default(true)
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @default(now()) @updatedAt
+  modeloEvaluativoId       String
+  fechaFin                 DateTime
+  fechaInicio              DateTime
+  asignaturaEnNivelMallaId String?
+  asignaturaModuloId       String?
+  nivelAcademicoId         String
+  asignaturaEnNivelMalla   AsignaturaEnNivelMalla?  @relation(fields: [asignaturaEnNivelMallaId], references: [id])
+  asignaturaModulo         AsignaturaModuloEnMalla? @relation(fields: [asignaturaModuloId], references: [id])
+  modeloEvaluativo         ModeloEvaluativo         @relation(fields: [modeloEvaluativoId], references: [id])
+  nivelAcademico           NivelAcademico           @relation(fields: [nivelAcademicoId], references: [id], onDelete: Cascade)
+
+  @@unique([nivelAcademicoId, asignaturaEnNivelMallaId])
+  @@unique([nivelAcademicoId, asignaturaModuloId])
+  @@index([numero])
+  @@index([asignaturaEnNivelMallaId], map: "materias_niveles_academicos_asignaturaEnNivelMallaId_fkey")
+  @@index([asignaturaModuloId], map: "materias_niveles_academicos_asignaturaModuloId_fkey")
+  @@index([modeloEvaluativoId], map: "materias_niveles_academicos_modeloEvaluativoId_fkey")
+  @@map("materias_niveles_academicos")
+}
+
+model NivelAcademico {
+  id                                                   String                    @id @default(uuid())
+  nombre                                               String?
+  profesores                                           Boolean                   @default(true)
+  horarios                                             Boolean                   @default(true)
+  cuposMaterias                                        Boolean                   @default(true)
+  planificacionProfesores                              Boolean                   @default(true)
+  matriculacion                                        Boolean                   @default(false)
+  fechaInicio                                          DateTime
+  fechaFin                                             DateTime
+  inicioAgregaciones                                   DateTime
+  limiteAgregaciones                                   DateTime
+  validaRequisitosMalla                                Boolean
+  validaCumplimientoMaterias                           Boolean
+  horasMinimasPracticasComunitarias                    Float?
+  horasMinimasPracticasPreprofesionales                Float?
+  estudiantesPuedenSeleccionarMaterias                 Boolean
+  estudiantesPuedenSeleccionarMateriasOtrosHorarios    Boolean
+  estudiantesPuedenSeleccionarMateriasOtrasModalidades Boolean
+  estudiantesRegistranProyectosIntegradores            Boolean
+  redireccionAPagos                                    Boolean
+  limiteOrdinaria                                      DateTime
+  limiteExtraordinaria                                 DateTime
+  limiteEspecial                                       DateTime
+  diasVencimientoMatricula                             Int
+  capacidad                                            Int
+  mensaje                                              String?
+  terminosCondiciones                                  String?
+  modeloEvaluativoId                                   String
+  sesionId                                             String
+  createdAt                                            DateTime                  @default(now())
+  updatedAt                                            DateTime                  @default(now()) @updatedAt
+  nivelMallaId                                         String
+  paraleloId                                           String
+  estado                                               Boolean                   @default(true)
+  materias                                             MateriaEnNivelAcademico[]
+  modeloEvaluativo                                     ModeloEvaluativo          @relation(fields: [modeloEvaluativoId], references: [id])
+  nivelMalla                                           NivelMalla                @relation(fields: [nivelMallaId], references: [id])
+  paralelo                                             Paralelo                  @relation(fields: [paraleloId], references: [nombre])
+  sesion                                               Sesion                    @relation(fields: [sesionId], references: [id])
+
+  @@unique([paraleloId, nivelMallaId, sesionId])
+  @@index([modeloEvaluativoId], map: "niveles_academicos_modeloEvaluativoId_fkey")
+  @@index([nivelMallaId], map: "niveles_academicos_nivelMallaId_fkey")
+  @@index([sesionId], map: "niveles_academicos_sesionId_fkey")
+  @@map("niveles_academicos")
+}
+
+model Ubicacion {
+  id             String        @id @default(uuid())
+  nombre         String
+  tipo           TipoUbicacion
+  capacidad      Int
+  entornoVirtual Boolean
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("ubicaciones")
+}
+
 model Account {
   id                String   @id @default(uuid())
   userId            String
@@ -877,4 +975,13 @@ enum TipoAsignatura {
   TEORICA_PRACTICA
 
   @@map("tipo_asignatura")
+}
+
+enum TipoUbicacion {
+  AULA
+  LABORATORIO
+  TALLER
+  SALON
+
+  @@map("tipo_ubicacion")
 }

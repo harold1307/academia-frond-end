@@ -9,6 +9,8 @@
 		"lint": "next lint",
 		"db:pull": "prisma db pull && prisma generate",
 		"db:generate": "prisma generate",
+		"format:check": "prettier --check \"src/**/*.{tsx,ts,js,cjs,mjs}\"",
+		"format:write": "prettier --write \"src/**/*.{tsx,ts,js,cjs,mjs}\"",
 		"postinstall": "pnpm run db:generate",
 		"check:watch": "tsc -w"
 	},

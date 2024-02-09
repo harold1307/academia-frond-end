@@ -1,24 +1,37 @@
-"use client"
+"use client";
 import React from "react";
-import { ProgramaTableItem, programasColumns, programasParams } from "./columns";
+import {
+	ProgramaTableItem,
+	programasColumns,
+	programasParams,
+} from "./columns";
 import { DataTable } from "./data-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import MutateModal from "@/app/_components/modals/mutate-modal";
-import { FormControl, FormField, FormItem, FormLabel } from "@/app/_components/ui/form";
+import {
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+} from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/_components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/app/_components/ui/select";
 import DeleteModal from "@/app/_components/modals/delete-modal";
 import { ProgramaSchema, programaFields } from "../add-programa";
 
 interface ProgramasTableProps {
-	data: ProgramaSchema[]
+	data: ProgramaSchema[];
 }
 
-
-export default function ProgramasTable({ data }:ProgramasTableProps) {
-
+export default function ProgramasTable({ data }: ProgramasTableProps) {
 	const programas = React.useMemo(() => {
 		return data?.map(
 			curso =>
@@ -32,7 +45,7 @@ export default function ProgramasTable({ data }:ProgramasTableProps) {
 		<section className=''>
 			<DataTable columns={programasColumns} data={programas} />
 			<UpdateProgramaModal programas={programas} />
-			<DeactivateProgramaModal programas={programas}/>
+			<DeactivateProgramaModal programas={programas} />
 		</section>
 	);
 }
@@ -41,19 +54,18 @@ function UpdateProgramaModal({ programas }: { programas: ProgramaSchema[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
-	const { form, mutation, } = useMutateModule({
+	const { form, mutation } = useMutateModule({
 		// schema,
 		mutationFn: async () => {
 			//update
 		},
-		onSuccess: (response) => {
-			console.log(response)
+		onSuccess: response => {
+			console.log(response);
 		},
-		onError: (error) => {
-			console.log(error)
-		}
-
-	})
+		onError: error => {
+			console.log(error);
+		},
+	});
 
 	const dismissModal = () => {
 		const newParams = new URLSearchParams(searchParams);
@@ -61,7 +73,6 @@ function UpdateProgramaModal({ programas }: { programas: ProgramaSchema[] }) {
 
 		router.replace(pathname + "?" + newParams.toString());
 	};
-
 
 	const programasParamsId = React.useMemo(
 		() => searchParams.get(programasParams.update),
@@ -90,106 +101,111 @@ function UpdateProgramaModal({ programas }: { programas: ProgramaSchema[] }) {
 				}}
 				disabled={false}
 				form={form}
-				onSubmit={form.handleSubmit(data => 
-					console.log('Falta implementar lógica de actualizar', data)
+				onSubmit={form.handleSubmit(
+					data => console.log("Falta implementar lógica de actualizar", data),
 					// mutation.mutate(data)
 				)}
 				title={`Modificar programa ${selectedPrograma.programa}`}
 				withTrigger
 				triggerLabel='Adicionar programa en variante de curso'
 			>
-				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
-					{programaFields.map(f => (
-						f.inputType === 'checkbox' ?
-						<FormField
-							// control={form.control}
-							name={f.name}
-							key={f.name}
-							defaultValue={selectedPrograma[f.name]}
-							render={({ field }) => {
-								return(
-								<FormItem
-								 className='flex justify-between items-center gap-4 space-y-0 border-2 rounded-2xl w-60 h-16 p-4'
-								 style={{
-									boxShadow: '0 0 20px rgba(67, 84, 234, .7)'
-								 }}
-								>
-									<FormLabel className='col-span-3 text-start'>
-										{f.label}
-									</FormLabel>
-									<FormControl>
-										<Input
-											{...field}
-											value={
-												typeof field.value === "boolean"
-													? undefined
-													: field.value || undefined
-											}
-											type={f.inputType}
-											defaultChecked={selectedPrograma[f.name]}
-										/>
-									</FormControl>
-								</FormItem>
-								)
-							}}
-						/>
-						: (
-                            f.inputType === 'custom-select' ? (
-                                <FormField
-                                    control={form.control}
-                                    name={f.name}
-                                    key={f.name}
-									defaultValue={selectedPrograma[f.name]}
-                                    render={({ field }) => {
-										const options = f.options ? f.options : ['A', 'B']
-										const selectedOption = options.indexOf(selectedPrograma[f.name])
-                                        return(
-                                            <FormItem className='grid grid-cols-12 items-center gap-4 space-y-0 w-full'>
-                                                <FormLabel className='col-span-3 text-end w-2/12'>
-                                                    {f.label}
-                                                </FormLabel>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    defaultValue={options[selectedOption] || '----' as string}
-                                                    disabled={field.disabled}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger className='col-span-9'>
-                                                            <SelectValue
-                                                                placeholder={f.placeholder}
-                                                                className='w-full'
-                                                            />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {options.map(o =>
-                                                            typeof o === "string" ? (
-                                                                <SelectItem value={o} key={o}>
-                                                                    {o}
-                                                                </SelectItem>
-                                                            ) : (
-                                                                <SelectItem value={o} key={o}>
-                                                                    {o}
-                                                                </SelectItem>
-                                                            ),
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormItem>
-                                        )
-                                    }}
-                                />
-
-                            ) : null
-                        )
-					))}
+				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
+					{programaFields.map(f =>
+						f.inputType === "checkbox" ? (
+							<FormField
+								// control={form.control}
+								name={f.name}
+								key={f.name}
+								defaultValue={selectedPrograma[f.name]}
+								render={({ field }) => {
+									return (
+										<FormItem
+											className='flex h-16 w-60 items-center justify-between gap-4 space-y-0 rounded-2xl border-2 p-4'
+											style={{
+												boxShadow: "0 0 20px rgba(67, 84, 234, .7)",
+											}}
+										>
+											<FormLabel className='col-span-3 text-start'>
+												{f.label}
+											</FormLabel>
+											<FormControl>
+												<Input
+													{...field}
+													value={
+														typeof field.value === "boolean"
+															? undefined
+															: field.value || undefined
+													}
+													type={f.inputType}
+													defaultChecked={selectedPrograma[f.name]}
+												/>
+											</FormControl>
+										</FormItem>
+									);
+								}}
+							/>
+						) : f.inputType === "custom-select" ? (
+							<FormField
+								control={form.control}
+								name={f.name}
+								key={f.name}
+								defaultValue={selectedPrograma[f.name]}
+								render={({ field }) => {
+									const options = f.options ? f.options : ["A", "B"];
+									const selectedOption = options.indexOf(
+										selectedPrograma[f.name],
+									);
+									return (
+										<FormItem className='grid w-full grid-cols-12 items-center gap-4 space-y-0'>
+											<FormLabel className='col-span-3 w-2/12 text-end'>
+												{f.label}
+											</FormLabel>
+											<Select
+												onValueChange={field.onChange}
+												defaultValue={
+													options[selectedOption] || ("----" as string)
+												}
+												disabled={field.disabled}
+											>
+												<FormControl>
+													<SelectTrigger className='col-span-9'>
+														<SelectValue
+															placeholder={f.placeholder}
+															className='w-full'
+														/>
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent>
+													{options.map(o =>
+														typeof o === "string" ? (
+															<SelectItem value={o} key={o}>
+																{o}
+															</SelectItem>
+														) : (
+															<SelectItem value={o} key={o}>
+																{o}
+															</SelectItem>
+														),
+													)}
+												</SelectContent>
+											</Select>
+										</FormItem>
+									);
+								}}
+							/>
+						) : null,
+					)}
 				</div>
 			</MutateModal>
 		</section>
-	)
+	);
 }
 
-function DeactivateProgramaModal({ programas }: { programas: ProgramaSchema[] }) {
+function DeactivateProgramaModal({
+	programas,
+}: {
+	programas: ProgramaSchema[];
+}) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
@@ -203,9 +219,7 @@ function DeactivateProgramaModal({ programas }: { programas: ProgramaSchema[] })
 
 	const { mutation } = useMutateModule({
 		// invalidateQueryKey: CURSO_KEYS.lists(),
-		mutationFn: async () => {
-			
-		},
+		mutationFn: async () => {},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
@@ -230,7 +244,9 @@ function DeactivateProgramaModal({ programas }: { programas: ProgramaSchema[] })
 		<DeleteModal
 			description={`Estas seguro que deseas desactivar la variante: ${selectedPrograma.programa}`}
 			title='Desactivar variante'
-			onDelete={() => console.log('falta implementar lógica de delete', selectedPrograma)}
+			onDelete={() =>
+				console.log("falta implementar lógica de delete", selectedPrograma)
+			}
 			disabled={mutation.isPending}
 			onClose={() => dismissModal()}
 			dialogProps={{

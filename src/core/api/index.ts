@@ -4,6 +4,7 @@ import { AlternativaEvaluacionClass } from "./alternativas-evaluacion";
 import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
+import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
@@ -13,9 +14,12 @@ import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
 import { EjeFormativoClass } from "./ejes-formativos";
 import { MallaCurricularClass } from "./mallas-curriculares";
+import { MateriaEnNivelAcademicoClass } from "./materias-niveles-academicos";
 import { ModalidadClass } from "./modalidades";
 import { ModeloEvaluativoClass } from "./modelos-evaluativos";
 import { ModeloNivelacionClass } from "./modelos-nivelacion";
+import { NivelAcademicoClass } from "./niveles-academicos";
+import { NivelMallaClass } from "./niveles-malla";
 import { NivelTitulacionClass } from "./niveles-titulacion";
 import { ParaleloClass } from "./paralelos";
 import { PerfilPracticaClass } from "./perfiles-practica";
@@ -180,6 +184,21 @@ export class APIClass {
 
 	get turnos() {
 		return new TurnoClass(this._apiUrl, this._fetcher);
+	}
+	get nivelesMalla() {
+		return new NivelMallaClass(this._apiUrl, this._fetcher);
+	}
+
+	get nivelesAcademicos() {
+		return new NivelAcademicoClass(this._apiUrl, this._fetcher);
+	}
+
+	get materiasNivelesAcademicos() {
+		return new MateriaEnNivelAcademicoClass(this._apiUrl, this._fetcher);
+	}
+
+	get asignaturasEnNivelesMalla() {
+		return new AsignaturaEnNivelMallaClass(this._apiUrl, this._fetcher);
 	}
 }
 

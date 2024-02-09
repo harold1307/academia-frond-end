@@ -1,6 +1,11 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, GripHorizontal, Lock, StretchHorizontal } from "lucide-react";
+import {
+	FileSignature,
+	GripHorizontal,
+	Lock,
+	StretchHorizontal,
+} from "lucide-react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/app/_components/ui/button";
@@ -14,7 +19,7 @@ import { ROUTES } from "@/core/routes";
 import { ModelosEvaluativoSchema } from "../add-modelo";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
-export type ModelosEvaluativosTableItem = ModelosEvaluativoSchema
+export type ModelosEvaluativosTableItem = ModelosEvaluativoSchema;
 
 const helper = createColumnHelper<ModelosEvaluativosTableItem>();
 
@@ -40,15 +45,15 @@ export const modelosEvaluativosColumns = [
 	}),
 	helper.accessor("examenComplexivo", {
 		header: "Examen",
-        cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.accessor("defineMaximos", {
 		header: "Máximos",
-        cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.accessor("camposActualizanEstado", {
 		header: "EstadoCampos",
-        cell: ({ getValue }) => (getValue() ? 'SI' : 'NO')
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
 	helper.display({
 		id: "actions",
@@ -61,59 +66,68 @@ export const modelosEvaluativosColumns = [
 ];
 
 export const modelosEvaluativosParams = {
-	update: 'actualizarmodeloevaluativo',
-	deactivate: 'desactivarmodeloevaluativo',
-    clone: 'clonemodeloevaluativo',
-	logic: 'logicamodeloevaluativo'
-}
+	update: "actualizarmodeloevaluativo",
+	deactivate: "desactivarmodeloevaluativo",
+	clone: "clonemodeloevaluativo",
+	logic: "logicamodeloevaluativo",
+};
 
 function Actions({ modeloEvaluativoId }: { modeloEvaluativoId: string }) {
 	const { replaceSet } = useMutateSearchParams();
 
 	const router = useRouter();
 	const { cursoId } = useParams<{ cursoId: string }>();
-  const pathname = usePathname()
-  
+	const pathname = usePathname();
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button>Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(modelosEvaluativosParams.update, modeloEvaluativoId)}
-                >
-                    <FileSignature className='mr-2 h-4 w-4' />
-                    <span>Editar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-					onClick={() => {
-						router.push(pathname + ROUTES.modelosEvaluativos.modeloCampos(modeloEvaluativoId))}
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(modelosEvaluativosParams.update, modeloEvaluativoId)
 					}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => {
+						router.push(
+							pathname +
+								ROUTES.modelosEvaluativos.modeloCampos(modeloEvaluativoId),
+						);
+					}}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Campos del Modelo</span>
 				</DropdownMenuItem>
-                <DropdownMenuItem
+				<DropdownMenuItem
 					onClick={() => {
-						replaceSet(modelosEvaluativosParams.logic, modeloEvaluativoId)}
-					}
+						replaceSet(modelosEvaluativosParams.logic, modeloEvaluativoId);
+					}}
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Lógica de cálculo</span>
 				</DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(modelosEvaluativosParams.clone, modeloEvaluativoId)}
-                >
-                    <Lock className='mr-2 h-4 w-4' />
-                    <span>Clonar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(modelosEvaluativosParams.deactivate, modeloEvaluativoId)}
-                >
-                    <Lock className='mr-2 h-4 w-4' />
-                    <span>Desactivar</span>
-                </DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(modelosEvaluativosParams.clone, modeloEvaluativoId)
+					}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Clonar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(modelosEvaluativosParams.deactivate, modeloEvaluativoId)
+					}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Desactivar</span>
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
