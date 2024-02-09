@@ -33,5 +33,9 @@ export const ROUTES = {
 		path: '/adm_horarios',
 		detalleHorario: (horarioId: string) => ROUTES.admHorarios.path + `/${horarioId}`
 
+	},
+	periodoEvaluacion: {
+		path: '/periodosevaluacion',
+
 	}
 } as const;
