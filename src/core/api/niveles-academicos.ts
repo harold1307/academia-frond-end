@@ -4,10 +4,16 @@ import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import type { CreateMateriaEnHorario } from "./materias-horario";
 import type { CreateMateriaEnNivelAcademico } from "./materias-niveles-academicos";
+import { sesionSchema, type SesionFromAPI } from "./sesiones";
 // import type { CreateAsignaturaEnNivelAcademico } from "./asignaturas-niveles-academicos";
 
-export type NivelAcademicoFromAPI = ReplaceDateToString<NivelAcademico>;
+export type NivelAcademicoFromAPI = ReplaceDateToString<
+	NivelAcademico & {
+		sesion: SesionFromAPI;
+	}
+>;
 
 type UpdateNivelAcademicoParams = {
 	id: string;
@@ -33,7 +39,7 @@ export type CreateNivelAcademico = Omit<
 >;
 
 export const baseNivelAcademicoSchema = z.object<
-	ZodInferSchema<NivelAcademicoFromAPI>
+	ZodInferSchema<Omit<NivelAcademicoFromAPI, "sesion">>
 >({
 	id: z.string().uuid(),
 	nombre: z.string().nullable(),
@@ -75,7 +81,9 @@ export const baseNivelAcademicoSchema = z.object<
 });
 
 export const nivelAcademicoSchema = baseNivelAcademicoSchema
-	.extend({})
+	.extend<ZodInferSchema<Pick<NivelAcademicoFromAPI, "sesion">>>({
+		sesion: sesionSchema,
+	})
 	.strict();
 
 export class NivelAcademicoClass {
@@ -167,7 +175,38 @@ export class NivelAcademicoClass {
 
 		return res.json();
 	}
+
+	async createMateriaEnHorario({
+		nivelAcademicoId,
+		materiaId,
+		data,
+	}: CreateMateriaEnHorarioParams): Promise<APIResponse<number | undefined>> {
+		const res = await fetch(
+			this.apiUrl +
+				`/api/niveles-academicos/${nivelAcademicoId}/materias/${materiaId}`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<undefined>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
+
+type CreateMateriaEnHorarioParams = {
+	nivelAcademicoId: string;
+	materiaId: string;
+	data: Omit<CreateMateriaEnHorario, "nivelAcademicoId" | "materiaId">;
+};
 
 type CreateMateriasParams = {
 	nivelAcademicoId: string;
