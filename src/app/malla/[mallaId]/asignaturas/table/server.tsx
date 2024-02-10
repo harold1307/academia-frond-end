@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { APIserver } from "@/core/api-server";
-import type { AsignaturaEnNivelMallaFromAPI } from "@/core/api/mallas-curriculares";
+import type { AsignaturaEnNivelMallaFromAPI } from "@/core/api/asignaturas-niveles-malla";
 import AsignaturaEnMallaTable from ".";
 
 export default async function AsignaturaEnMallaTableServer({

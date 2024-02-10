@@ -69,7 +69,7 @@ export default async function MallaCurricularTableServer({
 			nivelacion: false,
 			materiasAdelantar: malla.maximoMateriasAdelantar,
 			tieneMecanismoTitulacion: false,
-			modalidad: "",
+			modalidad: malla.modalidad.nombre,
 		} satisfies MallaCurricularTableItem;
 	});
 
