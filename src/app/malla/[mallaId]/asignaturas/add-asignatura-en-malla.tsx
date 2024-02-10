@@ -89,11 +89,9 @@ const schema = z.object<
 });
 
 export default function AddAsignaturaEnMalla({
-	mallaCurricularId,
 	asignaturas,
 	mallaNiveles,
 }: {
-	mallaCurricularId: string;
 	asignaturas: {
 		id: string;
 		nombre: string;
@@ -124,16 +122,15 @@ export default function AddAsignaturaEnMalla({
 			},
 		},
 		mutationFn: async ({ asignaturaId, nivelMallaId, ...data }) => {
-			return API.mallasCurriculares.createAsignaturaEnNivelMalla({
-				mallaCurricularId,
+			return API.nivelesMalla.createAsignatura({
 				nivelMallaId,
+				asignaturaId,
 				data: {
 					...data,
 					descripcion: data.descripcion || null,
 					resultadosAprendizaje: data.resultadosAprendizaje || null,
 					competenciaGenerica: data.competenciaGenerica || null,
 					objetivosEspecificos: data.objetivosEspecificos || null,
-					asignaturaId,
 				},
 			});
 		},

@@ -294,7 +294,6 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar malla</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<Button variant='success' disabled={!programaId}>
