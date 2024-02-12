@@ -10,7 +10,7 @@ import {
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
 import { VarianteCurso } from "@prisma/client";
-import { ProgramaSchema } from "../add-programa";
+import { type ProgramaSchema } from "../add-programa";
 
 export type ProgramaTableItem = ProgramaSchema;
 

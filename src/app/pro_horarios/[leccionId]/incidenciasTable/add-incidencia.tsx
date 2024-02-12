@@ -11,7 +11,7 @@ import {
 } from "@/app/_components/ui/form";
 import type { Field } from "@/utils/forms";
 import { useRouter } from "next/navigation";
-import { Incidencias } from "./columns";
+import { type Incidencias } from "./columns";
 import {
 	Select,
 	SelectContent,

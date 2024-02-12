@@ -16,7 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { ROUTES } from "@/core/routes";
-import { ModelosEvaluativoSchema } from "../add-modelo";
+import { type ModelosEvaluativoSchema } from "../add-modelo";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
 export type ModelosEvaluativosTableItem = ModelosEvaluativoSchema;

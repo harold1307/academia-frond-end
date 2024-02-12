@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { programasColumns, ProgramaTableItem } from "./columns";
+import { type programasColumns, type ProgramaTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof programasColumns;

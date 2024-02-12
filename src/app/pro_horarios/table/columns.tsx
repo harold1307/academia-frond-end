@@ -1,6 +1,6 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
-import HorarioCard, { HorarioCardT } from "../horarioCard";
+import HorarioCard, { type HorarioCardT } from "../horarioCard";
 
 export type Week = {
 	lunes: HorarioCardT | string;

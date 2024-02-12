@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
-import { ChangeEvent, ReactEventHandler, useState } from "react";
+import { type ChangeEvent, ReactEventHandler, useState } from "react";
 
 type ContenidoProps = {
 	materia: string;

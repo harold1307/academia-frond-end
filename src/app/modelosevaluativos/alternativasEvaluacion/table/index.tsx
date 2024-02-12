@@ -14,11 +14,11 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import DeleteModal from "@/app/_components/modals/delete-modal";
 import {
-	AlternativasEvaluacionSchema,
+	type AlternativasEvaluacionSchema,
 	alternativaEvaluacionFields,
 } from "../add-alternativas-evaluacion";
 import {
-	AlternativaEvaluacionTableItem,
+	type AlternativaEvaluacionTableItem,
 	alternativaEvaluacionColumns,
 	alternativaEvaluacionParams,
 } from "./columns";

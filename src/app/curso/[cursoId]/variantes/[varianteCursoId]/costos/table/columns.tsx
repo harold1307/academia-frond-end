@@ -9,7 +9,7 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock } from "lucide-react";
-import { CostosSchema } from "../add-costos";
+import { type CostosSchema } from "../add-costos";
 
 export type CostosTableItem = CostosSchema;
 

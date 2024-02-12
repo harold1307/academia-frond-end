@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { WeekTableItem, weekColumns } from "./columns";
+import { type WeekTableItem, weekColumns } from "./columns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 

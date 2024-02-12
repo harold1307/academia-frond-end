@@ -1,6 +1,6 @@
 import AlumnosEnClaseTable from ".";
 import HorariosTable from ".";
-import { AlumnosEnClase } from "./columns";
+import { type AlumnosEnClase } from "./columns";
 
 //MockUp data
 const alumnos: AlumnosEnClase[] = [

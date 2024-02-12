@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { weekColumns, WeekTableItem } from "./columns";
+import { type weekColumns, type WeekTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof weekColumns;

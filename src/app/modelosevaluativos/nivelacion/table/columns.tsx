@@ -10,7 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { NivelacionSchema } from "../add-nivelacion";
+import { type NivelacionSchema } from "../add-nivelacion";
 
 export type NivelacionTableItem = NivelacionSchema;
 

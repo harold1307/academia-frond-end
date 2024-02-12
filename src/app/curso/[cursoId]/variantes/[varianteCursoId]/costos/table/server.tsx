@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { APIserver } from "@/core/api-server";
-import { CostosSchema } from "../add-costos";
+import { type CostosSchema } from "../add-costos";
 import CostosTable from ".";
 
 interface MockUpDataI {

@@ -3,7 +3,7 @@ import { APIserver } from "@/core/api-server";
 import CursoTable from ".";
 import ProgramasTable from ".";
 import HorariosAdminTable from ".";
-import { HorariosAdminSchema } from "./columns";
+import { type HorariosAdminSchema } from "./columns";
 
 interface MockUpDataI {
 	horarios: HorariosAdminSchema[];

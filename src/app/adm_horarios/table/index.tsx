@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import {
-	HorariosAdminSchema,
-	HorariosAdminTableItem,
+	type HorariosAdminSchema,
+	type HorariosAdminTableItem,
 	horariosAdminColumns,
 	horariosParams,
 } from "./columns";
@@ -26,7 +26,7 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import { Field } from "@/utils/forms";
+import { type Field } from "@/utils/forms";
 
 interface HorariosAdminTableProps {
 	data: HorariosAdminSchema[];

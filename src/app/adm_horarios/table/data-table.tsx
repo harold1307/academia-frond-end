@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { horariosAdminColumns, HorariosAdminTableItem } from "./columns";
+import { type horariosAdminColumns, type HorariosAdminTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof horariosAdminColumns;

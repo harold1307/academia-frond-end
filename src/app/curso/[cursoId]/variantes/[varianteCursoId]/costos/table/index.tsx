@@ -20,8 +20,8 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import { CostosSchema, costoFields } from "../add-costos";
-import { CostosTableItem, costosColumns, costosParams } from "./columns";
+import { type CostosSchema, costoFields } from "../add-costos";
+import { type CostosTableItem, costosColumns, costosParams } from "./columns";
 
 interface CostosTableProps {
 	data: CostosSchema[];

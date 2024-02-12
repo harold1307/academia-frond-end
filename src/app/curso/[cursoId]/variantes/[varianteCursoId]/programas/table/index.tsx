@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import {
-	ProgramaTableItem,
+	type ProgramaTableItem,
 	programasColumns,
 	programasParams,
 } from "./columns";
@@ -25,7 +25,7 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import { ProgramaSchema, programaFields } from "../add-programa";
+import { type ProgramaSchema, programaFields } from "../add-programa";
 
 interface ProgramasTableProps {
 	data: ProgramaSchema[];

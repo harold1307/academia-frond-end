@@ -2,11 +2,11 @@
 import React from "react";
 import { DataTable } from "./data-table";
 import {
-	ProyectoIntegradorSchema,
+	type ProyectoIntegradorSchema,
 	proyectoIntegradorFields,
 } from "../add-proyecto-integrador";
 import {
-	ProyectoIntegradorTableItem,
+	type ProyectoIntegradorTableItem,
 	proyectoIntegradorColumns,
 	proyectoIntegradorParams,
 } from "./columns";

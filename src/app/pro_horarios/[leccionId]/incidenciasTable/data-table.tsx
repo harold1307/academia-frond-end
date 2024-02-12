@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { incidenciasColumn, Incidencias } from "./columns";
+import { type incidenciasColumn, type Incidencias } from "./columns";
 
 interface DataTableProps {
 	columns: typeof incidenciasColumn;

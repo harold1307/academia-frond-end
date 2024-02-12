@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { WeekTableItem, weekColumns } from "./columns";
+import { type WeekTableItem, weekColumns } from "./columns";
 
 interface HorariosTable {
 	data: any[];

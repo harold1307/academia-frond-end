@@ -2,7 +2,7 @@
 import { Input } from "@/app/_components/ui/input";
 import { createColumnHelper } from "@tanstack/react-table";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 //Schema hasta tenerlo en Prisma
 export type AlumnosEnClase = {
@@ -65,10 +65,10 @@ function PresentarAsistencia({
 }: PresentarAsistenciaProps) {
 	const [asistencia, setAsistencia] = useState(asistValue);
 
-	useEffect(() => {
-		console.log("update asistencia del alumno ", alumnoId, " ", asistencia);
-		setAsistencia(asistencia);
-	}, [asistencia]);
+	// useEffect(() => {
+	// 	console.log("update asistencia del alumno ", alumnoId, " ", asistencia);
+	// 	setAsistencia(asistencia);
+	// }, [asistencia]);
 
 	return (
 		<div className='flex items-center justify-center'>

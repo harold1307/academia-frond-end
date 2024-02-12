@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { costosColumns, CostosTableItem } from "./columns";
+import { type costosColumns, type CostosTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof costosColumns;

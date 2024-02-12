@@ -10,7 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { AlternativasEvaluacionSchema } from "../add-alternativas-evaluacion";
+import { type AlternativasEvaluacionSchema } from "../add-alternativas-evaluacion";
 
 export type AlternativaEvaluacionTableItem = AlternativasEvaluacionSchema;
 

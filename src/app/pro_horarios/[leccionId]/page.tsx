@@ -1,7 +1,7 @@
 import React from "react";
 import AlumnosEnClaseTableServer from "./alumnosTable/server";
 import AsistenciasTable from "./asistenciasTable";
-import { Asistencias } from "./asistenciasTable/columns";
+import { type Asistencias } from "./asistenciasTable/columns";
 import Contenido from "./contenido";
 import IncidenciaTableServer from "./incidenciasTable/server";
 import AddIncidencia from "./incidenciasTable/add-incidencia";

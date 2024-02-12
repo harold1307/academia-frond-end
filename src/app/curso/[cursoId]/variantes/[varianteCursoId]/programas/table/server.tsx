@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { APIserver } from "@/core/api-server";
 import CursoTable from ".";
-import { ProgramaSchema } from "../add-programa";
+import { type ProgramaSchema } from "../add-programa";
 import ProgramasTable from ".";
 
 interface MockUpDataI {

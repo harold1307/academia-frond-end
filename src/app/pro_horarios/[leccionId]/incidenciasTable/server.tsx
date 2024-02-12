@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { APIserver } from "@/core/api-server";
 import CursoTable from ".";
-import { Incidencias } from "./columns";
+import { type Incidencias } from "./columns";
 
 const incidencias: Incidencias[] = [
 	{
