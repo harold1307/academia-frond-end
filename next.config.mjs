@@ -16,7 +16,7 @@ const nextConfig = {
       }
     ]
   },
-  output: "standalone",
+  output: process.env.NODE_ENV !== 'development' ? "standalone" : undefined,
 }
 
 export default nextConfig;

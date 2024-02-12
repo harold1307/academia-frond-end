@@ -61,6 +61,11 @@ export default function AddUbicacion({
 			console.log({ response });
 			router.refresh();
 		},
+		hookFormProps: {
+			defaultValues: {
+				entornoVirtual: false,
+			},
+		},
 	});
 
 	console.log(sedeId);
