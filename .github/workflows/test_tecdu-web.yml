@@ -9,19 +9,6 @@ on:
       - test
   workflow_dispatch:
 
-env:
-  NODE_ENV: "production"
-  DATABASE_URL: ${{ vars.DATABASE_URL}}
-  API_URL: ${{ vars.API_URL}}
-  AZURE_AD_CLIENT_ID: ${{ vars.AZURE_AD_CLIENT_ID}}
-  AZURE_AD_CLIENT_SECRET: ${{ vars.AZURE_AD_CLIENT_SECRET}}
-  NEXTAUTH_SECRET: ${{ vars.NEXTAUTH_SECRET}}
-  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL}}
-  SKIP_FETCH_PARSE: ${{ vars.SKIP_FETCH_PARSE}}
-  NEXT_PUBLIC_SKIP_FETCH_PARSE: ${{ vars.NEXT_PUBLIC_SKIP_FETCH_PARSE}}
-  NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL}}
-  NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID}}
-
 jobs:
   build:
     runs-on: "ubuntu-latest"
@@ -38,6 +25,22 @@ jobs:
           registry: https://tecduwebimage.azurecr.io/
           username: ${{ secrets.AzureAppService_ContainerUsername_8e03904fd7054896a7b3bac53fb52f8e }}
           password: ${{ secrets.AzureAppService_ContainerPassword_ae76d6744a3442319ff96318cdffac05 }}
+
+      - name: "Create env file"
+        run: |
+          touch .env
+          echo  NODE_ENV: "production" >> .env
+          echo  DATABASE_URL: ${{ vars.DATABASE_URL}} >> .env
+          echo  API_URL: ${{ vars.API_URL}} >> .env
+          echo  AZURE_AD_CLIENT_ID: ${{ vars.AZURE_AD_CLIENT_ID}} >> .env
+          echo  AZURE_AD_CLIENT_SECRET: ${{ vars.AZURE_AD_CLIENT_SECRET}} >> .env
+          echo  NEXTAUTH_SECRET: ${{ vars.NEXTAUTH_SECRET}} >> .env
+          echo  NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL}} >> .env
+          echo  SKIP_FETCH_PARSE: ${{ vars.SKIP_FETCH_PARSE}} >> .env
+          echo  NEXT_PUBLIC_SKIP_FETCH_PARSE: ${{ vars.NEXT_PUBLIC_SKIP_FETCH_PARSE}} >> .env
+          echo  NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL}} >> .env
+          echo  NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID}} >> .env
+          cat .env
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
