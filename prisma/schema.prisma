@@ -207,9 +207,9 @@ model Sede {
   pais             String
   provincia        String
   canton           String
+  alias            String
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now()) @updatedAt
-  alias            String
   coordinaciones   Coordinacion[]
   lugaresEjecucion LugarEjecucion[]
   sesiones         Sesion[]
@@ -310,6 +310,7 @@ model CursoEscuela {
   legalizarMatriculas   Boolean
   registroExterno       Boolean
   registroInterno       Boolean
+  verificaSesion        Boolean
   registroDesdeOtraSede Boolean
   edadMinima            Int?
   edadMaxima            Int?
@@ -319,9 +320,8 @@ model CursoEscuela {
   plantillaId           String?
   createdAt             DateTime                   @default(now())
   updatedAt             DateTime                   @default(now()) @updatedAt
-  verificaSesion        Boolean
   asignaturas           AsignaturaEnCursoEscuela[]
-  paralelo              Paralelo                   @relation(fields: [paraleloId], references: [nombre])
+  paralelo              Paralelo                   @relation(fields: [paraleloId], references: [id])
   plantilla             VarianteCurso?             @relation(fields: [plantillaId], references: [id])
   sesion                Sesion                     @relation(fields: [sesionId], references: [id])
 
@@ -343,15 +343,15 @@ model AsignaturaEnCursoEscuela {
   creditos              Float
   requeridoAprobar      Boolean
   asistenciaAprobar     Int?
+  notaMaxima            Float?
+  notaMinima            Float?
+  cantidadDecimales     Int?
   asignaturaId          String
   cursoEscuelaId        String
   profesorId            String?
   modeloEvaluativoId    String?
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @default(now()) @updatedAt
-  cantidadDecimales     Int?
-  notaMaxima            Float?
-  notaMinima            Float?
   asignatura            Asignatura        @relation(fields: [asignaturaId], references: [id])
   cursoEscuela          CursoEscuela      @relation(fields: [cursoEscuelaId], references: [id], onDelete: Cascade)
   modeloEvaluativo      ModeloEvaluativo? @relation(fields: [modeloEvaluativoId], references: [id])
@@ -365,7 +365,8 @@ model AsignaturaEnCursoEscuela {
 }
 
 model Paralelo {
-  nombre            String           @id
+  id                String           @id @default(uuid())
+  nombre            String
   orden             Int
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @default(now()) @updatedAt
@@ -806,6 +807,7 @@ model Programa {
 
 model MateriaEnNivelAcademico {
   id                       String                   @id @default(uuid())
+  estado                   Boolean                  @default(true)
   numero                   Int                      @unique @default(autoincrement())
   alias                    String?
   materiaExterna           Boolean                  @default(false)
@@ -813,15 +815,14 @@ model MateriaEnNivelAcademico {
   validaParaCreditos       Boolean
   validaParaPromedio       Boolean
   sumaHorasProfesor        Boolean                  @default(true)
+  fechaInicio              DateTime
+  fechaFin                 DateTime
+  asignaturaEnNivelMallaId String?
+  nivelAcademicoId         String
+  asignaturaModuloId       String?
+  modeloEvaluativoId       String
   createdAt                DateTime                 @default(now())
   updatedAt                DateTime                 @default(now()) @updatedAt
-  modeloEvaluativoId       String
-  fechaFin                 DateTime
-  fechaInicio              DateTime
-  asignaturaEnNivelMallaId String?
-  asignaturaModuloId       String?
-  nivelAcademicoId         String
-  estado                   Boolean                  @default(true)
   horario                  MateriaEnHorario[]
   asignaturaEnNivelMalla   AsignaturaEnNivelMalla?  @relation(fields: [asignaturaEnNivelMallaId], references: [id])
   asignaturaModulo         AsignaturaModuloEnMalla? @relation(fields: [asignaturaModuloId], references: [id])
@@ -840,6 +841,7 @@ model MateriaEnNivelAcademico {
 model NivelAcademico {
   id                                                   String                    @id @default(uuid())
   nombre                                               String?
+  estado                                               Boolean                   @default(true)
   profesores                                           Boolean                   @default(true)
   horarios                                             Boolean                   @default(true)
   cuposMaterias                                        Boolean                   @default(true)
@@ -865,18 +867,17 @@ model NivelAcademico {
   capacidad                                            Int
   mensaje                                              String?
   terminosCondiciones                                  String?
+  paraleloId                                           String
   modeloEvaluativoId                                   String
   sesionId                                             String
+  nivelMallaId                                         String
   createdAt                                            DateTime                  @default(now())
   updatedAt                                            DateTime                  @default(now()) @updatedAt
-  nivelMallaId                                         String
-  paraleloId                                           String
-  estado                                               Boolean                   @default(true)
   horario                                              MateriaEnHorario[]
   materias                                             MateriaEnNivelAcademico[]
   modeloEvaluativo                                     ModeloEvaluativo          @relation(fields: [modeloEvaluativoId], references: [id])
   nivelMalla                                           NivelMalla                @relation(fields: [nivelMallaId], references: [id])
-  paralelo                                             Paralelo                  @relation(fields: [paraleloId], references: [nombre])
+  paralelo                                             Paralelo                  @relation(fields: [paraleloId], references: [id])
   sesion                                               Sesion                    @relation(fields: [sesionId], references: [id])
 
   @@unique([paraleloId, nivelMallaId, sesionId])
@@ -889,6 +890,8 @@ model NivelAcademico {
 model MateriaEnHorario {
   id               String                  @id @default(uuid())
   dia              Dia
+  fechaInicio      DateTime
+  fechaFin         DateTime
   materiaId        String
   nivelAcademicoId String
   turnoId          String
@@ -909,14 +912,14 @@ model MateriaEnHorario {
 
 model Ubicacion {
   id                String             @id @default(uuid())
+  estado            Boolean            @default(true)
   nombre            String
   tipo              TipoUbicacion
   capacidad         Int
   entornoVirtual    Boolean
+  sedeId            String
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  estado            Boolean            @default(true)
-  sedeId            String
   materiasEnHorario MateriaEnHorario[]
   sede              Sede               @relation(fields: [sedeId], references: [id])
 
