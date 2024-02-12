@@ -16,11 +16,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, SedeTableItem } from "./columns";
+import type { columns, UbicacionTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: SedeTableItem[];
+	data: UbicacionTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {

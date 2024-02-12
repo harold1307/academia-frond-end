@@ -16,18 +16,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, SedeTableItem } from "./columns";
+import type { CoordinacionTableItem, columns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: SedeTableItem[];
+	data: CoordinacionTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({
-			id: false,
-		});
+		React.useState<VisibilityState>({ id: false });
 	const table = useReactTable({
 		data,
 		columns,

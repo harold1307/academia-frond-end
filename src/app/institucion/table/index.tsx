@@ -1,9 +1,6 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import DeleteModal from "@/app/_components/modals/delete-modal";
@@ -26,45 +23,21 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { API } from "@/core/api-client";
-import { ROUTES } from "@/core/routes";
-import { institucionParams } from "../add-institucion";
-import { INSTITUCION_KEYS } from "../query-keys";
-import { columns, type InstitucionTableItem } from "./columns";
+import { useMutateModule } from "@/hooks/use-mutate-module";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { sedeParams } from "../add-sede";
+import { columns, type SedeTableItem } from "./columns";
 import { DataTable } from "./data-table";
 
-export default function InstitucionTable() {
-	const { data, isLoading } = useQuery({
-		queryKey: INSTITUCION_KEYS.lists(),
-		queryFn: async () => {
-			const data = await API.sedes.getMany();
-
-			return data.data.map(({ createdAt: _, ...rest }) => ({
-				...rest,
-			}));
-		},
-	});
-
-	if (isLoading) {
-		return "Cargando tabla...";
-	}
-
-	if (isLoading && !data) {
-		return "WTF";
-	}
-
-	if (!data) return "Ha ocurrido un error en el fetch";
-
+export default function SedeTable({ sedes }: { sedes: SedeTableItem[] }) {
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
-			<DataTable columns={columns} data={data} />
-			<UpdateInstitucionTableModal instituciones={data} />
-			<DeleteInstitucionModal instituciones={data} />
+			<DataTable columns={columns} data={sedes} />
 		</section>
 	);
 }
 
-const createInstitucionSchema = z.object({
+const createSedeSchema = z.object({
 	nombre: z.string(),
 	pais: z.string(),
 	provincia: z.string(),
@@ -72,50 +45,41 @@ const createInstitucionSchema = z.object({
 	alias: z.string(),
 });
 
-type Data = z.infer<typeof createInstitucionSchema>;
+type Data = z.infer<typeof createSedeSchema>;
 
-function UpdateInstitucionTableModal(props: {
-	instituciones: InstitucionTableItem[];
-}) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const queryClient = useQueryClient();
+export function UpdateSedeTableModal(props: { sedees: SedeTableItem[] }) {
+	const { router, replaceDelete, searchParams } = useMutateSearchParams();
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
+	const {
+		mutation: { mutate, isPending },
+		form,
+	} = useMutateModule({
+		schema: createSedeSchema,
 		mutationFn: async ({ data, id }: { data: Data; id: string }) => {
 			return API.sedes.update({ data: data, id });
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			queryClient.invalidateQueries({
-				queryKey: INSTITUCION_KEYS.lists(),
-			});
-			router.replace(ROUTES.institucion);
+			replaceDelete(sedeParams.delete);
+			router.refresh();
 		},
 	});
 
-	const form = useForm<Data>({
-		resolver: zodResolver(createInstitucionSchema),
-		disabled: isSubmitting,
-	});
-
-	const paramInstitucionId = React.useMemo(
-		() => searchParams.get(institucionParams.update),
+	const paramSedeId = React.useMemo(
+		() => searchParams.get(sedeParams.update),
 		[searchParams],
 	);
 
-	if (!paramInstitucionId) return null;
+	if (!paramSedeId) return null;
 
-	const selectedInstitucion = props.instituciones.find(
-		i => i.id === paramInstitucionId,
-	);
+	const selectedSede = props.sedees.find(i => i.id === paramSedeId);
 
-	if (!selectedInstitucion) {
+	if (!selectedSede) {
 		return (
 			<ModalFallback
 				action='update'
-				redirectTo={() => router.replace(ROUTES.institucion)}
+				redirectTo={() => replaceDelete(sedeParams.update)}
 			/>
 		);
 	}
@@ -124,28 +88,28 @@ function UpdateInstitucionTableModal(props: {
 		<Dialog
 			defaultOpen={true}
 			onOpenChange={open => {
-				if (isSubmitting) return;
+				if (isPending) return;
 				if (!open) {
-					router.replace(ROUTES.institucion);
+					replaceDelete(sedeParams.update);
 					return;
 				}
 			}}
 		>
 			<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>Actualizar institucion</DialogTitle>
+					<DialogTitle>Actualizar sede</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(data =>
-							onSubmit({ data, id: paramInstitucionId }),
+							mutate({ data, id: paramSedeId }),
 						)}
 						className='space-y-8'
 					>
 						<FormField
 							control={form.control}
 							name='nombre'
-							defaultValue={selectedInstitucion.nombre}
+							defaultValue={selectedSede.nombre}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
@@ -161,7 +125,7 @@ function UpdateInstitucionTableModal(props: {
 						{/* <FormField
 							control={form.control}
 							name='tipo'
-							defaultValue={selectedInstitucion.tipo}
+							defaultValue={selectedSede.tipo}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
@@ -176,7 +140,7 @@ function UpdateInstitucionTableModal(props: {
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
-												{Object.keys(TipoInstitucion).map(t => (
+												{Object.keys(TipoSede).map(t => (
 													<SelectItem key={t} value={t}>
 														{t}
 													</SelectItem>
@@ -191,7 +155,7 @@ function UpdateInstitucionTableModal(props: {
 						<FormField
 							control={form.control}
 							name='pais'
-							defaultValue={selectedInstitucion.pais}
+							defaultValue={selectedSede.pais}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
@@ -207,7 +171,7 @@ function UpdateInstitucionTableModal(props: {
 						<FormField
 							control={form.control}
 							name='provincia'
-							defaultValue={selectedInstitucion.provincia}
+							defaultValue={selectedSede.provincia}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
@@ -223,7 +187,7 @@ function UpdateInstitucionTableModal(props: {
 						<FormField
 							control={form.control}
 							name='canton'
-							defaultValue={selectedInstitucion.canton}
+							defaultValue={selectedSede.canton}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
@@ -239,7 +203,7 @@ function UpdateInstitucionTableModal(props: {
 						<FormField
 							control={form.control}
 							name='alias'
-							defaultValue={selectedInstitucion.alias}
+							defaultValue={selectedSede.alias}
 							render={({ field }) => (
 								<FormItem className='mx-auto w-52 md:w-[390px]'>
 									<div className='flex items-center justify-end gap-2'>
@@ -253,14 +217,14 @@ function UpdateInstitucionTableModal(props: {
 							)}
 						/>
 						<DialogFooter>
-							<Button type='submit' variant='success' disabled={isSubmitting}>
-								{isSubmitting ? "Guardando..." : "Guardar"}
+							<Button type='submit' variant='success' disabled={isPending}>
+								{isPending ? "Guardando..." : "Guardar"}
 							</Button>
 							<Button
 								variant='destructive'
 								type='button'
-								onClick={() => router.replace(ROUTES.institucion)}
-								disabled={isSubmitting}
+								onClick={() => replaceDelete(sedeParams.update)}
+								disabled={isPending}
 							>
 								Cancelar
 							</Button>
@@ -272,59 +236,52 @@ function UpdateInstitucionTableModal(props: {
 	);
 }
 
-function DeleteInstitucionModal(props: {
-	instituciones: InstitucionTableItem[];
-}) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const queryClient = useQueryClient();
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
+export function DeleteSedeModal(props: { sedees: SedeTableItem[] }) {
+	const { replaceDelete, router, searchParams } = useMutateSearchParams();
+
+	const { mutate: onSubmit, isPending: isPending } = useMutation({
 		mutationFn: async (id: string) => {
 			return API.sedes.deleteById(id);
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			queryClient.invalidateQueries({
-				queryKey: INSTITUCION_KEYS.lists(),
-			});
-			router.replace(ROUTES.institucion);
+			replaceDelete(sedeParams.delete);
+			router.refresh();
 		},
 	});
 
-	const paramInstitucionId = React.useMemo(
-		() => searchParams.get("eliminarInstitucion"),
+	const paramSedeId = React.useMemo(
+		() => searchParams.get(sedeParams.delete),
 		[searchParams],
 	);
 
-	if (!paramInstitucionId) return null;
+	if (!paramSedeId) return null;
 
-	const selectedInstitucion = props.instituciones.find(
-		i => i.id === paramInstitucionId,
-	);
+	const selectedSede = props.sedees.find(i => i.id === paramSedeId);
 
-	if (!selectedInstitucion) {
+	if (!selectedSede) {
 		return (
 			<ModalFallback
 				action='delete'
-				redirectTo={() => router.replace(ROUTES.institucion)}
+				redirectTo={() => replaceDelete(sedeParams.delete)}
 			/>
 		);
 	}
 
 	return (
 		<DeleteModal
-			description={`Estas seguro que deseas eliminar la institucion: ${selectedInstitucion.nombre}`}
-			title='Eliminar institucion'
-			onDelete={() => onSubmit(selectedInstitucion.id)}
-			disabled={isSubmitting}
-			onClose={() => router.replace(ROUTES.institucion)}
+			description={`Estas seguro que deseas eliminar la sede: ${selectedSede.nombre}`}
+			title='Eliminar sede'
+			onDelete={() => onSubmit(selectedSede.id)}
+			disabled={isPending}
+			onClose={() => replaceDelete(sedeParams.delete)}
 			dialogProps={{
 				open: true,
 				onOpenChange: open => {
-					if (isSubmitting) return;
+					if (isPending) return;
 					if (!open) {
-						router.replace(ROUTES.institucion);
+						replaceDelete(sedeParams.delete);
 						return;
 					}
 				},

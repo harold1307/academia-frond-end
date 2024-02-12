@@ -1,8 +1,4 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -23,12 +19,14 @@ import {
 } from "@/app/_components/ui/form";
 import { API } from "@/core/api-client";
 import type { CreateSede } from "@/core/api/sede";
+import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { ZodInferSchema } from "@/utils/types";
+import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
-import { INSTITUCION_KEYS } from "./query-keys";
+import { SEDE_KEYS } from "./query-keys";
 
-const createInstitucionSchema = z.object<ZodInferSchema<CreateSede>>({
+const createSedeSchema = z.object<ZodInferSchema<CreateSede>>({
 	nombre: z.string(),
 	pais: z.string(),
 	provincia: z.string(),
@@ -36,55 +34,53 @@ const createInstitucionSchema = z.object<ZodInferSchema<CreateSede>>({
 	alias: z.string(),
 });
 
-type Data = z.infer<typeof createInstitucionSchema>;
-
-export const institucionParams = {
-	update: "actualizarInstitucion",
-	delete: "eliminarInstitucion",
+export const sedeParams = {
+	update: "actualizarSede",
+	delete: "eliminarSede",
 };
 
-export default function AddInstitucion() {
-	const [open, setOpen] = React.useState(false);
-	const queryClient = useQueryClient();
+export default function AddSede() {
+	const router = useRouter();
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: Data) => {
+	const {
+		mutation: { mutate, isPending },
+		open,
+		setOpen,
+		form,
+	} = useMutateModule({
+		schema: createSedeSchema,
+		invalidateQueryKey: SEDE_KEYS.all,
+		mutationFn: async data => {
 			return API.sedes.create(data);
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			queryClient.invalidateQueries({
-				queryKey: INSTITUCION_KEYS.lists(),
-			});
-			setOpen(false);
+			router.refresh();
+		},
+		hookFormProps: {
+			shouldUnregister: true,
 		},
 	});
 
-	const form = useForm<Data>({
-		resolver: zodResolver(createInstitucionSchema),
-		disabled: isSubmitting,
-		shouldUnregister: true,
-	});
-
 	return (
-		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar institucion</h1>
+		<section className='mb-2'>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<Button variant='success'>Adicionar</Button>
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>
-						<DialogTitle>Adicionar institucion</DialogTitle>
+						<DialogTitle>Adicionar sede</DialogTitle>
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data => mutate(data))}
 							className='space-y-8'
 						>
 							<FormField
 								control={form.control}
+								disabled={isPending}
 								name='nombre'
 								render={({ field }) => (
 									<FormItem className='mx-auto w-52 md:w-[390px]'>
@@ -98,37 +94,9 @@ export default function AddInstitucion() {
 									</FormItem>
 								)}
 							/>
-							{/* <FormField
-								control={form.control}
-								name='tipo'
-								render={({ field }) => (
-									<FormItem className='mx-auto w-52 md:w-[390px]'>
-										<div className='flex items-center justify-end gap-2'>
-											<FormLabel>Tipo</FormLabel>
-											<Select
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-											>
-												<FormControl>
-													<SelectTrigger className='md:max-w-xs'>
-														<SelectValue placeholder='--------------------' />
-													</SelectTrigger>
-												</FormControl>
-												<SelectContent>
-													{Object.keys(TipoInstitucion).map(t => (
-														<SelectItem key={t} value={t}>
-															{t}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</div>
-										<FormMessage />
-									</FormItem>
-								)}
-							/> */}
 							<FormField
 								control={form.control}
+								disabled={isPending}
 								name='pais'
 								render={({ field }) => (
 									<FormItem className='mx-auto w-52 md:w-[390px]'>
@@ -144,6 +112,7 @@ export default function AddInstitucion() {
 							/>
 							<FormField
 								control={form.control}
+								disabled={isPending}
 								name='provincia'
 								render={({ field }) => (
 									<FormItem className='mx-auto w-52 md:w-[390px]'>
@@ -159,6 +128,7 @@ export default function AddInstitucion() {
 							/>
 							<FormField
 								control={form.control}
+								disabled={isPending}
 								name='canton'
 								render={({ field }) => (
 									<FormItem className='mx-auto w-52 md:w-[390px]'>
@@ -174,6 +144,7 @@ export default function AddInstitucion() {
 							/>
 							<FormField
 								control={form.control}
+								disabled={isPending}
 								name='alias'
 								render={({ field }) => (
 									<FormItem className='mx-auto w-52 md:w-[390px]'>

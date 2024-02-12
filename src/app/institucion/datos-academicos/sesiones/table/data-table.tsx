@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,17 +15,18 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, SedeTableItem } from "./columns";
+import type { columns, SesionTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: SedeTableItem[];
+	data: SesionTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({
 			id: false,
+			enUso: false,
 		});
 	const table = useReactTable({
 		data,
