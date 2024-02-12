@@ -15,7 +15,8 @@ const nextConfig = {
         hostname: 'www.shutterstock.com'
       }
     ]
-  }
+  },
+  output: "standalone",
 }
 
 export default nextConfig;
