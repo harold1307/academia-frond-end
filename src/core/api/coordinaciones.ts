@@ -4,16 +4,18 @@ import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import { programaSchema, type ProgramaFromAPI } from "./programas";
 
 export type CoordinacionFromAPI = ReplaceDateToString<
 	Coordinacion & {
 		enUso: boolean;
+		programas: ProgramaFromAPI[];
 	}
 >;
 
 export type CreateCoordinacion = Omit<
 	CoordinacionFromAPI,
-	"id" | "enUso" | "createdAt" | "updatedAt"
+	"id" | "enUso" | "createdAt" | "updatedAt" | "programas"
 >;
 
 const schema = z
@@ -23,6 +25,7 @@ const schema = z
 		enUso: z.boolean(),
 		alias: z.string(),
 		sedeId: z.string().uuid(),
+		programas: programaSchema.array(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -38,7 +41,10 @@ export class CoordinacionClass {
 	async update(params: {
 		id: string;
 		data: Partial<
-			Omit<CoordinacionFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
+			Omit<
+				CoordinacionFromAPI,
+				"id" | "enUso" | "createdAt" | "updatedAt" | "programas" | "sedeId"
+			>
 		>;
 	}): Promise<APIResponse<CoordinacionFromAPI>> {
 		const res = this.fetcher(

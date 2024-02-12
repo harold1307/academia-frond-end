@@ -295,7 +295,7 @@ export class MallaCurricularClass {
 				data: mallaSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/mallas-curriculares",
+			this.apiUrl + "/api/mallas-curriculares?" + searchParams.toString(),
 		);
 
 		return res;

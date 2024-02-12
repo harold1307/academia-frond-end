@@ -34,7 +34,7 @@ type UpdateProgramaParams = {
 	data: Partial<Omit<CreatePrograma, "nombre">>;
 };
 
-const programaSchema = z
+export const programaSchema = z
 	.object<ZodInferSchema<ProgramaFromAPI>>({
 		nombre: z.string(),
 		enUso: z.boolean(),

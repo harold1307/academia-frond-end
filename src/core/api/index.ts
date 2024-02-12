@@ -14,10 +14,12 @@ import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
 import { EjeFormativoClass } from "./ejes-formativos";
 import { MallaCurricularClass } from "./mallas-curriculares";
+import { MateriaEnHorarioClass } from "./materias-horario";
 import { MateriaEnNivelAcademicoClass } from "./materias-niveles-academicos";
 import { ModalidadClass } from "./modalidades";
 import { ModeloEvaluativoClass } from "./modelos-evaluativos";
 import { ModeloNivelacionClass } from "./modelos-nivelacion";
+import { AsignaturaModuloEnMallaClass } from "./modulos-malla";
 import { NivelAcademicoClass } from "./niveles-academicos";
 import { NivelMallaClass } from "./niveles-malla";
 import { NivelTitulacionClass } from "./niveles-titulacion";
@@ -31,6 +33,7 @@ import { TipoDocumentoClass } from "./tipos-documento";
 import { TipoDocumentoEnProgramaClass } from "./tipos-documento-programas";
 import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
+import { UbicacionClass } from "./ubicaciones";
 import { VarianteCursoClass } from "./variantes-curso";
 
 export type APIResponse<D> = {
@@ -199,6 +202,18 @@ export class APIClass {
 
 	get asignaturasEnNivelesMalla() {
 		return new AsignaturaEnNivelMallaClass(this._apiUrl, this._fetcher);
+	}
+
+	get materiasHorarios() {
+		return new MateriaEnHorarioClass(this._apiUrl, this._fetcher);
+	}
+
+	get modulosMalla() {
+		return new AsignaturaModuloEnMallaClass(this._apiUrl, this._fetcher);
+	}
+
+	get ubicaciones() {
+		return new UbicacionClass(this._apiUrl, this._fetcher);
 	}
 }
 
