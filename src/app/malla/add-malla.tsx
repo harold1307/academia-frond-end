@@ -634,17 +634,32 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 												}
 												case "checkbox": {
 													return (
-														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-															<FormLabel className='col-span-3 text-end'>
-																{f.label}
-															</FormLabel>
-															<FormControl>
-																<Checkbox
-																	checked={field.value as boolean}
-																	onCheckedChange={field.onChange}
-																/>
-															</FormControl>
-														</FormItem>
+														<FormField
+															control={form.control}
+															name={f.name}
+															key={f.name}
+															disabled={isPending}
+															shouldUnregister={true}
+															render={({ field }) => (
+																<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+																	<FormLabel className='col-span-3 text-end'>
+																		{f.label}
+																	</FormLabel>
+																	<FormControl>
+																		<Input
+																			{...field}
+																			value={undefined}
+																			onChange={e =>
+																				field.onChange(e.target.checked)
+																			}
+																			checked={field.value as boolean}
+																			type={f.inputType}
+																			className='col-span-9'
+																		/>
+																	</FormControl>
+																</FormItem>
+															)}
+														/>
 													);
 												}
 												default: {
