@@ -32,18 +32,18 @@ jobs:
           push: true
           tags: tecduwebimage.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_8e03904fd7054896a7b3bac53fb52f8e }}/testing:${{ github.sha }}
           file: ./Dockerfile
-          secrets: |
-            "NODE_ENV: 'production'"
-            "DATABASE_URL: ${{ vars.DATABASE_URL}}"
-            "API_URL: ${{ vars.API_URL}}"
-            "AZURE_AD_CLIENT_ID: ${{ vars.AZURE_AD_CLIENT_ID}}"
-            "AZURE_AD_CLIENT_SECRET: ${{ vars.AZURE_AD_CLIENT_SECRET}}"
-            "NEXTAUTH_SECRET: ${{ vars.NEXTAUTH_SECRET}}"
-            "NEXTAUTH_URL: ${{ vars.NEXTAUTH_URL}}"
-            "SKIP_FETCH_PARSE: ${{ vars.SKIP_FETCH_PARSE}}"
-            "NEXT_PUBLIC_SKIP_FETCH_PARSE: ${{ vars.NEXT_PUBLIC_SKIP_FETCH_PARSE}}"
-            "NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL}}"
-            "NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID: ${{ vars.NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID}}"
+          build-args: |
+            "NODE_ENV=production"
+            "DATABASE_URL=${{ vars.DATABASE_URL}}"
+            "API_URL=${{ vars.API_URL}}"
+            "AZURE_AD_CLIENT_ID=${{ vars.AZURE_AD_CLIENT_ID}}"
+            "AZURE_AD_CLIENT_SECRET=${{ vars.AZURE_AD_CLIENT_SECRET}}"
+            "NEXTAUTH_SECRET=${{ vars.NEXTAUTH_SECRET}}"
+            "NEXTAUTH_URL=${{ vars.NEXTAUTH_URL}}"
+            "SKIP_FETCH_PARSE=${{ vars.SKIP_FETCH_PARSE}}"
+            "NEXT_PUBLIC_SKIP_FETCH_PARSE=${{ vars.NEXT_PUBLIC_SKIP_FETCH_PARSE}}"
+            "NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL}}"
+            "NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID=${{ vars.NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID}}"
 
   deploy:
     runs-on: ubuntu-latest
