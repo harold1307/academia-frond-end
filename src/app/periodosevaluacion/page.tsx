@@ -1,5 +1,7 @@
 import React from "react";
 import MateriasDeNivelTableServer from "./table/server";
+import CarrerasDataTableServer from "./cronograma/table/server";
+import PeriodosEvaluativosTableServer from "./table/server";
 
 
 type Context = {
@@ -12,9 +14,8 @@ export default function PeriodoEvaluacion({ searchParams } : Context) {
     if(section === '0') {
         return(
             <div>
-                Periodo de Evaluación
                 <React.Suspense fallback={<h1>Cargando tabla...</h1>} >
-                <MateriasDeNivelTableServer />
+                    <PeriodosEvaluativosTableServer />  
                 </React.Suspense>
             </div>
         )
@@ -23,10 +24,8 @@ export default function PeriodoEvaluacion({ searchParams } : Context) {
     if(section === '1') {
         return(
             <div>
-                Periodo de Evaluación
                 <React.Suspense fallback={<h1>Cargando tabla...</h1>} >
                     <MateriasDeNivelTableServer />
-                    <h1>he</h1>
                 </React.Suspense>
             </div>
         )
@@ -34,10 +33,8 @@ export default function PeriodoEvaluacion({ searchParams } : Context) {
     
         return(
         <div>
-            Periodo de Evaluación
             <React.Suspense fallback={<h1>Cargando tabla...</h1>} >
-                <MateriasDeNivelTableServer />
-                <h1>he</h1>
+                <CarrerasDataTableServer />
             </React.Suspense>
         </div>
     )

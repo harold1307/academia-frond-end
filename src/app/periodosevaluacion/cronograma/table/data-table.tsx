@@ -17,11 +17,11 @@ import {
 	TableRow,
 } from "@/app/_components/ui/table";
 
-import { CronogramaColumns, CronogramasTableItem } from "./columns";
+import { CarrerasColumns, CarreraTableItem } from "./columns";
 
 interface DataTableProps {
-	columns: typeof CronogramaColumns;
-	data: CronogramasTableItem[];
+	columns: typeof CarrerasColumns;
+	data: CarreraTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
@@ -45,7 +45,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 
 	return (
 		<div>
-			<Table>
+			<Table className="p-0">
 				<TableHeader>
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
@@ -73,7 +73,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 				<TableBody 
 				// className="before:content-['space'] before:leading-8 before:text-transparent"
 				>
-					{table.getRowModel().rows?.length ? (
+               {table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map(row => (
 							<TableRow
 								key={row.id}

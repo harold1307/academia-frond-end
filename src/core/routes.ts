@@ -39,6 +39,6 @@ export const ROUTES = {
 	},
 	periodoEvaluacion: {
 		path: '/periodosevaluacion',
-
+		materias: (sectionId: string) => ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma` 
 	}
 } as const;

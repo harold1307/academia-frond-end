@@ -34,7 +34,7 @@ const modulos = [
 	},
 	{
 		label: "Periodos de Evaluación",
-		href: ROUTES.periodoEvaluacion.path
+		href: ROUTES.periodoEvaluacion.path + "?section=0"
 	},
 	// {
 	// 	label: "Mis Horarios",

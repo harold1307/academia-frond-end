@@ -1,7 +1,7 @@
 import { DatePickerDemo } from "@/app/_components/date-picker";
 import { createColumnHelper } from "@tanstack/react-table";
 
-export type MateriasDeNivelTableItem = {
+export type CronogramasTableItem = {
    id:string, 
 	campo: string,
    inicio: string,
@@ -9,9 +9,9 @@ export type MateriasDeNivelTableItem = {
    tipo: string
 }
 
-const helper = createColumnHelper<MateriasDeNivelTableItem>();
+const helper = createColumnHelper<CronogramasTableItem>();
 
-export const MateriasDeNivelColumns = [
+export const CronogramaColumns = [
 	helper.accessor("id",{}),
 	helper.accessor("campo", {
 		header: "Campo",
@@ -21,7 +21,7 @@ export const MateriasDeNivelColumns = [
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string
 			
-			return <Actions materiaId={id} />
+			return <Date materiaId={id} />
 		}
 	}),
 	helper.accessor("fin", {
@@ -29,7 +29,7 @@ export const MateriasDeNivelColumns = [
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string
 			
-			return <Actions materiaId={id} />
+			return <Date materiaId={id} />
 		}
 	}),
 	helper.accessor("tipo", {
@@ -42,7 +42,7 @@ type ActionsProps = {
 }
 
 
-const Actions = (props : ActionsProps ) => {
+const Date = (props : ActionsProps ) => {
 
 	const setNewDate = () => {}
 	return <DatePickerDemo onChangeValue={setNewDate} />

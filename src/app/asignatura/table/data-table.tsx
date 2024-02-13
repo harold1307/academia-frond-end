@@ -23,6 +23,12 @@ interface DataTableProps {
 	data: AsignaturaTableItem[];
 }
 
+const headerManual = [
+	{
+		id:1 ,
+		header: 'Ciclo 2023'
+	}]
+
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({
@@ -42,6 +48,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 		<div className='rounded-md border'>
 			<Table>
 				<TableHeader>
+
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map(header => {
