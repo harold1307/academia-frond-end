@@ -4,9 +4,32 @@ import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import {
+	asignaturaEnNivelMallaSchema,
+	type AsignaturaEnNivelMallaFromAPI,
+} from "./asignaturas-niveles-malla";
+import {
+	modeloEvaluativoSchema,
+	type ModeloEvaluativoFromAPI,
+} from "./modelos-evaluativos";
+import {
+	asignaturaModuloEnMallaSchema,
+	type AsignaturaModuloEnMallaFromAPI,
+} from "./modulos-malla";
 
-export type MateriaEnNivelAcademicoFromAPI =
-	ReplaceDateToString<MateriaEnNivelAcademico>;
+export type MateriaEnNivelAcademicoFromAPI = ReplaceDateToString<
+	MateriaEnNivelAcademico & {
+		asignaturaEnNivelMalla: Omit<
+			AsignaturaEnNivelMallaFromAPI,
+			"ejeFormativo" | "areaConocimiento" | "campoFormacion"
+		> | null;
+		asignaturaModulo: Omit<
+			AsignaturaModuloEnMallaFromAPI,
+			"areaConocimiento" | "campoFormacion"
+		> | null;
+		modeloEvaluativo: ModeloEvaluativoFromAPI;
+	}
+>;
 
 type UpdateMateriaEnNivelAcademicoParams = {
 	id: string;
@@ -33,25 +56,56 @@ export type CreateMateriaEnNivelAcademico = Pick<
 	modulosMalla: string[];
 };
 
-export const materiaEnNivelMateriaEnNivelAcademicoSchema = z
-	.object<ZodInferSchema<MateriaEnNivelAcademicoFromAPI>>({
-		id: z.string().uuid(),
-		alias: z.string().nullable(),
-		asignaturaEnNivelMallaId: z.string().uuid().nullable(),
-		asignaturaModuloId: z.string().uuid().nullable(),
-		materiaExterna: z.boolean(),
-		fechaFin: z.string().datetime(),
-		fechaInicio: z.string().datetime(),
-		practicasPermitidas: z.boolean(),
-		validaParaCreditos: z.boolean(),
-		validaParaPromedio: z.boolean(),
-		sumaHorasProfesor: z.boolean(),
-		modeloEvaluativoId: z.string().uuid(),
-		nivelAcademicoId: z.string().uuid(),
-		numero: z.number(),
+export const baseMateriaEnNivelAcademicoSchema = z.object<
+	ZodInferSchema<
+		Omit<
+			MateriaEnNivelAcademicoFromAPI,
+			"asignaturaEnNivelMalla" | "asignaturaModulo" | "modeloEvaluativo"
+		>
+	>
+>({
+	id: z.string().uuid(),
+	estado: z.boolean(),
+	alias: z.string().nullable(),
+	asignaturaEnNivelMallaId: z.string().uuid().nullable(),
+	asignaturaModuloId: z.string().uuid().nullable(),
+	materiaExterna: z.boolean(),
+	fechaFin: z.string().datetime(),
+	fechaInicio: z.string().datetime(),
+	practicasPermitidas: z.boolean(),
+	validaParaCreditos: z.boolean(),
+	validaParaPromedio: z.boolean(),
+	sumaHorasProfesor: z.boolean(),
+	modeloEvaluativoId: z.string().uuid(),
+	nivelAcademicoId: z.string().uuid(),
+	numero: z.number(),
 
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
+	createdAt: z.string().datetime(),
+	updatedAt: z.string().datetime(),
+});
+
+export const materiaEnNivelAcademicoSchema = baseMateriaEnNivelAcademicoSchema
+	.extend<
+		ZodInferSchema<
+			Pick<
+				MateriaEnNivelAcademicoFromAPI,
+				"asignaturaEnNivelMalla" | "asignaturaModulo" | "modeloEvaluativo"
+			>
+		>
+	>({
+		asignaturaEnNivelMalla: asignaturaEnNivelMallaSchema
+			.omit({
+				ejeFormativo: true,
+				areaConocimiento: true,
+				campoFormacion: true,
+			})
+			.nullable(),
+
+		asignaturaModulo: asignaturaModuloEnMallaSchema
+			.omit({ campoFormacion: true, areaConocimiento: true })
+			.nullable(),
+
+		modeloEvaluativo: modeloEvaluativoSchema,
 	})
 	.strict();
 
@@ -69,7 +123,7 @@ export class MateriaEnNivelAcademicoClass {
 	> {
 		const res = this.fetcher(
 			z.object({
-				data: materiaEnNivelMateriaEnNivelAcademicoSchema,
+				data: materiaEnNivelAcademicoSchema,
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/materias-niveles-academicos/${id}`,
@@ -90,7 +144,7 @@ export class MateriaEnNivelAcademicoClass {
 	): Promise<APIResponse<MateriaEnNivelAcademicoFromAPI[]>> {
 		const res = this.fetcher(
 			z.object({
-				data: materiaEnNivelMateriaEnNivelAcademicoSchema.array(),
+				data: materiaEnNivelAcademicoSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/materias-niveles-academicos",
@@ -104,7 +158,7 @@ export class MateriaEnNivelAcademicoClass {
 	): Promise<APIResponse<MateriaEnNivelAcademicoFromAPI | null>> {
 		const res = this.fetcher(
 			z.object({
-				data: materiaEnNivelMateriaEnNivelAcademicoSchema.nullable(),
+				data: materiaEnNivelAcademicoSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/materias-niveles-academicos/${id}`,

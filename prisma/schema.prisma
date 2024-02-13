@@ -214,6 +214,7 @@ model Sede {
   lugaresEjecucion LugarEjecucion[]
   sesiones         Sesion[]
   titulos          Titulo[]
+  ubicaciones      Ubicacion[]
 
   @@map("sedes")
 }
@@ -492,15 +493,16 @@ model Modalidad {
 }
 
 model Turno {
-  id        String   @id @default(uuid())
-  estado    Boolean  @default(false)
-  horas     Float
-  comienza  DateTime @db.Time(0)
-  termina   DateTime @db.Time(0)
-  sesionId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  sesion    Sesion   @relation(fields: [sesionId], references: [id])
+  id                String             @id @default(uuid())
+  estado            Boolean            @default(false)
+  horas             Float
+  comienza          DateTime           @db.Time(0)
+  termina           DateTime           @db.Time(0)
+  sesionId          String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
+  materiasEnHorario MateriaEnHorario[]
+  sesion            Sesion             @relation(fields: [sesionId], references: [id])
 
   @@index([sesionId], map: "turnos_sesionId_fkey")
   @@map("turnos")
@@ -819,6 +821,8 @@ model MateriaEnNivelAcademico {
   asignaturaEnNivelMallaId String?
   asignaturaModuloId       String?
   nivelAcademicoId         String
+  estado                   Boolean                  @default(true)
+  horario                  MateriaEnHorario[]
   asignaturaEnNivelMalla   AsignaturaEnNivelMalla?  @relation(fields: [asignaturaEnNivelMallaId], references: [id])
   asignaturaModulo         AsignaturaModuloEnMalla? @relation(fields: [asignaturaModuloId], references: [id])
   modeloEvaluativo         ModeloEvaluativo         @relation(fields: [modeloEvaluativoId], references: [id])
@@ -868,6 +872,7 @@ model NivelAcademico {
   nivelMallaId                                         String
   paraleloId                                           String
   estado                                               Boolean                   @default(true)
+  horario                                              MateriaEnHorario[]
   materias                                             MateriaEnNivelAcademico[]
   modeloEvaluativo                                     ModeloEvaluativo          @relation(fields: [modeloEvaluativoId], references: [id])
   nivelMalla                                           NivelMalla                @relation(fields: [nivelMallaId], references: [id])
@@ -881,15 +886,41 @@ model NivelAcademico {
   @@map("niveles_academicos")
 }
 
-model Ubicacion {
-  id             String        @id @default(uuid())
-  nombre         String
-  tipo           TipoUbicacion
-  capacidad      Int
-  entornoVirtual Boolean
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+model MateriaEnHorario {
+  id               String                  @id @default(uuid())
+  dia              Dia
+  materiaId        String
+  nivelAcademicoId String
+  turnoId          String
+  ubicacionId      String
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @default(now()) @updatedAt
+  materia          MateriaEnNivelAcademico @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+  nivelAcademico   NivelAcademico          @relation(fields: [nivelAcademicoId], references: [id])
+  turno            Turno                   @relation(fields: [turnoId], references: [id])
+  ubicacion        Ubicacion               @relation(fields: [ubicacionId], references: [id])
 
+  @@index([materiaId], map: "horarios_materiaId_fkey")
+  @@index([nivelAcademicoId], map: "horarios_nivelAcademicoId_fkey")
+  @@index([turnoId], map: "horarios_turnoId_fkey")
+  @@index([ubicacionId], map: "horarios_ubicacionId_fkey")
+  @@map("horarios")
+}
+
+model Ubicacion {
+  id                String             @id @default(uuid())
+  nombre            String
+  tipo              TipoUbicacion
+  capacidad         Int
+  entornoVirtual    Boolean
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  estado            Boolean            @default(true)
+  sedeId            String
+  materiasEnHorario MateriaEnHorario[]
+  sede              Sede               @relation(fields: [sedeId], references: [id])
+
+  @@index([sedeId], map: "ubicaciones_sedeId_fkey")
   @@map("ubicaciones")
 }
 
@@ -984,4 +1015,16 @@ enum TipoUbicacion {
   SALON
 
   @@map("tipo_ubicacion")
+}
+
+enum Dia {
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+  DOMINGO
+
+  @@map("dia")
 }

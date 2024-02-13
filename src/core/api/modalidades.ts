@@ -21,7 +21,7 @@ type UpdateModalidadParams = {
 	>;
 };
 
-const modalidadSchema = z
+export const modalidadSchema = z
 	.object<ZodInferSchema<ModalidadFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),

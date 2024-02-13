@@ -13,7 +13,7 @@ export type CoordinacionFromAPI = ReplaceDateToString<
 
 export type CreateCoordinacion = Omit<
 	CoordinacionFromAPI,
-	"sedeId" | "id" | "enUso" | "createdAt" | "updatedAt"
+	"id" | "enUso" | "createdAt" | "updatedAt"
 >;
 
 const schema = z

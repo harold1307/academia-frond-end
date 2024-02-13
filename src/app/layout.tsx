@@ -23,12 +23,12 @@ export default function RootLayout({
 			<body className={inter.className + " dark"}>
 				<Providers>
 					<main className='p-6'>
-						<div className='w-100 flex h-16 items-center justify-between pl-6 pr-6'>
+						<header className='w-100 mb-4 flex h-16 items-center justify-between pl-6 pr-6'>
 							<Link href='/'>
 								<Logo />
 							</Link>
 							<UserSession />
-						</div>
+						</header>
 						{children}
 					</main>
 				</Providers>

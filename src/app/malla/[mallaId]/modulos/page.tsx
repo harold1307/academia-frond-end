@@ -1,6 +1,5 @@
 import React from "react";
 
-import { APIserver } from "@/core/api-server";
 import AddModulo from "./add-modulo";
 import MallaModulosTableServer from "./table/server";
 
@@ -11,12 +10,10 @@ type Context = {
 };
 
 export default async function MallaModulosPage({ params }: Context) {
-	const asignaturas = await APIserver.asignaturas.getMany();
-
 	return (
 		<>
 			<div className='mt-4'>
-				<AddModulo mallaId={params.mallaId} asignaturas={asignaturas.data} />
+				<AddModulo mallaCurricularId={params.mallaId} />
 				<React.Suspense fallback={"Cargando tabla..."}>
 					<MallaModulosTableServer mallaId={params.mallaId} />
 				</React.Suspense>

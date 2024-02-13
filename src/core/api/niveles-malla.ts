@@ -6,7 +6,7 @@ import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateAsignaturaEnNivelMalla } from "./asignaturas-niveles-malla";
 import {
-	mallaSchema,
+	baseMallaSchema,
 	type MallaCurricularFromAPI,
 } from "./mallas-curriculares";
 import type { CreateNivelAcademico } from "./niveles-academicos";
@@ -64,14 +64,12 @@ export const nivelMallaSchema = baseNivelMallaSchema
 			>
 		>
 	>({
-		malla: mallaSchema.omit({
-			practicaPreProfesional: true,
-			practicaComunitaria: true,
-			tituloObtenido: true,
-			niveles: true,
-			asignaturas: true,
-			modulos: true,
-		}),
+		malla: z.lazy(() =>
+			baseMallaSchema.omit({
+				practicaPreProfesional: true,
+				practicaComunitaria: true,
+			}),
+		),
 	})
 	.strict();
 

@@ -7,10 +7,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/app/_components/ui/card";
-import type {
-	AsignaturaEnNivelMallaFromAPI,
-	MallaCurricularFromAPI,
-} from "@/core/api/mallas-curriculares";
+import type { AsignaturaEnNivelMallaFromAPI } from "@/core/api/asignaturas-niveles-malla";
+import type { MallaCurricularFromAPI } from "@/core/api/mallas-curriculares";
 import { NIVELES_PREFIXES } from "@/utils/forms";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -43,10 +41,8 @@ export default function AsignaturaEnMallaTable({
 				// @ts-expect-error not well typed because dynamic columns
 				cell: ({ getValue }) =>
 					(
-						getValue() as MallaCurricularFromAPI["niveles"][number]
-					).asignaturas.map(a => (
-						<AsignaturaEnMalla asignaturaEnMalla={a} key={a.id} />
-					)),
+						getValue() as (AsignaturaEnNivelMallaFromAPI & { nivel: number })[]
+					).map(a => <AsignaturaEnMalla asignaturaEnMalla={a} key={a.id} />),
 			})),
 			// ...nivelesPrefixes.map(prefix => ({
 			// 	accessorKey: prefix + " NIVEL",
