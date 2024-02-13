@@ -9,7 +9,7 @@ type Context = {
 	searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default async function MallaPage({ searchParams }: Context) {
+export default async function PeriodoPage({ searchParams }: Context) {
 	const seccion = searchParams.seccion;
 
 	if (seccion === "cortes") {

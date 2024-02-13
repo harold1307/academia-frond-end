@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import PeriodosPageTabs from "./tabs";
+import CrmPageTabs from "./tabs";
 
-export default function PeriodoLayout({ children }: React.PropsWithChildren) {
+export default function CrmLayout({ children }: React.PropsWithChildren) {
 	const [locat, setLocat] = useState<string>();
 
 	useEffect(() => {
@@ -11,7 +11,7 @@ export default function PeriodoLayout({ children }: React.PropsWithChildren) {
 	}, []);
 	return (
 		<>
-			<PeriodosPageTabs />
+			<CrmPageTabs />
 			{children}
 		</>
 	);

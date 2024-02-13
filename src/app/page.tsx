@@ -44,6 +44,10 @@ const modulos = [
 		label: "Periodos",
 		href: ROUTES.periodo.path,
 	},
+	{
+		label: "CRM",
+		href: ROUTES.crm.path,
+	},
 	// {
 	// 	label: "Mis Horarios",
 	// 	href: ROUTES.horarios.path
