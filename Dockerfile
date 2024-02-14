@@ -1,5 +1,27 @@
 FROM node:18-alpine AS base
 
+ARG DATABASE_URL=${DATABASE_URL}
+ARG API_URL=${API_URL}
+ARG AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID}
+ARG AZURE_AD_CLIENT_SECRET=${AZURE_AD_CLIENT_SECRET}
+ARG NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+ARG NEXTAUTH_URL=${NEXTAUTH_URL}
+ARG SKIP_FETCH_PARSE=${SKIP_FETCH_PARSE}
+ARG NEXT_PUBLIC_SKIP_FETCH_PARSE=${NEXT_PUBLIC_SKIP_FETCH_PARSE}
+ARG NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ARG NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID=${NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID}
+
+ENV DATABASE_URL=${DATABASE_URL}
+ENV API_URL=${API_URL}
+ENV AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID}
+ENV AZURE_AD_CLIENT_SECRET=${AZURE_AD_CLIENT_SECRET}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL}
+ENV SKIP_FETCH_PARSE=${SKIP_FETCH_PARSE}
+ENV NEXT_PUBLIC_SKIP_FETCH_PARSE=${NEXT_PUBLIC_SKIP_FETCH_PARSE}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID=${NEXT_PUBLIC_MSAL_PUBLIC_CLIENT_ID}
+
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -7,13 +29,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
 
 # Rebuild the source code only when needed
@@ -29,12 +47,7 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+RUN corepack enable pnpm && pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
