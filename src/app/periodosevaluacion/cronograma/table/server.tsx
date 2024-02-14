@@ -1,4 +1,4 @@
-import CarrerasTable, { CarrerasServerData } from ".";
+import CarrerasTable, { type CarrerasServerData } from ".";
 
 export const carrerasData: CarrerasServerData[] = [
 	{

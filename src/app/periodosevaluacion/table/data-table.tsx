@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,8 +15,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-
-import { CronogramaColumns, CronogramasTableItem } from "./columns";
+import type { CronogramaColumns, CronogramasTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof CronogramaColumns;

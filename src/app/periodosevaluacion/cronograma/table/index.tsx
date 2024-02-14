@@ -1,20 +1,18 @@
 "use client";
-
-import { useState } from "react";
-import { CarreraTableItem, CarrerasColumns } from "./columns";
-import { DataTable } from "./data-table";
-import {
-	DropdownMenu,
-	DropdownMenuTrigger,
-	DropdownMenuContent,
-	DropdownMenuItem,
-} from "@radix-ui/react-dropdown-menu";
-import { CollapsibleItem } from "@/app/_components/ui/collapsible";
 import {
 	CollapsibleContent,
+	CollapsibleItem,
 	CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
+} from "@/app/_components/ui/collapsible";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/app/_components/ui/dropdown-menu";
 import { Header } from "../../table";
+import { CarrerasColumns, type CarreraTableItem } from "./columns";
+import { DataTable } from "./data-table";
 
 export interface CarrerasServerData {
 	nombre: string;
@@ -47,6 +45,7 @@ export default function CarrerasTable({ data }: CarrerasProps) {
 						<DropdownMenuItem
 							className='text-white-500 my-1 w-full justify-start rounded-md py-2 text-lg shadow-primaryShadow [&_tr]:border-b'
 							onSelect={handleSelect}
+							key={carrera.nombre}
 						>
 							{carrera.nombre}
 						</DropdownMenuItem>
@@ -55,7 +54,7 @@ export default function CarrerasTable({ data }: CarrerasProps) {
 			</DropdownMenu>
 			{data[0]?.modalidad.map(modalidad => {
 				return (
-					<Header>
+					<Header key={modalidad.nombre}>
 						<CollapsibleItem>
 							<CollapsibleTrigger>{modalidad.nombre}</CollapsibleTrigger>
 							<CollapsibleContent>

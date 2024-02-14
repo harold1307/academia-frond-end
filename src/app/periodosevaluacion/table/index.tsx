@@ -1,16 +1,17 @@
 "use client";
+import Link from "next/link";
 import React from "react";
-import { DataTable } from "./data-table";
-import { CronogramaColumns, CronogramasTableItem } from "./columns";
-import AddCronograma from "./add-cronograma";
+
+import { Button } from "@/app/_components/ui/button";
 import {
 	CollapsibleContent,
-	CollapsibleTrigger,
 	CollapsibleItem,
+	CollapsibleTrigger,
 } from "@/app/_components/ui/collapsible";
-import Link from "next/link";
-import { Button } from "@/app/_components/ui/button";
 import { ROUTES } from "@/core/routes";
+import AddCronograma from "./add-cronograma";
+import { CronogramaColumns, type CronogramasTableItem } from "./columns";
+import { DataTable } from "./data-table";
 
 type ModelosProps = {
 	nombre: string;
@@ -75,13 +76,11 @@ export default function CronogramasTable({ data }: PeriodosEvaluativoProps) {
 
 interface HeaderProps {
 	className?: string;
-	key?: number;
 	children: React.ReactNode;
 }
 
-export const Header = ({ className, key, children }: HeaderProps) => (
+export const Header = ({ className, children }: HeaderProps) => (
 	<div
-		key={key}
 		className={`text-white-500 my-4 w-full justify-start rounded-md px-2 py-4 text-lg shadow-primaryShadow [&_tr]:border-b ${className}`}
 	>
 		{children}
