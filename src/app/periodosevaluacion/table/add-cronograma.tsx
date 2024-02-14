@@ -27,11 +27,11 @@ import { Button } from "../../_components/ui/button";
 import { Input } from "../../_components/ui/input";
 
 type CreateCronograma = {
-	nombre: string
-}
+	nombre: string;
+};
 
 const schema = z.object<ZodInferSchema<CreateCronograma>>({
-	nombre: z.string()
+	nombre: z.string(),
 });
 
 export default function AddCronograma() {
@@ -39,8 +39,8 @@ export default function AddCronograma() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
 		mutationFn: async data => {
-			return
-         // return API.cronogramas.create({
+			return;
+			// return API.cronogramas.create({
 			// 	...data,
 			// });
 		},
@@ -133,5 +133,5 @@ const fields = [
 		name: "nombre",
 		inputType: "text",
 		label: "Nombre",
-	}
+	},
 ] satisfies Field<keyof CreateCronograma>[];
