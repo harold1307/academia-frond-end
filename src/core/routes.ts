@@ -33,12 +33,13 @@ export const ROUTES = {
 			ROUTES.proHorarios.path + `/${horarioId}`,
 	},
 	admHorarios: {
-		path: '/adm_horarios',
-		detalleHorario: (horarioId: string) => ROUTES.admHorarios.path + `/${horarioId}`
-
+		path: "/adm_horarios",
+		detalleHorario: (horarioId: string) =>
+			ROUTES.admHorarios.path + `/${horarioId}`,
 	},
 	periodoEvaluacion: {
-		path: '/periodosevaluacion',
-		materias: (sectionId: string) => ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma` 
-	}
+		path: "/periodosevaluacion",
+		materias: (sectionId: string) =>
+			ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma`,
+	},
 } as const;

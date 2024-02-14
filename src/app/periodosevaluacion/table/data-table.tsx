@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,8 +15,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-
-import { CronogramaColumns, CronogramasTableItem } from "./columns";
+import type { CronogramaColumns, CronogramasTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof CronogramaColumns;
@@ -51,26 +49,25 @@ export function DataTable({ columns, data }: DataTableProps) {
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header, index) => {
 								return (
-									<TableHead key={header.id}
-									 className={
-										`${index === 0 ? 'border-l-2 rounded-l-md' : ''} 
-										${index === headerGroup.headers.length - 1 ? ' border-r-2 rounded-r-md' : ''} 
-										font-light px-0 py-0 w-2 relative`
-									 }
+									<TableHead
+										key={header.id}
+										className={`${index === 0 ? "rounded-l-md border-l-2" : ""} 
+										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
+										relative w-2 px-0 py-0 font-light`}
 									>
 										{header.isPlaceholder
 											? null
 											: flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-										)}
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
 									</TableHead>
 								);
 							})}
 						</TableRow>
 					))}
 				</TableHeader>
-				<TableBody 
+				<TableBody
 				// className="before:content-['space'] before:leading-8 before:text-transparent"
 				>
 					{table.getRowModel().rows?.length ? (

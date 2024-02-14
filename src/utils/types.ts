@@ -20,11 +20,15 @@ type OptionalNullable<T> = {
 };
 
 export type ReplaceDateToString<Obj> = {
-	[K in keyof Obj]: Obj[K] extends Date
-		? string
-		: Obj[K] extends object
-			? ReplaceDateToString<Obj[K]>
-			: Obj[K];
+	[K in keyof Obj]: IsNullable<Obj[K]> extends true
+		? Exclude<Obj[K], null> extends Date
+			? string | null
+			: Obj[K]
+		: Obj[K] extends Date
+			? string
+			: Obj[K] extends object
+				? ReplaceDateToString<Obj[K]>
+				: Obj[K];
 };
 
 export type ReplaceNullableToOptional<Obj> = Prettify<OptionalNullable<Obj>>;
@@ -61,3 +65,5 @@ export type ZodInferSchema<T extends object> = {
 export type NonNullableObject<T extends object> = {
 	[K in keyof T]: Exclude<T[K], null>;
 };
+
+type ASd = ReplaceDateToString<{ date: Date | null }>;
