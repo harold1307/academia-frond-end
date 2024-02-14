@@ -106,7 +106,7 @@ export default function AddDocumento() {
 									name={f.name}
 									key={
 										f.name.includes("Desde")
-											? f.name + form.watch().niveles
+											? f.name + form.watch()
 											: f.name
 									}
 									render={({ field }) => {
@@ -249,7 +249,10 @@ export default function AddDocumento() {
 															{f.label}
 														</FormLabel>
 														<FormControl>
-															<ToggleSwitch value={f.options} />
+															<ToggleSwitch
+																checked={field.value as boolean}
+																onCheckedChange={field.onChange}
+															/>
 														</FormControl>
 													</FormItem>
 												);
@@ -317,20 +320,17 @@ const fields = [
 	{ name: "observaciones", inputType: "textarea", label: "Observaciones" },
 	{
 		name: "copiaDigital",
-		inputType: "custom-select",
-		options: ["si", "no"],
+		inputType: "toggle",
 		label: "Copia digital",
 	},
 	{
 		name: "copiaFisica",
-		inputType: "custom-select",
-		options: ["si", "no"],
+		inputType: "toggle",
 		label: "Copia fisica",
 	},
 	{
 		name: "visible",
-		inputType: "custom-select",
-		options: ["si", "no"],
+		inputType: "toggle",
 		label: "Visible para estudiante",
 	},
 ];

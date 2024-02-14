@@ -273,9 +273,12 @@ function UpdatePeriodoTableModal(props) {
 													<FormLabel className='col-span-3 text-end'>
 														{f.label}
 													</FormLabel>
-													<ToggleSwitch
-														value={(f.options === "SI").toString()}
-													/>
+													<FormControl>
+														<ToggleSwitch
+															checked={field.value as boolean}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
 												</FormItem>
 											);
 										}

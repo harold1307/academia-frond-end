@@ -44,6 +44,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { cn } from "@/utils";
+import { ToggleSwitch } from "@/app/_components/ui/toggle";
 
 export default function CronogramaTable({ mallas }) {
 	return (
@@ -247,6 +248,21 @@ function UpdateCronograma(props) {
 													</FormLabel>
 													<FormControl>
 														<Checkbox
+															checked={field.value as boolean}
+															onCheckedChange={field.onChange}
+														/>
+													</FormControl>
+												</FormItem>
+											);
+										}
+										case "toggle": {
+											return (
+												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+													<FormLabel className='col-span-3 text-end'>
+														{f.label}
+													</FormLabel>
+													<FormControl>
+														<ToggleSwitch
 															checked={field.value as boolean}
 															onCheckedChange={field.onChange}
 														/>

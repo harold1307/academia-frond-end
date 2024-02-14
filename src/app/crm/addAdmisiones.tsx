@@ -56,6 +56,7 @@ import { ROUTES } from "@/core/routes";
 import { FormInputFile } from "../_components/ui/form-input-file";
 import { GetCountries, countries } from "@/utils/countries";
 import { states } from "@/utils/states";
+import { ToggleSwitch } from "../_components/ui/toggle";
 
 export const admisionParams = {
 	add: "agregarAdm",
@@ -239,6 +240,21 @@ export default function AddAdmisiones() {
 															</FormLabel>
 															<FormControl>
 																<Checkbox
+																	checked={field.value as boolean}
+																	onCheckedChange={field.onChange}
+																/>
+															</FormControl>
+														</FormItem>
+													);
+												}
+												case "toggle": {
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<ToggleSwitch
 																	checked={field.value as boolean}
 																	onCheckedChange={field.onChange}
 																/>

@@ -268,6 +268,21 @@ function ActualizarUniforme(props) {
 													</FormItem>
 												);
 											}
+											case "toggle": {
+												return (
+													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+														<FormLabel className='col-span-3 text-end'>
+															{f.label}
+														</FormLabel>
+														<FormControl>
+															<ToggleSwitch
+																checked={field.value as boolean}
+																onCheckedChange={field.onChange}
+															/>
+														</FormControl>
+													</FormItem>
+												);
+											}
 											default: {
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
@@ -532,7 +547,10 @@ function Seguimientos(props) {
 															{f.label}
 														</FormLabel>
 														<FormControl>
-															<ToggleSwitch value={f.options} />
+															<ToggleSwitch
+																checked={field.value as boolean}
+																onCheckedChange={field.onChange}
+															/>
 														</FormControl>
 													</FormItem>
 												);
@@ -801,7 +819,10 @@ function AgendarSeguimientos(props) {
 															{f.label}
 														</FormLabel>
 														<FormControl>
-															<ToggleSwitch value={f.options} />
+															<ToggleSwitch
+																checked={field.value as boolean}
+																onCheckedChange={field.onChange}
+															/>
 														</FormControl>
 													</FormItem>
 												);

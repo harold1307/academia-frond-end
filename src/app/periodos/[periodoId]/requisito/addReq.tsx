@@ -44,6 +44,7 @@ import {
 	PopoverTrigger,
 } from "../../../_components/ui/popover";
 import { Textarea } from "../../../_components/ui/textarea";
+import { ToggleSwitch } from "@/app/_components/ui/toggle";
 
 export const reqParams = {
 	add: "agregarCorte",
@@ -262,6 +263,21 @@ export default function AddReq() {
 													</FormItem>
 												);
 											}
+											case "toggle": {
+												return (
+													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+														<FormLabel className='col-span-3 text-end'>
+															{f.label}
+														</FormLabel>
+														<FormControl>
+															<ToggleSwitch
+																checked={field.value as boolean}
+																onCheckedChange={field.onChange}
+															/>
+														</FormControl>
+													</FormItem>
+												);
+											}
 											default: {
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
@@ -333,30 +349,24 @@ const fields = [
 	{ name: "nivel", inputType: "text", label: "Nivel" },
 	{
 		name: "obligatorio",
-		inputType: "custom-select",
+		inputType: "toggle",
 		placeholder: "-----------",
 		options: ["si", "no"],
 		label: "Obligatorio",
 	},
 	{
 		name: "transferenciaIES",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
 		label: "Transferencia a otra IES",
 	},
 	{
 		name: "primeraMatricula",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
 		label: "Primera Matriculas",
 	},
 	{
 		name: "repite",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		inputType: "toggle",
 		label: "Repiten materias",
 	},
 	{

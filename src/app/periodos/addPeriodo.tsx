@@ -274,7 +274,10 @@ export default function AddPeriodo() {
 															{f.label}
 														</FormLabel>
 														<FormControl>
-															<ToggleSwitch value={f.options} />
+															<ToggleSwitch
+																checked={field.value as boolean}
+																onCheckedChange={field.onChange}
+															/>
 														</FormControl>
 													</FormItem>
 												);
