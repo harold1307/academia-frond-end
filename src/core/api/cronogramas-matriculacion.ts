@@ -4,9 +4,22 @@ import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
+import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
+import { programaSchema, type ProgramaFromAPI } from "./programas";
+import { sedeSchema, type SedeFromAPI } from "./sede";
 
-export type CronogramaMatriculacionFromAPI =
-	ReplaceDateToString<CronogramaMatriculacion>;
+export type CronogramaMatriculacionFromAPI = ReplaceDateToString<
+	CronogramaMatriculacion & {
+		sede: Omit<SedeFromAPI, "enUso">;
+		programa: Omit<
+			ProgramaFromAPI,
+			"enUso" | "nivelTitulacion" | "detalleNivelTitulacion"
+		>;
+		modalidad: Omit<ModalidadFromAPI, "enUso">;
+		nivel: Omit<NivelMallaFromAPI, "enUso" | "malla">;
+	}
+>;
 
 export type CreateCronogramaMatriculacion = Omit<
 	CronogramaMatriculacionFromAPI,
@@ -18,8 +31,15 @@ type UpdateCronogramaMatriculacionParams = {
 	data: Omit<CreateCronogramaMatriculacion, "periodoId" | "nivelId">;
 };
 
-export const cronogramaMatriculacionSchema = z
-	.object<ZodInferSchema<CronogramaMatriculacionFromAPI>>({
+export const baseCronogramaMatriculacionSchema = z
+	.object<
+		ZodInferSchema<
+			Omit<
+				CronogramaMatriculacionFromAPI,
+				"sede" | "programa" | "modalidad" | "nivel"
+			>
+		>
+	>({
 		id: z.string(),
 		fechaFin: z.string().datetime(),
 		fechaInicio: z.string().datetime(),
@@ -28,6 +48,26 @@ export const cronogramaMatriculacionSchema = z
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
+	})
+	.strict();
+
+export const cronogramaMatriculacionSchema = baseCronogramaMatriculacionSchema
+	.extend<
+		ZodInferSchema<
+			Pick<
+				CronogramaMatriculacionFromAPI,
+				"sede" | "programa" | "modalidad" | "nivel"
+			>
+		>
+	>({
+		sede: sedeSchema.omit({ enUso: true }),
+		programa: programaSchema.omit({
+			enUso: true,
+			nivelTitulacion: true,
+			detalleNivelTitulacion: true,
+		}),
+		modalidad: modalidadSchema.omit({ enUso: true }),
+		nivel: baseNivelMallaSchema,
 	})
 	.strict();
 

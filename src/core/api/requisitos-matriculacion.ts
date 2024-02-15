@@ -1,16 +1,29 @@
 import type { RequisitoMatriculacion } from "@prisma/client";
+import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
-import { z } from "zod";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
+import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
+import { programaSchema, type ProgramaFromAPI } from "./programas";
+import { sedeSchema, type SedeFromAPI } from "./sede";
 
-export type RequisitoMatriculacionFromAPI =
-	ReplaceDateToString<RequisitoMatriculacion>;
+export type RequisitoMatriculacionFromAPI = ReplaceDateToString<
+	RequisitoMatriculacion & {
+		sede: Omit<SedeFromAPI, "enUso">;
+		programa: Omit<
+			ProgramaFromAPI,
+			"enUso" | "nivelTitulacion" | "detalleNivelTitulacion"
+		>;
+		modalidad: Omit<ModalidadFromAPI, "enUso">;
+		nivel: Omit<NivelMallaFromAPI, "enUso" | "malla">;
+	}
+>;
 
 export type CreateRequisitoMatriculacion = Omit<
 	RequisitoMatriculacionFromAPI,
-	"id" | "createdAt" | "updatedAt"
+	"id" | "createdAt" | "updatedAt" | "sede" | "programa" | "modalidad" | "nivel"
 >;
 
 type UpdateRequisitoMatriculacionParams = {
@@ -18,8 +31,15 @@ type UpdateRequisitoMatriculacionParams = {
 	data: Partial<Omit<CreateRequisitoMatriculacion, "periodoId">>;
 };
 
-const requisitoMatriculacionSchema = z
-	.object<ZodInferSchema<RequisitoMatriculacionFromAPI>>({
+const baseRequisitoMatriculacionSchema = z
+	.object<
+		ZodInferSchema<
+			Omit<
+				RequisitoMatriculacionFromAPI,
+				"sede" | "programa" | "modalidad" | "nivel"
+			>
+		>
+	>({
 		id: z.string(),
 		obligatorio: z.boolean(),
 		transferenciaIES: z.boolean(),
@@ -35,6 +55,24 @@ const requisitoMatriculacionSchema = z
 		updatedAt: z.string().datetime(),
 	})
 	.strict();
+
+const requisitoMatriculacionSchema = baseRequisitoMatriculacionSchema.extend<
+	ZodInferSchema<
+		Pick<
+			RequisitoMatriculacionFromAPI,
+			"sede" | "programa" | "modalidad" | "nivel"
+		>
+	>
+>({
+	sede: sedeSchema.omit({ enUso: true }),
+	programa: programaSchema.omit({
+		enUso: true,
+		nivelTitulacion: true,
+		detalleNivelTitulacion: true,
+	}),
+	modalidad: modalidadSchema.omit({ enUso: true }),
+	nivel: baseNivelMallaSchema,
+});
 
 export class RequisitoMatriculacionClass {
 	constructor(

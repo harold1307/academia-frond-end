@@ -21,6 +21,7 @@ export type PeriodoLectivoFromAPI = ReplaceDateToString<
 		legalizarMatriculas: boolean;
 		secuenciaDesdeNumeroEspecifico: boolean;
 		numeroMatricula: boolean;
+		calculoCosto: CalculoCostoFromAPI;
 	}
 >;
 
@@ -50,6 +51,7 @@ type UpdatePeriodoLectivoParams = {
 			| "legalizarMatriculas"
 			| "secuenciaDesdeNumeroEspecifico"
 			| "numeroMatricula"
+			| "calculoCosto"
 		>
 	>;
 };
@@ -76,6 +78,7 @@ export type CreatePeriodoLectivo = Omit<
 	| "legalizarMatriculas"
 	| "secuenciaDesdeNumeroEspecifico"
 	| "numeroMatricula"
+	| "calculoCosto"
 >;
 
 export const calculoCostoSchema = z.object<ZodInferSchema<CalculoCostoFromAPI>>(
@@ -143,6 +146,7 @@ export const periodoLectivoSchema = z
 		otrasActividades: z.boolean(),
 
 		calculoCostoId: z.string().uuid(),
+		calculoCosto: calculoCostoSchema,
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
