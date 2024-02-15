@@ -2,10 +2,10 @@ import Link from "next/link";
 
 import { ROUTES } from "@/core/routes";
 import { getServerAuthSession } from "@/server/auth";
-import LupaIcon from "./_components/ui/icons/lupa";
 import FileUpload from "./_components/ui/icons/file-up";
-import QrCode from "./_components/ui/icons/qr-code";
+import LupaIcon from "./_components/ui/icons/lupa";
 import PdfIcon from "./_components/ui/icons/pdf";
+import QrCode from "./_components/ui/icons/qr-code";
 
 const modulos = [
 	{
@@ -47,10 +47,6 @@ const modulos = [
 	{
 		label: "CRM",
 		href: ROUTES.crm.path,
-	},
-	{
-		label: "Periodos de Evaluación",
-		href: ROUTES.periodoEvaluacion.path + "?section=0",
 	},
 	// {
 	// 	label: "Mis Horarios",

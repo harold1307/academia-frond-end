@@ -90,59 +90,59 @@ export default function MallaCurricularTable({
 // 		);
 // 	}
 
-// 	return null;
-// <MutateModal
-// 	form={form}
-// 	title='Actualizar asignatura'
-// 	disabled={mutation.isPending}
-// 	onSubmit={form.handleSubmit(data =>
-// 		mutation.mutate({ data, id: paramMallaId }),
-// 	)}
-// 	dialogProps={{
-// 		defaultOpen: true,
-// 		onOpenChange: open => {
-// 			if (mutation.isPending) return;
-// 			if (!open) {
-// 				replaceDelete(mallaParams.update);
-// 				return;
-// 			}
-// 		},
-// 	}}
-// >
-// 	<FormField
-// 		control={form.control}
-// 		name='nombre'
-// 		defaultValue={selectedMalla.nombre}
-// 		render={({ field }) => (
-// 			<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-// 				<FormLabel className='col-span-3 text-end'>Nombre</FormLabel>
-// 				<FormControl>
-// 					<Input
-// 						{...field}
-// 						value={field.value || undefined}
-// 						disabled={true}
-// 						className='col-span-9'
-// 					/>
-// 				</FormControl>
-// 			</FormItem>
-// 		)}
-// 	/>
-// 	<FormField
-// 		control={form.control}
-// 		name='codigo'
-// 		defaultValue={selectedMalla.codigo}
-// 		render={({ field }) => (
-// 			<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-// 				<FormLabel className='col-span-3 text-end'>Codigo</FormLabel>
-// 				<FormControl>
-// 					<Input
-// 						{...field}
-// 						value={field.value || undefined}
-// 						className='col-span-9'
-// 					/>
-// 				</FormControl>
-// 			</FormItem>
-// 		)}
-// 	/>
-// </MutateModal>
+	// return null;
+	// <MutateModal
+	// 	form={form}
+	// 	title='Actualizar asignatura'
+	// 	disabled={mutation.isPending}
+	// 	onSubmit={form.handleSubmit(data =>
+	// 		mutation.mutate({ data, id: paramMallaId }),
+	// 	)}
+	// 	dialogProps={{
+	// 		defaultOpen: true,
+	// 		onOpenChange: open => {
+	// 			if (mutation.isPending) return;
+	// 			if (!open) {
+	// 				replaceDelete(mallaParams.update);
+	// 				return;
+	// 			}
+	// 		},
+	// 	}}
+	// >
+	// 	<FormField
+	// 		control={form.control}
+	// 		name='nombre'
+	// 		defaultValue={selectedMalla.nombre}
+	// 		render={({ field }) => (
+	// 			<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+	// 				<FormLabel className='col-span-3 text-end'>Nombre</FormLabel>
+	// 				<FormControl>
+	// 					<Input
+	// 						{...field}
+	// 						value={field.value || undefined}
+	// 						disabled={true}
+	// 						className='col-span-9'
+	// 					/>
+	// 				</FormControl>
+	// 			</FormItem>
+	// 		)}
+	// 	/>
+	// 	<FormField
+	// 		control={form.control}
+	// 		name='codigo'
+	// 		defaultValue={selectedMalla.codigo}
+	// 		render={({ field }) => (
+	// 			<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+	// 				<FormLabel className='col-span-3 text-end'>Codigo</FormLabel>
+	// 				<FormControl>
+	// 					<Input
+	// 						{...field}
+	// 						value={field.value || undefined}
+	// 						className='col-span-9'
+	// 					/>
+	// 				</FormControl>
+	// 			</FormItem>
+	// 		)}
+	// 	/>
+	// </MutateModal>
 // }

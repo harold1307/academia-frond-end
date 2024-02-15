@@ -1,3 +1,4 @@
+import type { CalculoCosto, PeriodoLectivo } from "@prisma/client";
 import { z } from "zod";
 import { zodFetcher, type APIResponse } from ".";
 import { ZodFetcher } from "zod-fetch";
@@ -128,6 +129,7 @@ export class CronogramaMatriculas {
 	}
 }
 
+<<<<<<< HEAD
 export class TraduccionPeriodosClass {
 	constructor(
 		private apiUrl: string,
@@ -152,3 +154,10 @@ export class TraduccionPeriodosClass {
 		return res;
 	}
 }
+=======
+type CreateCronogramaMatriculacionParams = {
+	periodoLectivoId: string;
+	nivelMallaId: string;
+	data: CreateCronogramaMatriculacion;
+};
+>>>>>>> b76ee57611d4905596a13dde7ba7af079b4b621b

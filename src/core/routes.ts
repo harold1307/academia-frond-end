@@ -37,6 +37,11 @@ export const ROUTES = {
 		detalleHorario: (horarioId: string) =>
 			ROUTES.admHorarios.path + `/${horarioId}`,
 	},
+	periodoEvaluacion: {
+		path: "/periodosevaluacion",
+		materias: (sectionId: string) =>
+			ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma`,
+	},
 	periodo: {
 		path: "/periodos",
 		cortes: "/periodos?seccion=cortes",
@@ -58,10 +63,5 @@ export const ROUTES = {
 		seguimiento: "/crm?seccion=seguimiento",
 		documentos: (crmId: string) => ROUTES.crm.path + `/${crmId}/documentos`,
 		depositos: (crmId: string) => ROUTES.crm.path + `/${crmId}/depositos`,
-	},
-	periodoEvaluacion: {
-		path: "/periodosevaluacion",
-		materias: (sectionId: string) =>
-			ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma`,
 	},
 } as const;
