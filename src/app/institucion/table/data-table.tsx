@@ -1,11 +1,12 @@
 "use client";
 
 import {
-	type VisibilityState,
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
+	type VisibilityState,
 } from "@tanstack/react-table";
+import React from "react";
 
 import {
 	Table,
@@ -15,17 +16,18 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { InstitucionTableItem, columns } from "./columns";
-import React from "react";
+import type { columns, SedeTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: InstitucionTableItem[];
+	data: SedeTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({});
+		React.useState<VisibilityState>({
+			id: false,
+		});
 	const table = useReactTable({
 		data,
 		columns,
@@ -35,12 +37,6 @@ export function DataTable({ columns, data }: DataTableProps) {
 			columnVisibility,
 		},
 	});
-
-	React.useEffect(() => {
-		table.setColumnVisibility({
-			id: false,
-		});
-	}, [table]);
 
 	return (
 		<div className='rounded-md border'>

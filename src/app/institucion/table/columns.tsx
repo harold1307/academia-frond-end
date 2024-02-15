@@ -3,13 +3,14 @@ import { createColumnHelper } from "@tanstack/react-table";
 import BaseTableActions from "@/app/_components/table-actions";
 import type { SedeFromAPI } from "@/core/api/sede";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { institucionParams } from "../add-institucion";
+import { sedeParams } from "../add-sede";
+import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
 
-export type InstitucionTableItem = Omit<SedeFromAPI, "createdAt"> & {
+export type SedeTableItem = Omit<SedeFromAPI, "createdAt"> & {
 	enUso: boolean;
 };
 
-const columnHelper = createColumnHelper<InstitucionTableItem>();
+const columnHelper = createColumnHelper<SedeTableItem>();
 
 export const columns = [
 	columnHelper.accessor("id", {}),
@@ -28,13 +29,18 @@ export const columns = [
 	columnHelper.accessor("canton", {
 		header: "Canton",
 	}),
-	columnHelper.accessor("codigo", {
-		header: "Codigo",
+	columnHelper.accessor("alias", {
+		header: "Alias",
 	}),
-	// TODO: esto debe ser dependiendo si la institucion esta en uso - como una institucion esta en uso??
+	// TODO: esto debe ser dependiendo si la sede esta en uso - como una sede esta en uso??
 	columnHelper.accessor("enUso", {
 		header: "En uso",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	columnHelper.display({
 		id: "actions",
@@ -47,13 +53,12 @@ export const columns = [
 				<BaseTableActions
 					updateOptions={{
 						buttonProps: {
-							onClick: () => replaceSet(institucionParams.update, id),
+							onClick: () => replaceSet(sedeParams.update, id),
 						},
-						show: !enUso,
 					}}
 					deleteOptions={{
 						buttonProps: {
-							onClick: () => replaceSet(institucionParams.delete, id),
+							onClick: () => replaceSet(sedeParams.delete, id),
 						},
 						show: !enUso,
 					}}

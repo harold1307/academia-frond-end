@@ -1,3 +1,3 @@
-import { Play } from 'next/font/google'
+import { Play } from "next/font/google";
 
-export const fontPlay = Play({ subsets: ['latin'], weight: '400'})
+export const fontPlay = Play({ subsets: ["latin"], weight: "400" });

@@ -14,14 +14,16 @@ export type ModalidadFromAPI = ReplaceDateToString<
 type UpdateModalidadParams = {
 	id: string;
 	data: Partial<
-		Omit<
-			ModalidadFromAPI,
-			"nombre" | "enUso" | "id" | "createdAt" | "updatedAt"
-		>
+		Omit<ModalidadFromAPI, "enUso" | "id" | "createdAt" | "updatedAt">
 	>;
 };
 
-const modalidadSchema = z
+export type CreateModalidad = Omit<
+	ModalidadFromAPI,
+	"enUso" | "createdAt" | "updatedAt" | "id"
+>;
+
+export const modalidadSchema = z
 	.object<ZodInferSchema<ModalidadFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),

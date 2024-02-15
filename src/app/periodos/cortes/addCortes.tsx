@@ -1,6 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TipoDuracion, type MallaCurricular } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
@@ -50,32 +49,7 @@ export const cortesParams = {
 	update: "actualizarCorte",
 } as const;
 
-type CreateCortesInput = Omit<
-	MallaCurricular,
-	| "id"
-	| "createdAt"
-	| "registroPracticasDesde"
-	| "registroVinculacionDesde"
-	| "registroProyectosDesde"
-> & {
-	registroPracticasDesde: (typeof NIVELES_PREFIXES)[number];
-	registroVinculacionDesde: (typeof NIVELES_PREFIXES)[number];
-	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
-};
-
-type CreateCortesOutput = Omit<
-	MallaCurricular,
-	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	fechaAprobacion: string;
-	fechaLimiteVigencia: string;
-};
-
-const createCortesSchema: z.ZodType<
-	CreateCortesOutput,
-	z.ZodTypeDef,
-	CreateCortesInput
-> = z.object({});
+const createCortesSchema: z.ZodType<z.ZodTypeDef> = z.object({});
 
 export default function AddCortes() {
 	const router = useRouter();

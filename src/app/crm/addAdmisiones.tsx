@@ -54,7 +54,7 @@ import {
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { ROUTES } from "@/core/routes";
 import { FormInputFile } from "../_components/ui/form-input-file";
-import { GetCountries, countries } from "@/utils/countries";
+import { countries } from "@/utils/countries";
 import { states } from "@/utils/states";
 import { ToggleSwitch } from "../_components/ui/toggle";
 

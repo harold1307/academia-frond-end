@@ -11,18 +11,19 @@ export type ParaleloFromAPI = ReplaceDateToString<
 	}
 >;
 
-type CreateParalelo = Omit<
+export type CreateParalelo = Omit<
 	ParaleloFromAPI,
-	"enUso" | "createdAt" | "updatedAt"
+	"id" | "enUso" | "createdAt" | "updatedAt"
 >;
 
 type UpdateParaleloParams = {
 	id: string;
-	data: Partial<Omit<CreateParalelo, "nombre">>;
+	data: Partial<CreateParalelo>;
 };
 
 const paraleloSchema = z
 	.object<ZodInferSchema<ParaleloFromAPI>>({
+		id: z.string(),
 		nombre: z.string(),
 		orden: z.number(),
 		enUso: z.boolean(),
@@ -32,7 +33,6 @@ const paraleloSchema = z
 	})
 	.strict();
 
-// el ID de los paralelos son el nombre mismo
 export class ParaleloClass {
 	constructor(
 		private apiUrl: string,

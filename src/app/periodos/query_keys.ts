@@ -1,5 +1,5 @@
 export const PERIODOS_KEYS = {
-	all: ["malla"] as const,
+	all: ["periodos"] as const,
 	lists: () => [...PERIODOS_KEYS.all, "list"] as const,
 	list: (filters: string) => [...PERIODOS_KEYS.lists(), { filters }] as const,
 	details: () => [...PERIODOS_KEYS.all, "detail"] as const,

@@ -4,6 +4,7 @@ import { AlternativaEvaluacionClass } from "./alternativas-evaluacion";
 import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
+import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
@@ -13,9 +14,14 @@ import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
 import { EjeFormativoClass } from "./ejes-formativos";
 import { MallaCurricularClass } from "./mallas-curriculares";
+import { MateriaEnHorarioClass } from "./materias-horario";
+import { MateriaEnNivelAcademicoClass } from "./materias-niveles-academicos";
 import { ModalidadClass } from "./modalidades";
 import { ModeloEvaluativoClass } from "./modelos-evaluativos";
 import { ModeloNivelacionClass } from "./modelos-nivelacion";
+import { AsignaturaModuloEnMallaClass } from "./modulos-malla";
+import { NivelAcademicoClass } from "./niveles-academicos";
+import { NivelMallaClass } from "./niveles-malla";
 import { NivelTitulacionClass } from "./niveles-titulacion";
 import { ParaleloClass } from "./paralelos";
 import { PerfilPracticaClass } from "./perfiles-practica";
@@ -27,6 +33,7 @@ import { TipoDocumentoClass } from "./tipos-documento";
 import { TipoDocumentoEnProgramaClass } from "./tipos-documento-programas";
 import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
+import { UbicacionClass } from "./ubicaciones";
 import { VarianteCursoClass } from "./variantes-curso";
 import { CronogramaMatriculas, PeriodosLectivosClass, TraduccionPeriodosClass } from "./periodos-lectivos";
 
@@ -192,6 +199,33 @@ export class APIClass {
 
 	get turnos() {
 		return new TurnoClass(this._apiUrl, this._fetcher);
+	}
+	get nivelesMalla() {
+		return new NivelMallaClass(this._apiUrl, this._fetcher);
+	}
+
+	get nivelesAcademicos() {
+		return new NivelAcademicoClass(this._apiUrl, this._fetcher);
+	}
+
+	get materiasNivelesAcademicos() {
+		return new MateriaEnNivelAcademicoClass(this._apiUrl, this._fetcher);
+	}
+
+	get asignaturasEnNivelesMalla() {
+		return new AsignaturaEnNivelMallaClass(this._apiUrl, this._fetcher);
+	}
+
+	get materiasHorarios() {
+		return new MateriaEnHorarioClass(this._apiUrl, this._fetcher);
+	}
+
+	get modulosMalla() {
+		return new AsignaturaModuloEnMallaClass(this._apiUrl, this._fetcher);
+	}
+
+	get ubicaciones() {
+		return new UbicacionClass(this._apiUrl, this._fetcher);
 	}
 }
 

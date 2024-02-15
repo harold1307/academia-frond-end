@@ -1,23 +1,30 @@
-"use client"
+"use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { NivelacionTableItem, nivelacionColumns, nivelacionParams } from "./columns";
+import {
+	type NivelacionTableItem,
+	nivelacionColumns,
+	nivelacionParams,
+} from "./columns";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import MutateModal from "@/app/_components/modals/mutate-modal";
-import { FormControl, FormField, FormItem, FormLabel } from "@/app/_components/ui/form";
+import {
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+} from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import { NivelacionSchema, nivelacionFields } from "../add-nivelacion";
+import { type NivelacionSchema, nivelacionFields } from "../add-nivelacion";
 
 interface NivelacionTableProps {
-	data: NivelacionSchema[]
+	data: NivelacionSchema[];
 }
 
-
-export default function NivelacionTable({ data }:NivelacionTableProps) {
-
+export default function NivelacionTable({ data }: NivelacionTableProps) {
 	const nivelaciones = React.useMemo(() => {
 		return data?.map(
 			nivelacion =>
@@ -31,28 +38,31 @@ export default function NivelacionTable({ data }:NivelacionTableProps) {
 		<section className=''>
 			<DataTable columns={nivelacionColumns} data={nivelaciones} />
 			<UpdateNivelacion nivelaciones={nivelaciones} />
-			<DeactivateNivelacion nivelaciones={nivelaciones}/>
+			<DeactivateNivelacion nivelaciones={nivelaciones} />
 		</section>
 	);
 }
 
-function UpdateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema[] }) {
+function UpdateNivelacion({
+	nivelaciones,
+}: {
+	nivelaciones: NivelacionSchema[];
+}) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
-	const { form, mutation, } = useMutateModule({
+	const { form, mutation } = useMutateModule({
 		// schema,
 		mutationFn: async () => {
 			//update
 		},
-		onSuccess: (response) => {
-			console.log(response)
+		onSuccess: response => {
+			console.log(response);
 		},
-		onError: (error) => {
-			console.log(error)
-		}
-
-	})
+		onError: error => {
+			console.log(error);
+		},
+	});
 
 	const dismissModal = () => {
 		const newParams = new URLSearchParams(searchParams);
@@ -60,7 +70,6 @@ function UpdateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema[] }
 
 		router.replace(pathname + "?" + newParams.toString());
 	};
-
 
 	const nivelacionId = React.useMemo(
 		() => searchParams.get(nivelacionParams.update),
@@ -74,8 +83,8 @@ function UpdateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema[] }
 	if (!selectedNivelacion) {
 		return <ModalFallback action='update' redirectTo={() => dismissModal()} />;
 	}
-    return(
-        <section>
+	return (
+		<section>
 			<MutateModal
 				dialogProps={{
 					open: true,
@@ -89,50 +98,54 @@ function UpdateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema[] }
 				}}
 				disabled={mutation.isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => 
-					console.log('Falta implementar lógica', data)
+				onSubmit={form.handleSubmit(
+					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
 				title={`Editar nivelación ${selectedNivelacion.nombre}`}
 				withTrigger
 				triggerLabel='Editar nivelacion'
 			>
-				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
+				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
 					{nivelacionFields.map(f => (
-                        <FormField
-                            control={form.control}
-                            name={f.name}
-                            key={f.name}
-                            defaultValue={selectedNivelacion[f.name]}
-                            render={({ field }) => {
-                                return (
-                                    <FormItem className='flex w-full items-center justify-start gap-2'>
-                                        <FormLabel className='text-md col-span-3 w-[12%] text-start'>
-                                            {f.label}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                value={
-                                                    typeof field.value === "boolean"
-                                                        ? undefined
-                                                        : field.value || undefined
-                                                }
-                                                type={f.inputType}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                );
-                            }}
-                        />
+						<FormField
+							control={form.control}
+							name={f.name}
+							key={f.name}
+							defaultValue={selectedNivelacion[f.name]}
+							render={({ field }) => {
+								return (
+									<FormItem className='flex w-full items-center justify-start gap-2'>
+										<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+											{f.label}
+										</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												value={
+													typeof field.value === "boolean"
+														? undefined
+														: field.value || undefined
+												}
+												type={f.inputType}
+											/>
+										</FormControl>
+									</FormItem>
+								);
+							}}
+						/>
 					))}
 				</div>
 			</MutateModal>
 		</section>
-    )
+	);
 }
 
-function DeactivateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema[] }) {
+function DeactivateNivelacion({
+	nivelaciones,
+}: {
+	nivelaciones: NivelacionSchema[];
+}) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
@@ -146,9 +159,7 @@ function DeactivateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema
 
 	const { mutation } = useMutateModule({
 		// invalidateQueryKey: CURSO_KEYS.lists(),
-		mutationFn: async () => {
-			
-		},
+		mutationFn: async () => {},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
@@ -173,7 +184,9 @@ function DeactivateNivelacion({ nivelaciones }: { nivelaciones: NivelacionSchema
 		<DeleteModal
 			description={`Estas seguro que deseas desactivar la nivelación: ${selectedNivelacion.nombre}`}
 			title='Desactivar nivelación'
-			onDelete={() => console.log('falta implementar lógica de delete', selectedNivelacion)}
+			onDelete={() =>
+				console.log("falta implementar lógica de delete", selectedNivelacion)
+			}
 			disabled={mutation.isPending}
 			onClose={() => dismissModal()}
 			dialogProps={{

@@ -2,30 +2,44 @@ import type { Sesion } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
-import type { CreateTurno } from "./turnos";
+import { sedeSchema, type SedeFromAPI } from "./sede";
+import { baseTurnoSchema, type CreateTurno, type TurnoFromAPI } from "./turnos";
 
 export type SesionFromAPI = ReplaceDateToString<
 	Sesion & {
 		enUso: boolean;
+		turnos: Omit<TurnoFromAPI, "sesion">[];
+		sede: SedeFromAPI;
 	}
+>;
+
+export type SesionQueryFilter = Partial<
+	NonNullableObject<Omit<Sesion, "createdAt" | "updatedAt" | "id">>
 >;
 
 export type CreateSesion = Omit<
 	SesionFromAPI,
-	"id" | "enUso" | "createdAt" | "updatedAt" | "estado"
+	"id" | "enUso" | "createdAt" | "updatedAt" | "estado" | "turnos" | "sede"
 >;
 
 type UpdateSesionParams = {
 	id: string;
 	data: Partial<
-		Omit<SesionFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
+		Omit<
+			SesionFromAPI,
+			"id" | "enUso" | "createdAt" | "updatedAt" | "turnos" | "sede"
+		>
 	>;
 };
 
-export const sesionSchema = z
-	.object<ZodInferSchema<SesionFromAPI>>({
+export const baseSesionSchema = z
+	.object<ZodInferSchema<Omit<SesionFromAPI, "turnos" | "sede">>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
 		enUso: z.boolean(),
@@ -44,6 +58,13 @@ export const sesionSchema = z
 		updatedAt: z.string().datetime(),
 	})
 	.strict();
+
+export const sesionSchema = baseSesionSchema.extend<
+	ZodInferSchema<Pick<SesionFromAPI, "turnos" | "sede">>
+>({
+	turnos: baseTurnoSchema.array(),
+	sede: sedeSchema,
+});
 
 export class SesionClass {
 	constructor(
@@ -89,13 +110,23 @@ export class SesionClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<SesionFromAPI[]>> {
+	async getMany(
+		filters?: SesionQueryFilter,
+	): Promise<APIResponse<SesionFromAPI[]>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(filters ?? {}).forEach(([key, value]) => {
+			if (value === undefined) return;
+
+			searchParams.append(key, `${value}`);
+		});
+
 		const res = this.fetcher(
 			z.object({
 				data: sesionSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/sesiones",
+			this.apiUrl + "/api/sesiones?" + searchParams.toString(),
 		);
 
 		return res;

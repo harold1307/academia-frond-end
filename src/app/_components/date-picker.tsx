@@ -10,16 +10,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ControllerProps } from "react-hook-form";
 
 interface DatePickerDemoProps {
-	value?: string
-	onChangeValue: (date:Date | undefined) => void
+	value?: string;
+	onChangeValue: (date: Date | undefined) => void;
 }
-export function DatePickerDemo({ value = new Date().toString(), onChangeValue}:DatePickerDemoProps) {
+export function DatePickerDemo({
+	value = new Date().toString(),
+	onChangeValue,
+}: DatePickerDemoProps) {
 	const [date, setDate] = React.useState<Date | undefined>(new Date(value));
 
-	const updateDate = (day:Date | undefined) => {
-		setDate(day)
-		onChangeValue(day)
-	}
+	const updateDate = (day: Date | undefined) => {
+		setDate(day);
+		onChangeValue(day);
+	};
 
 	return (
 		<Popover>
@@ -39,7 +42,7 @@ export function DatePickerDemo({ value = new Date().toString(), onChangeValue}:D
 				<Calendar
 					mode='single'
 					selected={date}
-					onSelect={((day) => updateDate(day))}
+					onSelect={day => updateDate(day)}
 					initialFocus
 				/>
 			</PopoverContent>

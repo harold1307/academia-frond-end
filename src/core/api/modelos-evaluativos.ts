@@ -33,7 +33,7 @@ type CreateCampoParams = {
 	>;
 };
 
-const modeloEvaluativoSchema = z
+export const modeloEvaluativoSchema = z
 	.object<ZodInferSchema<ModeloEvaluativoFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),

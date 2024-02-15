@@ -34,7 +34,7 @@ type UpdateProgramaParams = {
 	data: Partial<Omit<CreatePrograma, "nombre">>;
 };
 
-const programaSchema = z
+export const programaSchema = z
 	.object<ZodInferSchema<ProgramaFromAPI>>({
 		nombre: z.string(),
 		enUso: z.boolean(),
@@ -44,8 +44,8 @@ const programaSchema = z
 		estado: z.boolean(),
 		id: z.string().uuid(),
 		mencion: z.string().nullable(),
-		detalleNivelTitulacion: detalleNivelTitulacionSchema,
-		nivelTitulacion: nivelTitulacionSchema,
+		detalleNivelTitulacion: detalleNivelTitulacionSchema.omit({ enUso: true }),
+		nivelTitulacion: nivelTitulacionSchema.omit({ enUso: true }),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),

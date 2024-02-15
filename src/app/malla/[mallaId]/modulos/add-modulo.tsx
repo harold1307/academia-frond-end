@@ -22,10 +22,7 @@ import {
 } from "@/app/_components/ui/select";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { API } from "@/core/api-client";
-import type {
-	CreateAsignaturaEnNivelMallaParams,
-	CreateAsignaturaModuloEnMalla,
-} from "@/core/api/mallas-curriculares";
+import type { CreateAsignaturaModuloEnMalla } from "@/core/api/modulos-malla";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { assertReferenceInput, type Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
@@ -35,8 +32,8 @@ const schema = z.object<
 		Omit<
 			CreateAsignaturaModuloEnMalla,
 			| "descripcion"
-			| "resultadosAprendizaje"
-			| "competenciaGenerica"
+			| "resultados"
+			| "competencia"
 			| "objetivos"
 			| "esAnexo"
 			| "nivel"
@@ -44,9 +41,11 @@ const schema = z.object<
 		> & {
 			asignaturaId: string;
 			descripcion?: string;
-			resultadosAprendizaje?: string;
-			competenciaGenerica?: string;
+			resultados?: string;
+			competencia?: string;
 			objetivos?: string;
+			"dummy-validaCantidadMatriculas"?: boolean;
+			"dummy-minimoCreditos"?: boolean;
 		}
 	>
 >({
@@ -71,34 +70,35 @@ const schema = z.object<
 	materiaGeneral: z.boolean(),
 	guiaPracticaMetodologiaObligatoria: z.boolean(),
 	aprobarGuiaPracticaMetodologica: z.boolean(),
-	competencia: z.string().nullable(),
+	competencia: z.string().optional(),
 	objetivosEspecificos: z.string().nullable(),
 	descripcion: z.string().optional(),
-	resultados: z.string().nullable(),
+	resultados: z.string().optional(),
 	aporteAsignaturaAlPerfil: z.string().nullable(),
 	objetivoGeneral: z.string().nullable(),
-	competenciaGenerica: z.string().optional(),
 	objetivos: z.string().optional(),
-	resultadosAprendizaje: z.string().optional(),
 
 	asignaturaId: z.string().uuid(),
 	areaConocimientoId: z.string().uuid(),
 	campoFormacionId: z.string(),
 	mallaId: z.string().uuid(),
+
+	"dummy-validaCantidadMatriculas": z.boolean().optional(),
+	"dummy-minimoCreditos": z.boolean().optional(),
 });
 
 type AddModuloProps = {
-	mallaId: string;
-	asignaturas: {
-		id: string;
-		nombre: string;
-		codigo: string | null;
-	}[];
+	mallaCurricularId: string;
 };
 
-export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
+export default function AddModulo({ mallaCurricularId }: AddModuloProps) {
 	const router = useRouter();
-	const { form, mutation, open, setOpen } = useMutateModule({
+	const {
+		form,
+		mutation: { isPending, mutate },
+		open,
+		setOpen,
+	} = useMutateModule({
 		schema,
 		hookFormProps: {
 			defaultValues: {
@@ -116,23 +116,48 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 				horasAsistidasDocente: 0,
 				horasAutonomas: 0,
 				horasPracticas: 0,
+				"dummy-minimoCreditos": false,
+				"dummy-validaCantidadMatriculas": false,
 			},
 		},
-		mutationFn: async ({ asignaturaId, ...data }) => {
-			// return API.mallasCurriculares.createAsignaturaEnMalla({
-			// 	mallaId,
-			// 	asignaturaId,
-			// 	data: {
-			// 		...data,
-			// 		descripcion: data.descripcion || null,
-			// 		resultadosAprendizaje: data.resultadosAprendizaje || null,
-			// 		competenciaGenerica: data.competenciaGenerica || null,
-			// 		objetivos: data.objetivos || null,
-			// 		esAnexo: true,
-			// 		ejeFormativoId: null,
-			// 		nivel: 0,
-			// 	},
-			// });
+		mutationFn: async ({
+			asignaturaId,
+			competencia,
+			objetivosEspecificos,
+			descripcion,
+			resultados,
+			aporteAsignaturaAlPerfil,
+			objetivoGeneral,
+			cantidadMatriculasAutorizadas,
+			minimoCreditosRequeridos,
+			guiaPracticaMetodologiaObligatoria,
+			aprobarGuiaPracticaMetodologica,
+			...data
+		}) => {
+			return API.mallasCurriculares.createModulo({
+				mallaCurricularId,
+				asignaturaId,
+				data: {
+					...data,
+					competencia: competencia || null,
+					objetivosEspecificos: objetivosEspecificos || null,
+					descripcion: descripcion || null,
+					resultados: resultados || null,
+					aporteAsignaturaAlPerfil: aporteAsignaturaAlPerfil || null,
+					objetivoGeneral: objetivoGeneral || null,
+					cantidadMatriculasAutorizadas: data["dummy-validaCantidadMatriculas"]
+						? cantidadMatriculasAutorizadas
+						: null,
+					minimoCreditosRequeridos: data["dummy-minimoCreditos"]
+						? minimoCreditosRequeridos
+						: null,
+					guiaPracticaMetodologiaObligatoria:
+						guiaPracticaMetodologiaObligatoria,
+					aprobarGuiaPracticaMetodologica: guiaPracticaMetodologiaObligatoria
+						? aprobarGuiaPracticaMetodologica
+						: false,
+				},
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -162,12 +187,24 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 		},
 		enabled: false,
 	});
+	const {
+		data: asignaturas,
+		isLoading: asignaturasAreLoading,
+		refetch: fetchAsignaturas,
+	} = useQuery({
+		queryKey: ["asignaturasEnAsignaturaEnMalla"],
+		queryFn: async () => {
+			return API.asignaturas.getMany();
+		},
+		enabled: false,
+	});
 
 	const {
 		horasColaborativas,
 		horasAsistidasDocente,
 		horasAutonomas,
 		horasPracticas,
+		...formValues
 	} = form.watch();
 
 	return (
@@ -178,83 +215,123 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 					open,
 					onOpenChange: setOpen,
 				}}
-				disabled={mutation.isPending}
+				disabled={isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
+				onSubmit={form.handleSubmit(data => mutate(data))}
 				title='Adicionar modulo'
 				withTrigger
 				triggerLabel='Adicionar'
 			>
-				{fields.map(f =>
-					assertReferenceInput(f.name) ? (
-						<FormItem
-							key={f.name}
-							className='grid grid-cols-12 items-center gap-4 space-y-0'
-						>
-							<FormLabel className='col-span-3 text-end'>{f.label}</FormLabel>
-							<FormControl>
-								<Input
-									type={f.inputType}
-									placeholder={f.placeholder}
-									value={
-										f.name === "reference-horasTotales"
-											? horasColaborativas +
-												horasAsistidasDocente +
-												horasAutonomas +
-												horasPracticas
-											: f.name === "reference-horasDocencia"
-												? horasColaborativas + horasAsistidasDocente
-												: horasAutonomas + horasPracticas
-									}
-									className='col-span-9'
-									disabled={true}
-								/>
-							</FormControl>
-						</FormItem>
-					) : (
+				{fields.map(f => {
+					if (assertReferenceInput(f.name)) {
+						return (
+							<FormItem
+								key={f.name}
+								className='grid grid-cols-12 items-center gap-4 space-y-0'
+							>
+								<FormLabel className='col-span-3 text-end'>{f.label}</FormLabel>
+								<FormControl>
+									<Input
+										type={f.inputType}
+										placeholder={f.placeholder}
+										value={
+											f.name === "reference-horasTotales"
+												? horasColaborativas +
+													horasAsistidasDocente +
+													horasAutonomas +
+													horasPracticas
+												: f.name === "reference-horasDocencia"
+													? horasColaborativas + horasAsistidasDocente
+													: horasAutonomas + horasPracticas
+										}
+										className='col-span-9'
+										disabled={true}
+									/>
+								</FormControl>
+							</FormItem>
+						);
+					}
+
+					if (f.dependsOn && !formValues[f.dependsOn]) return null;
+
+					if (f.dependsOn && f.inputType === "number") {
+						return (
+							<FormField
+								control={form.control}
+								name={f.name}
+								key={f.name}
+								disabled={isPending}
+								shouldUnregister={true}
+								render={({ field }) => (
+									<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+										<FormLabel className='col-span-3 text-end'>
+											{f.label}
+										</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												value={field.value || undefined}
+												onChange={e => field.onChange(+e.target.value)}
+												type={f.inputType}
+												placeholder={f.placeholder}
+												className='col-span-9'
+											/>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
+						);
+					}
+
+					return (
 						<FormField
 							control={form.control}
 							name={f.name}
 							key={f.name}
+							disabled={isPending}
+							shouldUnregister={true}
 							render={({ field }) => {
 								switch (f.inputType) {
 									case "custom-select": {
-										let options: { label: string; value: string }[] | undefined;
+										let options:
+											| { label: string; value: string }[]
+											| string[]
+											| undefined = Array.isArray(f.options)
+											? f.options
+											: undefined;
 										let loading;
 
 										if (f.options === "custom") {
 											switch (f.name) {
 												case "asignaturaId": {
-													options = asignaturas.map(
-														a =>
-															({ label: a.nombre, value: a.id }) satisfies {
-																label: string;
-																value: string;
-															},
-													);
+													options = asignaturas?.data.map(m => ({
+														label: m.nombre,
+														value: m.id,
+													}));
+
+													loading = asignaturasAreLoading;
 													break;
 												}
 												case "campoFormacionId": {
-													options = camposFormacion?.data.map(c => ({
-														label: c.nombre,
-														value: c.id,
+													options = camposFormacion?.data.map(t => ({
+														label: t.nombre,
+														value: t.id,
 													}));
 
 													loading = camposAreLoading;
 													break;
 												}
+
 												case "areaConocimientoId": {
-													options = areasConocimiento?.data.map(a => ({
-														label: a.nombre,
-														value: a.id,
+													options = areasConocimiento?.data.map(t => ({
+														label: t.nombre,
+														value: t.id,
 													}));
 
 													loading = areasAreLoading;
 													break;
 												}
 											}
-										} else {
-											options = f.options;
 										}
 
 										return (
@@ -267,6 +344,10 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 													defaultValue={field.value as string}
 													disabled={field.disabled}
 													onOpenChange={() => {
+														if (f.name === "asignaturaId" && !asignaturas) {
+															fetchAsignaturas();
+														}
+
 														if (
 															f.name === "campoFormacionId" &&
 															!camposFormacion
@@ -371,8 +452,8 @@ export default function AddModulo({ mallaId, asignaturas }: AddModuloProps) {
 								}
 							}}
 						/>
-					),
-				)}
+					);
+				})}
 			</MutateModal>
 		</section>
 	);
@@ -387,6 +468,16 @@ const fields = [
 		placeholder: "-----------------",
 	},
 	{
+		name: "tipoAsignatura",
+		label: "Tipo de asignatura",
+		inputType: "custom-select",
+		options: Object.keys($Enums.TipoAsignatura).map(k => ({
+			label: k,
+			value: k,
+		})),
+		placeholder: "-----------------",
+	},
+	{
 		name: "areaConocimientoId",
 		inputType: "custom-select",
 		label: "Area de conocimiento",
@@ -398,16 +489,6 @@ const fields = [
 		inputType: "custom-select",
 		label: "Campo formacion",
 		options: "custom",
-		placeholder: "-----------------",
-	},
-	{
-		name: "tipoAsignatura",
-		label: "Tipo de asignatura",
-		inputType: "custom-select",
-		options: Object.keys($Enums.TipoAsignatura).map(k => ({
-			label: k,
-			value: k,
-		})),
 		placeholder: "-----------------",
 	},
 	{
@@ -436,13 +517,8 @@ const fields = [
 		inputType: "checkbox",
 	},
 	{
-		name: "practicasPreProfesionales",
-		label: "Practicas pre-profesionales",
-		inputType: "checkbox",
-	},
-	{
-		name: "requeridaParaEgresar",
-		label: "Requerida para egresar",
+		name: "requeridaParaGraduar",
+		label: "Requerida para graduar",
 		inputType: "checkbox",
 	},
 	{
@@ -451,8 +527,30 @@ const fields = [
 		inputType: "number",
 	},
 	{
+		name: "dummy-validaCantidadMatriculas",
+		label: "Valida cantidad matriculas autorizadas",
+		inputType: "checkbox",
+	},
+	{
+		name: "cantidadMatriculasAutorizadas",
+		label: "Cantidad matriculas autorizadas",
+		inputType: "number",
+		dependsOn: "dummy-validaCantidadMatriculas",
+	},
+	{
+		name: "dummy-minimoCreditos",
+		label: "Minimo de creditos requeridos",
+		inputType: "checkbox",
+	},
+	{
+		name: "minimoCreditosRequeridos",
+		label: "Creditos requeridos",
+		inputType: "number",
+		dependsOn: "dummy-minimoCreditos",
+	},
+	{
 		name: "maximaCantidadHorasSemanalas",
-		label: "Horas semanales",
+		label: "Maxima cantidad de horas semanales",
 		inputType: "number",
 	},
 	{
@@ -482,17 +580,28 @@ const fields = [
 	},
 	{ name: "horasAutonomas", label: "Horas autonomas", inputType: "number" },
 	{ name: "horasPracticas", label: "Horas practicas", inputType: "number" },
-	{ name: "sumaHoras", label: "Suma horas", inputType: "checkbox" },
 	{ name: "creditos", label: "Creditos", inputType: "number" },
+	{ name: "sumaHoras", label: "Suma horas", inputType: "checkbox" },
 	{
 		name: "noValidaAsistencia",
 		label: "No valida asistencia",
 		inputType: "checkbox",
 	},
-	{ name: "materiaComun", label: "Materia comun", inputType: "checkbox" },
+	{ name: "materiaGeneral", label: "Materia general", inputType: "checkbox" },
 	{
-		name: "competenciaGenerica",
-		label: "Competencia generica",
+		name: "guiaPracticaMetodologiaObligatoria",
+		label: "Guia practica o metodologica obligatoria",
+		inputType: "checkbox",
+	},
+	{
+		name: "aprobarGuiaPracticaMetodologica",
+		label: "Aprobar guia practica o metodologica",
+		inputType: "checkbox",
+		dependsOn: "guiaPracticaMetodologiaObligatoria",
+	},
+	{
+		name: "competencia",
+		label: "Competencia",
 		inputType: "custom-text-area",
 	},
 	{
@@ -506,15 +615,18 @@ const fields = [
 		inputType: "custom-text-area",
 	},
 	{
-		name: "resultadosAprendizaje",
+		name: "resultados",
 		label: "Resultados de aprendizaje",
 		inputType: "custom-text-area",
 	},
-] satisfies Field<
-	keyof (Omit<
-		CreateAsignaturaEnNivelMallaParams["data"],
-		"ejeFormativoId" | "nivel"
-	> & {
-		asignaturaId: string;
-	})
->[];
+	{
+		name: "aporteAsignaturaAlPerfil",
+		label: "Aporte de la asignatura al perfil profesional",
+		inputType: "custom-text-area",
+	},
+	{
+		name: "objetivoGeneral",
+		label: "Objetivo general",
+		inputType: "custom-text-area",
+	},
+] satisfies Field<keyof z.infer<typeof schema>>[];

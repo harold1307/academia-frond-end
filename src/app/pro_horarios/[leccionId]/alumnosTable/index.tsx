@@ -1,15 +1,19 @@
-"use client"
+"use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { AlumnosEnClase, AlumnosEnClaseColumns, AlumnosEnClaseTableItem } from "./columns";
+import {
+	type AlumnosEnClase,
+	AlumnosEnClaseColumns,
+	type AlumnosEnClaseTableItem,
+} from "./columns";
 
 interface AlumnosEnClaseTableProps {
-	data: AlumnosEnClase[]
+	data: AlumnosEnClase[];
 }
 
-
-export default function AlumnosEnClaseTable({ data }:AlumnosEnClaseTableProps) {
-
+export default function AlumnosEnClaseTable({
+	data,
+}: AlumnosEnClaseTableProps) {
 	const alumnos = React.useMemo(() => {
 		return data?.map(
 			alumno =>

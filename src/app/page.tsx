@@ -41,12 +41,16 @@ const modulos = [
 		href: ROUTES.admHorarios.path,
 	},
 	{
-		label: "Periodos",
+		label: "Periodos Lectivos",
 		href: ROUTES.periodo.path,
 	},
 	{
 		label: "CRM",
 		href: ROUTES.crm.path,
+	},
+	{
+		label: "Periodos de Evaluación",
+		href: ROUTES.periodoEvaluacion.path + "?section=0",
 	},
 	// {
 	// 	label: "Mis Horarios",

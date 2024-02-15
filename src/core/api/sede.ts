@@ -5,6 +5,7 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateCoordinacion } from "./coordinaciones";
+import type { CreateUbicacion } from "./ubicaciones";
 
 export type SedeFromAPI = ReplaceDateToString<
 	Sede & {
@@ -27,7 +28,7 @@ export const sedeSchema = z
 		canton: z.string(),
 		provincia: z.string(),
 		pais: z.string(),
-		codigo: z.string(),
+		alias: z.string(),
 	})
 	.strict();
 
@@ -137,9 +138,34 @@ export class SedeClass {
 
 		return res.json();
 	}
+
+	async createUbicacion({
+		sedeId,
+		data,
+	}: CreateUbicacionParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(this.apiUrl + `/api/sedes/${sedeId}/ubicaciones`, {
+			method: "POST",
+			headers: {
+				"Context-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		});
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<undefined>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
+
+type CreateUbicacionParams = {
+	data: Omit<CreateUbicacion, "sedeId">;
+	sedeId: string;
+};
 
 type CreateCoordinacionParams = {
 	sedeId: string;
-	data: CreateCoordinacion;
+	data: Omit<CreateCoordinacion, "sedeId">;
 };
