@@ -1,15 +1,17 @@
-"use client"
+"use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { Asistencias, AsistenciasTableItem, asistenciasColumns } from "./columns";
+import {
+	type Asistencias,
+	type AsistenciasTableItem,
+	asistenciasColumns,
+} from "./columns";
 
 interface AsistenciasTableProps {
-	data: Asistencias[]
+	data: Asistencias[];
 }
 
-
-export default function AsistenciasTable({ data }:AsistenciasTableProps) {
-
+export default function AsistenciasTable({ data }: AsistenciasTableProps) {
 	const asistencias = React.useMemo(() => {
 		return data?.map(
 			asistencia =>

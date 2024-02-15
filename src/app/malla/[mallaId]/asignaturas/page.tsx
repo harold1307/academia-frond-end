@@ -26,7 +26,6 @@ export default async function AsignaturasEnMallaPage({ params }: Context) {
 		<>
 			<div className='mt-4'>
 				<AddAsignaturaEnMalla
-					mallaCurricularId={params.mallaId}
 					mallaNiveles={malla.data.niveles.map(n => ({
 						id: n.id,
 						nivel: n.nivel,

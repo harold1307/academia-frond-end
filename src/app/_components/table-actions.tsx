@@ -22,13 +22,13 @@ export default function BaseTableActions({
 	deleteOptions,
 }: BaseTableActionsProps) {
 	return (
-		<>
+		<div className='flex items-center justify-center gap-2'>
 			{updateOptions?.show === undefined || !!updateOptions.show ? (
 				<Button
 					size='icon'
 					variant='info'
 					{...updateOptions?.buttonProps}
-					className={cn("mr-2", updateOptions?.buttonProps?.className)}
+					className={cn(updateOptions?.buttonProps?.className)}
 				>
 					{updateOptions?.icon || <FileSignature className='h-4 w-4' />}
 				</Button>
@@ -42,6 +42,6 @@ export default function BaseTableActions({
 					{deleteOptions?.icon || <X className='h-4 w-4' />}
 				</Button>
 			) : null}
-		</>
+		</div>
 	);
 }

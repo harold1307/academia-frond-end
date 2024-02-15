@@ -2,10 +2,7 @@ import HorariosTable from ".";
 import { Week } from "./columns";
 
 //MockUp data
-const horarios:[] = [
-]
-
-
+const horarios: [] = [];
 
 export default async function HorariosTableServer() {
 	//Fetch horarios

@@ -1,15 +1,18 @@
-"use client"
+"use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { CamposModelosEvaluativosTableItem, camposModelosEvaluativosColumns } from "./columns";
+import {
+	type CamposModelosEvaluativosTableItem,
+	camposModelosEvaluativosColumns,
+} from "./columns";
 
 interface CamposModelosEvaluativosTableProps {
-	data: CamposModelosEvaluativosTableItem[]
+	data: CamposModelosEvaluativosTableItem[];
 }
 
-
-export default function CamposModelosEvaluativosTable({ data }:CamposModelosEvaluativosTableProps) {
-
+export default function CamposModelosEvaluativosTable({
+	data,
+}: CamposModelosEvaluativosTableProps) {
 	const camposModelosEvaluativos = React.useMemo(() => {
 		return data?.map(
 			campoModeloEvaluativo =>
@@ -21,7 +24,10 @@ export default function CamposModelosEvaluativosTable({ data }:CamposModelosEval
 
 	return (
 		<section className=''>
-			<DataTable columns={camposModelosEvaluativosColumns} data={camposModelosEvaluativos} />
+			<DataTable
+				columns={camposModelosEvaluativosColumns}
+				data={camposModelosEvaluativos}
+			/>
 		</section>
 	);
 }

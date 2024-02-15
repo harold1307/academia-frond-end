@@ -1,17 +1,15 @@
-"use client"
+"use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { WeekTableItem, weekColumns } from "./columns";
+import { type WeekTableItem, weekColumns } from "./columns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 
 interface HorariosTable {
-	data: any[]
+	data: any[];
 }
 
-
-export default function HorariosTable({ data }:HorariosTable) {
-
+export default function HorariosTable({ data }: HorariosTable) {
 	const horarios = React.useMemo(() => {
 		return data?.map(
 			horariosTable =>
@@ -27,4 +25,3 @@ export default function HorariosTable({ data }:HorariosTable) {
 		</section>
 	);
 }
-

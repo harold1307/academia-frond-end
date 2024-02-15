@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { AlumnosEnClase, AlumnosEnClaseColumns } from "./columns";
+import { type AlumnosEnClase, type AlumnosEnClaseColumns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof AlumnosEnClaseColumns;
@@ -44,32 +44,31 @@ export function DataTable({ columns, data }: DataTableProps) {
 
 	return (
 		<div>
-			<Table >
+			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header, index) => {
 								return (
-									<TableHead key={header.id}
-									 className={
-										`${index === 0 ? 'border-l-2 rounded-l-md' : ''} 
-										${index === headerGroup.headers.length - 1 ? ' border-r-2 rounded-r-md' : ''} 
-										font-light px-0 py-0 h-16 w-2 relative`
-									 }
+									<TableHead
+										key={header.id}
+										className={`${index === 0 ? "rounded-l-md border-l-2" : ""} 
+										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
+										relative h-16 w-2 px-0 py-0 font-light`}
 									>
 										{header.isPlaceholder
 											? null
 											: flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-										)}
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
 									</TableHead>
 								);
 							})}
 						</TableRow>
 					))}
 				</TableHeader>
-				<TableBody 
+				<TableBody
 				// className="before:content-['space'] before:leading-8 before:text-transparent"
 				>
 					{table.getRowModel().rows?.length ? (
@@ -79,7 +78,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map((cell, index) => (
-									<TableCell key={cell.id} className={`p-0 h-16 text-center `}>
+									<TableCell key={cell.id} className={`h-16 p-0 text-center `}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}

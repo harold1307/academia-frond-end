@@ -9,17 +9,21 @@ import {
 type StatusButtonTooltipProps = {
 	status: boolean;
 	hoverTitle: string;
+	onClick?: () => void;
 };
 
 export default function StatusButtonTooltip({
 	hoverTitle,
 	status,
+	onClick,
 }: StatusButtonTooltipProps) {
 	return (
 		<TooltipProvider delayDuration={300}>
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<Button variant='outline'>{status ? "SI" : "NO"}</Button>
+					<Button onClick={onClick} variant='outline'>
+						{status ? "SI" : "NO"}
+					</Button>
 				</TooltipTrigger>
 				<TooltipContent>
 					<p>{hoverTitle}</p>

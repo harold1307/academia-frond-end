@@ -29,13 +29,15 @@ export function useMutateModule<T extends z.ZodType, R, P = undefined>({
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
+		mutationKey: invalidateQueryKey,
 		mutationFn,
 		onError,
-		onSuccess: response => {
-			onSuccess(response);
-			queryClient.invalidateQueries({
+		onSuccess: async response => {
+			await queryClient.invalidateQueries({
 				queryKey: invalidateQueryKey,
 			});
+			queryClient.removeQueries({ queryKey: invalidateQueryKey });
+			onSuccess(response);
 			setOpen(false);
 		},
 	});

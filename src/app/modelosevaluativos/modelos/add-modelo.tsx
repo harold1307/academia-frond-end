@@ -12,36 +12,34 @@ import type { Field } from "@/utils/forms";
 
 //Esquema de MockUp hasta tener el esquema de Prisma
 export type ModelosEvaluativoSchema = {
-	id:string	
-	nombre: string
-    examenComplexivo: boolean
-    notaMaxima: number
-    notaParaAprobar: number
-    notaParaRecuperacion: number
-    porcentajeAsistenciaAprobar: number
-    decimalesNotaFinal: number
-    defineMaximos: boolean
-    camposActualizanEstado: boolean
-    observaciones:string
-}
+	id: string;
+	nombre: string;
+	examenComplexivo: boolean;
+	notaMaxima: number;
+	notaParaAprobar: number;
+	notaParaRecuperacion: number;
+	porcentajeAsistenciaAprobar: number;
+	decimalesNotaFinal: number;
+	defineMaximos: boolean;
+	camposActualizanEstado: boolean;
+	observaciones: string;
+};
 
 export default function AddModeloEvaluativo() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		// schema: ModeloEvaluativoSchema,
-		mutationFn: async data => {
-
-        },
+		mutationFn: async data => {},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 		},
-        hookFormProps: {
-            defaultValues: {
-                examenComplexivo: false,
-                defineMaximos: false,
-                camposActualizanEstados: false
-            }
-        }
+		hookFormProps: {
+			defaultValues: {
+				examenComplexivo: false,
+				defineMaximos: false,
+				camposActualizanEstados: false,
+			},
+		},
 	});
 	console.log(form.formState.errors);
 	return (
@@ -53,76 +51,76 @@ export default function AddModeloEvaluativo() {
 				}}
 				disabled={mutation.isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => 
-					console.log('Falta implementar lógica', data)
+				onSubmit={form.handleSubmit(
+					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
 				title={`Adicionar Modelo Evaluativo`}
 				withTrigger
 				triggerLabel='Adicionar modelo evaluativo'
 			>
-				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
-					{modeloEvaluativoFields.map(f => (
-						f.inputType === 'checkbox' ?
-						<FormField
-							control={form.control}
-							name={f.name}
-							key={f.name}
-							defaultValue={false}
-							render={({ field }) => {
-								return(
-								<FormItem
-								 className='flex justify-between items-center gap-4 space-y-0 border-2 rounded-2xl w-60 h-16 p-4'
-								 style={{
-									boxShadow: '0 0 20px rgba(67, 84, 234, .7)'
-								 }}
-								>
-									<FormLabel className='col-span-3 text-start'>
-										{f.label}
-									</FormLabel>
-									<FormControl>
-										<Input
-											{...field}
-											value={
-												typeof field.value === "boolean"
-													? undefined
-													: field.value || undefined
-											}
-											type={f.inputType}
-										/>
-									</FormControl>
-								</FormItem>
-								)
-							}}
-						/>
-						: (
-                            <FormField
-                                control={form.control}
-                                name={f.name}
-                                key={f.name}
-                                render={({ field }) => {
-                                    return (
-                                        <FormItem className='flex w-full items-center justify-start gap-2'>
-                                            <FormLabel className='text-md col-span-3 w-[12%] text-start'>
-                                                {f.label}
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    value={
-                                                        typeof field.value === "boolean"
-                                                            ? undefined
-                                                            : field.value || undefined
-                                                    }
-                                                    type={f.inputType}
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    );
-                                }}
-                            />
-                        )
-					))}
+				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
+					{modeloEvaluativoFields.map(f =>
+						f.inputType === "checkbox" ? (
+							<FormField
+								control={form.control}
+								name={f.name}
+								key={f.name}
+								defaultValue={false}
+								render={({ field }) => {
+									return (
+										<FormItem
+											className='flex h-16 w-60 items-center justify-between gap-4 space-y-0 rounded-2xl border-2 p-4'
+											style={{
+												boxShadow: "0 0 20px rgba(67, 84, 234, .7)",
+											}}
+										>
+											<FormLabel className='col-span-3 text-start'>
+												{f.label}
+											</FormLabel>
+											<FormControl>
+												<Input
+													{...field}
+													value={
+														typeof field.value === "boolean"
+															? undefined
+															: field.value || undefined
+													}
+													type={f.inputType}
+												/>
+											</FormControl>
+										</FormItem>
+									);
+								}}
+							/>
+						) : (
+							<FormField
+								control={form.control}
+								name={f.name}
+								key={f.name}
+								render={({ field }) => {
+									return (
+										<FormItem className='flex w-full items-center justify-start gap-2'>
+											<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+												{f.label}
+											</FormLabel>
+											<FormControl>
+												<Input
+													{...field}
+													value={
+														typeof field.value === "boolean"
+															? undefined
+															: field.value || undefined
+													}
+													type={f.inputType}
+												/>
+											</FormControl>
+										</FormItem>
+									);
+								}}
+							/>
+						),
+					)}
 				</div>
 			</MutateModal>
 		</section>

@@ -10,9 +10,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { AlternativasEvaluacionSchema } from "../add-alternativas-evaluacion";
+import { type AlternativasEvaluacionSchema } from "../add-alternativas-evaluacion";
 
-export type AlternativaEvaluacionTableItem = AlternativasEvaluacionSchema
+export type AlternativaEvaluacionTableItem = AlternativasEvaluacionSchema;
 
 const helper = createColumnHelper<AlternativaEvaluacionTableItem>();
 
@@ -35,11 +35,15 @@ export const alternativaEvaluacionColumns = [
 ];
 
 export const alternativaEvaluacionParams = {
-	update: 'actualizaralternativaevaluacion',
-	deactivate: 'desactivaralternativaevaluacion',
-}
+	update: "actualizaralternativaevaluacion",
+	deactivate: "desactivaralternativaevaluacion",
+};
 
-function Actions({ alternativaEvaluacionId }: { alternativaEvaluacionId: string }) {
+function Actions({
+	alternativaEvaluacionId,
+}: {
+	alternativaEvaluacionId: string;
+}) {
 	const { replaceSet } = useMutateSearchParams();
 
 	return (
@@ -48,18 +52,28 @@ function Actions({ alternativaEvaluacionId }: { alternativaEvaluacionId: string 
 				<Button>Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(alternativaEvaluacionParams.update, alternativaEvaluacionId)}
-                >
-                    <FileSignature className='mr-2 h-4 w-4' />
-                    <span>Editar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                    onClick={() => replaceSet(alternativaEvaluacionParams.deactivate, alternativaEvaluacionId)}
-                >
-                    <Lock className='mr-2 h-4 w-4' />
-                    <span>Desactivar</span>
-                </DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(
+							alternativaEvaluacionParams.update,
+							alternativaEvaluacionId,
+						)
+					}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() =>
+						replaceSet(
+							alternativaEvaluacionParams.deactivate,
+							alternativaEvaluacionId,
+						)
+					}
+				>
+					<Lock className='mr-2 h-4 w-4' />
+					<span>Desactivar</span>
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

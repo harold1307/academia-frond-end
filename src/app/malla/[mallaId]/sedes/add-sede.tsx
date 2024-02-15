@@ -17,7 +17,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/app/_components/ui/select";
-import { INSTITUCION_KEYS } from "@/app/institucion/query-keys";
+import { SEDE_KEYS } from "@/app/institucion/query-keys";
 import { API } from "@/core/api-client";
 import type { CreateLugarEjecucionParams } from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
@@ -36,8 +36,8 @@ export default function AddSede({ mallaId }: { mallaId: string }) {
 		refetch,
 		isLoading,
 	} = useQuery({
-		queryKey: INSTITUCION_KEYS.lists(),
-		queryFn: async () => {
+		queryKey: SEDE_KEYS.lists(),
+		queryFn: () => {
 			return API.sedes.getMany();
 		},
 		enabled: false,

@@ -12,21 +12,19 @@ import type { Field } from "@/utils/forms";
 
 //Esquema de MockUp hasta tener el esquema de Prisma
 export type NivelacionSchema = {
-	id:string	
-	nombre: string
-    notaMaxima: number
-    notaParaAprobar: number
-    decimalesNotaFinal: number
-    logicaModelo:string
-    observaciones:string
-}
+	id: string;
+	nombre: string;
+	notaMaxima: number;
+	notaParaAprobar: number;
+	decimalesNotaFinal: number;
+	logicaModelo: string;
+	observaciones: string;
+};
 
 export default function AddNivelacion() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		// schema: nivelacionSchema,
-		mutationFn: async data => {
-
-        },
+		mutationFn: async data => {},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
@@ -42,41 +40,41 @@ export default function AddNivelacion() {
 				}}
 				disabled={mutation.isPending}
 				form={form}
-				onSubmit={form.handleSubmit(data => 
-					console.log('Falta implementar lógica', data)
+				onSubmit={form.handleSubmit(
+					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
 				title={`Adicionar Nivelación`}
 				withTrigger
 				triggerLabel='Adicionar nivelacion'
 			>
-				<div className='flex items-start justify-start flex-col gap-8 w-full px-8'>
+				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
 					{nivelacionFields.map(f => (
-                        <FormField
-                            control={form.control}
-                            name={f.name}
-                            key={f.name}
-                            render={({ field }) => {
-                                return (
-                                    <FormItem className='flex w-full items-center justify-start gap-2'>
-                                        <FormLabel className='text-md col-span-3 w-[12%] text-start'>
-                                            {f.label}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                value={
-                                                    typeof field.value === "boolean"
-                                                        ? undefined
-                                                        : field.value || undefined
-                                                }
-                                                type={f.inputType}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                );
-                            }}
-                        />
+						<FormField
+							control={form.control}
+							name={f.name}
+							key={f.name}
+							render={({ field }) => {
+								return (
+									<FormItem className='flex w-full items-center justify-start gap-2'>
+										<FormLabel className='text-md col-span-3 w-[12%] text-start'>
+											{f.label}
+										</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												value={
+													typeof field.value === "boolean"
+														? undefined
+														: field.value || undefined
+												}
+												type={f.inputType}
+											/>
+										</FormControl>
+									</FormItem>
+								);
+							}}
+						/>
 					))}
 				</div>
 			</MutateModal>
@@ -105,11 +103,11 @@ export const nivelacionFields = [
 		inputType: "number",
 		label: "Decimales nota Final",
 	},
-    {
-        name: "logicaModelo",
-        inputType: "custom-text-area",
-        label: "Lógica del Modelo"
-    },
+	{
+		name: "logicaModelo",
+		inputType: "custom-text-area",
+		label: "Lógica del Modelo",
+	},
 	{
 		name: "observaciones",
 		inputType: "custom-text-area",
