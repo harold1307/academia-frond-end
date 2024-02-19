@@ -6,127 +6,53 @@ import {
 	APIError,
 } from ".";
 import { type ZodFetcher } from "zod-fetch";
-import { type CreateCronogramaMatriculacion } from "./cronogramas-matriculacion";
-import { type ZodInferSchema } from "@/utils/types";
+import {
+	type CronogramaMatriculacionFromAPI,
+	type CreateCronogramaMatriculacion,
+} from "./cronogramas-matriculacion";
+import { type ReplaceDateToString, type ZodInferSchema } from "@/utils/types";
+import { type CalculoCosto, type PeriodoLectivo } from "@prisma/client";
 
-export type PeriodoAPI = {
-	id: string;
-	matriculas: boolean;
-	estado: boolean;
-	abierto: boolean;
-	nombre: string;
-	inicio: Date;
-	fin: Date;
-	tipo: string;
-	limiteMatriculaOrdinaria: Date | null;
-	limiteMatriculaExtraordinaria: Date | null;
-	limiteMatriculaEspecial: Date | null;
-	automatriculaAlumnosFechaExtraordinaria: boolean | null;
-	estudianteSeleccionaParaleloAutomatricula: boolean | null;
-	seImpartioNivelacion: boolean | null;
-	planificacionCargaHoraria: boolean | null;
-	planificacionProfesoresFormaTotal: boolean | null;
-	aprobacionPlanificacionProfesores: boolean | null;
-	legalizacionAutomaticaContraPagos: boolean | null;
-	corteId: boolean | null;
-	numeroSecuencia: boolean | null;
-	cronogramaNotasCoordinacion: boolean | null;
-	puedenAutomatricularseSegundasOMasMatriculas: boolean |null;
-	puedenMatricularseArrastre: boolean | null;
-	numeroMatriculaAutomatico: boolean | null;
-	numeroMatricularAlLegalizar: boolean | null;
-	actividadesDocencia: boolean;
-	actividadesInvestigacion: boolean;
-	actividadesGestion: boolean;
-	actividadesPracticasComunitarias: boolean;
-	actividadesPracticasPreprofesionales: boolean;
-	otrasActividades: boolean;
-	calculoCostoId: string;
-	createdAt: Date;
-	updatedAt: Date;
-	enUso: boolean;
-	fechasEnMatricula: boolean;
-	estructuraParalelosAgrupadosPorNivel: boolean;
-	planificacionProfesoresObligatoria: boolean;
-	legalizarMatriculas: boolean;
-	secuenciaDesdeNumeroEspecifico: boolean;
-	numeroMatricula: boolean;
-};
+export type PeriodoLectivoFromAPI = ReplaceDateToString<
+	PeriodoLectivo & {
+		enUso: boolean;
+		fechasEnMatricula: boolean;
+		estructuraParalelosAgrupadosPorNivel: boolean;
+		planificacionProfesoresObligatoria: boolean;
+		legalizarMatriculas: boolean;
+		secuenciaDesdeNumeroEspecifico: boolean;
+		numeroMatricula: boolean;
+		calculoCosto: CalculoCostoFromAPI;
+	}
+>;
 
-type OmitPeriodo =
-	| "id"
-	| "matriculas"
-	| "estado"
-	| "abierto"
-	| "fechaMatriculas"
-	| "actividadesDocencia"
-	| "actividadesInvestigacion"
-	| "actividadesGestion"
-	| "actividadesPracticasComunitarias"
-	| "actividadesPracticasPreprofesionales"
-	| "numeroMatricula"
-	| "secuenciaDesdeNumeroEspecifico"
-	| "otrasActividades"
-	| "calculoCostoId"
-	| "createdAt"
-	| "updatedAt"
-	| "enUso"
-	| "fechasEnMatricula"
-	| "estructuraParalelosAgrupadosPorNivel"
-	| "planificacionProfesoresObligatoria"
-	| "legalizarMatriculas"
-	| "secuenciaDesdeNumeroEspecifico";
+export type PeriodoLectivoWithCronogramasMatriculacion =
+	PeriodoLectivoFromAPI & {
+		cronogramasMatriculacion: CronogramaMatriculacionFromAPI[];
+	};
 
-export type CreatePeriodo = Omit<PeriodoAPI, OmitPeriodo>;
+export type CalculoCostoFromAPI = ReplaceDateToString<
+	CalculoCosto & {
+		planCostos: boolean;
+	}
+>;
+export type UpdateCalculoCosto = Partial<
+	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt">
+>;
 
-type UpdatePeriodo = {
-	id: string;
-	data: Partial<CreatePeriodo>;
-};
-
-const PeriodoSchema = z.object<ZodInferSchema<PeriodoAPI>>({
-	id: z.string(),
-    matriculas: z.boolean(),
-    estado: z.boolean(),
-    abierto: z.boolean(),
-    nombre: z.string(),
-    inicio: z.coerce.date(),
-    fin: z.coerce.date(),
-    limiteMatriculaOrdinaria: z.coerce.date().nullable(),
-    limiteMatriculaExtraordinaria: z.coerce.date().nullable(),
-    limiteMatriculaEspecial: z.coerce.date().nullable(),
-    automatriculaAlumnosFechaExtraordinaria: z.null().nullable(),
-    tipo: z.string(),
-    estudianteSeleccionaParaleloAutomatricula: z.null().nullable(),
-    seImpartioNivelacion: z.boolean(),
-    planificacionCargaHoraria: z.boolean(),
-    planificacionProfesoresFormaTotal: z.null().nullable(),
-    aprobacionPlanificacionProfesores: z.null().nullable(),
-    cronogramaNotasCoordinacion: z.boolean(),
-    legalizacionAutomaticaContraPagos: z.null().nullable(),
-    puedenMatricularseArrastre: z.boolean(),
-    puedenAutomatricularseSegundasOMasMatriculas: z.boolean(),
-    numeroSecuencia: z.null().nullable(),
-    numeroMatriculaAutomatico: z.null().nullable(),
-    numeroMatricularAlLegalizar: z.null().nullable(),
-    actividadesDocencia: z.boolean(),
-    actividadesInvestigacion: z.boolean(),
-    actividadesGestion: z.boolean(),
-    actividadesPracticasComunitarias: z.boolean(),
-    actividadesPracticasPreprofesionales: z.boolean(),
-    otrasActividades: z.boolean(),
-    corteId: z.null().nullable(),
-    calculoCostoId: z.string(),
-    createdAt: z.coerce.date(),
-    updatedAt: z.coerce.date(),
-    enUso: z.boolean(),
-    fechasEnMatricula: z.boolean(),
-    estructuraParalelosAgrupadosPorNivel: z.boolean(),
-    planificacionProfesoresObligatoria: z.boolean(),
-    legalizarMatriculas: z.boolean(),
-    secuenciaDesdeNumeroEspecifico: z.boolean(),
-    numeroMatricula: z.boolean(),
-});
+export const calculoCostoSchema = z.object<ZodInferSchema<CalculoCostoFromAPI>>(
+	{
+		id: z.string().uuid(),
+		tipo: z.enum([
+			"COSTO_POR_NIVEL_Y_MATERIAS",
+			"COSTO_POR_PLAN_CUOTA",
+		] as const),
+		costoPorSesion: z.boolean().nullable(),
+		planCostos: z.boolean(),
+		cronogramaFechasOpcionPago: z.boolean().nullable(),
+		estudiantesEligenOpcionPago: z.boolean().nullable(),
+	},
+);
 
 export class PeriodosLectivosClass {
 	constructor(
@@ -134,7 +60,7 @@ export class PeriodosLectivosClass {
 		private fetcher: ZodFetcher<typeof fetch>,
 	) {}
 
-	async create(data: CreatePeriodo): Promise<SimpleAPIResponse> {
+	async create(data: any): Promise<SimpleAPIResponse> {
 		console.log(data);
 		const res = await fetch(this.apiUrl + `/api/periodos-lectivos`, {
 			method: "POST",
@@ -151,10 +77,10 @@ export class PeriodosLectivosClass {
 		}
 		return res.json();
 	}
-	async getMany(_: void): Promise<APIResponse<PeriodoAPI[]>> {
+	async getMany(_: void): Promise<APIResponse<PeriodoLectivoFromAPI[]>> {
 		const res = this.fetcher(
 			z.object({
-				data: PeriodoSchema.array(),
+				data: z.any(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/periodos-lectivos",
@@ -162,11 +88,11 @@ export class PeriodosLectivosClass {
 
 		return res;
 	}
-	async update({ id, data }: UpdatePeriodo): Promise<APIResponse<PeriodoAPI>> {
+	async update({ id, data }: any): Promise<APIResponse<PeriodoLectivoFromAPI>> {
 		console.log(data);
 		const res = zodFetcher(
 			z.object({
-				data: PeriodoSchema,
+				data: z.any(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/periodos-lectivos/${id}`,

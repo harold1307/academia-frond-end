@@ -76,7 +76,7 @@ const schema = z.object<ZodInferSchema<CreatePeriodo>>({
 	puedenAutomatricularseSegundasOMasMatriculas: z.boolean().nullable(),
 	puedenMatricularseArrastre: z.boolean().nullable(),
 	numeroMatriculaAutomatico: z.boolean().nullable(),
-	numeroMatricularAlLegalizar: z.boolean().nullable(),
+	numeroMatricularAlLegalizar: z.boolean().nullable(), 
 });
 
 export default function AddPeriodo() {
