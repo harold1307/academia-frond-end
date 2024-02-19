@@ -1,10 +1,7 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
@@ -31,7 +28,6 @@ import {
 } from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
 import { cn } from "@/utils";
-import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
 import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
@@ -44,6 +40,9 @@ import {
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
 import { ToggleSwitch } from "../_components/ui/toggle";
+import { type ZodInferSchema } from "@/utils/types";
+import { type CreatePeriodo } from "@/core/api/periodos-lectivos";
+import { useMutateModule } from "@/hooks/use-mutate-module";
 
 export const periodoParams = {
 	add: "agregarPeriodo",
@@ -56,29 +55,47 @@ export const periodoParams = {
 	subPeriodos: "actualizarSubperiodos",
 } as const;
 
-const createPeriodoSchema: z.ZodType<z.ZodTypeDef> = z.object({});
+const schema = z.object<ZodInferSchema<CreatePeriodo>>({
+	nombre: z.string(),
+	inicio: z.coerce.date(),
+	fin: z.coerce.date(),
+	tipo: z.string(),
+	limiteMatriculaOrdinaria: z.coerce.date().nullable(),
+	limiteMatriculaExtraordinaria: z.coerce.date().nullable(),
+	limiteMatriculaEspecial: z.coerce.date().nullable(),
+	automatriculaAlumnosFechaExtraordinaria: z.boolean().nullable(),
+	estudianteSeleccionaParaleloAutomatricula: z.boolean().nullable(),
+	seImpartioNivelacion: z.boolean().nullable(),
+	planificacionCargaHoraria: z.boolean().nullable(),
+	planificacionProfesoresFormaTotal: z.boolean().nullable(),
+	aprobacionPlanificacionProfesores: z.boolean().nullable(),
+	legalizacionAutomaticaContraPagos: z.boolean().nullable(),
+	numeroSecuencia: z.boolean().nullable(),
+	corteId: z.boolean().nullable(),
+	cronogramaNotasCoordinacion: z.boolean().nullable(),
+	puedenAutomatricularseSegundasOMasMatriculas: z.boolean().nullable(),
+	puedenMatricularseArrastre: z.boolean().nullable(),
+	numeroMatriculaAutomatico: z.boolean().nullable(),
+	numeroMatricularAlLegalizar: z.boolean().nullable(),
+});
 
 export default function AddPeriodo() {
 	const router = useRouter();
-	const [open, setOpen] = React.useState(false);
-
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: createPeriodoSchema) => {
+	const {
+		mutation: { mutate, isPending },
+		form,
+		open,
+		setOpen,
+	} = useMutateModule({
+		mutationFn: async data => {
 			return API.periodos.create(data);
 		},
+		schema,
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			setOpen(false);
 			router.refresh();
 		},
-	});
-
-	const form = useForm({
-		resolver: zodResolver(createPeriodoSchema),
-		defaultValues: {},
-		disabled: isSubmitting,
-		shouldUnregister: true,
 	});
 
 	return (
@@ -96,18 +113,14 @@ export default function AddPeriodo() {
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data => mutate(data))}
 							className='space-y-8'
 						>
 							{fields.map(f => (
 								<FormField
 									control={form.control}
 									name={f.name}
-									key={
-										f.name.includes("Desde")
-											? f.name + form.watch().niveles
-											: f.name
-									}
+									key={f.name}
 									render={({ field }) => {
 										switch (f.inputType) {
 											case "custom-date": {
@@ -158,23 +171,7 @@ export default function AddPeriodo() {
 												);
 											}
 											case "custom-select": {
-												const options =
-													f.options === "niveles"
-														? NIVELES_PREFIXES.slice(
-																0,
-																form.getValues().niveles,
-															).map(
-																v =>
-																	({
-																		value: v,
-																		label: `${v} NIVEL`,
-																	}) satisfies {
-																		label: string;
-																		value: string;
-																	},
-															)
-														: f.options;
-
+												const options = f.options;
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
 														<FormLabel className='col-span-3 text-end'>
@@ -288,11 +285,11 @@ export default function AddPeriodo() {
 								/>
 							))}
 							<DialogFooter>
-								<Button disabled={isSubmitting} type='submit' variant='success'>
+								<Button disabled={isPending} type='submit' variant='success'>
 									Guardar
 								</Button>
 								<Button
-									disabled={isSubmitting}
+									disabled={isPending}
 									variant='destructive'
 									type='button'
 									onClick={() => setOpen(false)}
@@ -310,173 +307,118 @@ export default function AddPeriodo() {
 
 const fields = [
 	{
-		name: "Nombre",
+		name: "nombre",
 		inputType: "text",
 		placeholder: "",
 		label: "Nombre",
 	},
-	{ name: "Inicio", inputType: "custom-date", label: "Inicio" },
-	{ name: "Fin", inputType: "custom-date", label: "Fin" },
+	{ name: "inicio", inputType: "custom-date", label: "Inicio" },
+	{ name: "fin", inputType: "custom-date", label: "Fin" },
 	{
-		name: "inscritos",
-		inputType: "number",
+		name: "limiteMatriculaOrdinaria",
+		inputType: "custom-date",
 		placeholder: "",
-		label: "Inscritos",
+		label: "Limite matricula ordinaria",
 	},
 	{
-		name: "Materias",
-		inputType: "number",
+		name: "limiteMatriculaExtraordinaria",
+		inputType: "custom-date",
 		placeholder: "",
-		label: "Materias",
+		label: "Limite matricula extraordinaria",
 	},
 	{
-		name: "Matriculas",
-		inputType: "number",
+		name: "limiteMatriculaEspecial",
+		inputType: "custom-date",
 		placeholder: "",
-		label: "Matriculas",
+		label: "Limite matricula especial",
 	},
 	{
-		name: "fechaMatriculas",
+		name: "automatriculaAlumnosFechaExtraordinaria",
 		inputType: "toggle",
-		options: "SI",
+		placeholder: "",
+		label: "Automatricula de alumnos fecha extraordinaria",
+	},
+	{
+		name: "tipo",
+		inputType: "custom-select",
+		options: ["GRADO", "POSGRADO"],
+		placeholder: "",
+		label: "Tipo de periodo",
+	},
+	{
+		name: "corte",
+		inputType: "custom-select",
+		options: ["SI"],
 		label: "Fecha de Matriculas",
 	},
 	{
-		name: "matriculacion",
+		name: "seImpartioNivelacion:",
 		inputType: "toggle",
-		options: "SI",
-		label: "Matriculaciòn",
+		label: "Se impartio nivelacion",
 	},
 	{
-		name: "estrucuraNivel",
+		name: "planificacionProfesoresObligatoria",
 		inputType: "toggle",
-		options: "SI",
-		label: "Estructura por nivel",
+		label: "Planificacion de profesores obligatoria",
 	},
 	{
-		name: "nivelacion",
+		name: "planificacionProfesoresFormaTotal",
 		inputType: "toggle",
-		options: "SI",
-		label: "Nivelaciòn",
+		label: "Planificacion de profesores de forma total",
 	},
 	{
-		name: "legalizarMatricula",
+		name: "aprobacionPlanificacionProfesores",
 		inputType: "toggle",
-		options: "SI",
+		label: "Aprobacion de planificacion de profesores",
+	},
+	{
+		name: "cronogramaNotasCoordinacion",
+		inputType: "toggle",
+		label: "Cronograma por coordinacion",
+	},
+	{
+		name: "legalizarMatriculas",
+		inputType: "toggle",
 		label: "Legalizar Matricula",
 	},
 	{
-		name: "legalizacionPago",
+		name: "legalizacionAutomaticaContraPagos",
 		inputType: "toggle",
-		options: "SI",
 		label: "Legalizaciòn por pago",
 	},
 	{
-		name: "cerrado",
+		name: "automatriculaAlumnosFechaExtraordinaria:",
 		inputType: "toggle",
-		options: "SI",
-		label: "Cerrado",
-	},
-	{
-		name: "vigente",
-		inputType: "toggle",
-		options: "SI",
-		label: "Vigente",
-	},
-	{
-		name: "planifCargaHoraria",
-		inputType: "toggle",
-		options: "SI",
-		label: "Planif. carga horaria",
-	},
-	{
-		name: "planifProfObl",
-		inputType: "toggle",
-		options: "SI",
-		label: "Planif. profesores obl.",
-	},
-	{
-		name: "planifProfTotal",
-		inputType: "toggle",
-		options: "SI",
-		label: "Planif. profesores total",
-	},
-	{
-		name: "AprobPlanif",
-		inputType: "toggle",
-		options: "SI",
-		label: "Aprob. Planificaciòn",
-	},
-	{
-		name: "NotasCoord",
-		inputType: "toggle",
-		options: "SI",
-		label: "Notas por coordinaciòn",
-	},
-	{
-		name: "AutoExtraordinaria",
-		inputType: "toggle",
-		options: "SI",
 		label: "Automat. extraordinaria",
 	},
 	{
-		name: "AutoArrastre",
+		name: "puedenMatricularseArrastre",
 		inputType: "toggle",
-		options: "SI",
 		label: "Automat. con arrastre",
 	},
 	{
-		name: "AutoSecMatriculas",
+		name: "puedenAutomatricularseSegundasOMasMatriculas",
 		inputType: "toggle",
-		options: "SI",
 		label: "Automat. 2das matriculas",
 	},
 	{
-		name: "matricula",
+		name: "numeroMatricula",
 		inputType: "toggle",
-		options: "SI",
 		label: "# Matricula",
 	},
 	{
-		name: "AutoMatriculas",
+		name: "numeroSecuencia",
 		inputType: "toggle",
-		options: "SI",
-		label: "# matricula automatica",
-	},
-	{
-		name: "matriculaLegal",
-		inputType: "toggle",
-		options: "SI",
-		label: "# matricula al legalizar",
-	},
-	{
-		name: "Secuencia",
-		inputType: "toggle",
-		options: "SI",
 		label: "Secuencia",
 	},
 	{
-		name: "EvaluacionDocente",
+		name: "numeroMatriculaAutomatico",
 		inputType: "toggle",
-		options: "SI",
-		label: "Evaluaciòn al docente",
+		label: "# matricula automatica",
 	},
 	{
-		name: "CostoSeccion",
+		name: "numeroMatricularAlLegalizar",
 		inputType: "toggle",
-		options: "SI",
-		label: "Costos por sesiòn",
-	},
-	{
-		name: "PlanCostos",
-		inputType: "toggle",
-		options: "SI",
-		label: "Plan de costos",
-	},
-	{
-		name: "Activo",
-		inputType: "toggle",
-		options: "SI",
-		label: "Activo",
+		label: "# matricula al legalizar",
 	},
 ];

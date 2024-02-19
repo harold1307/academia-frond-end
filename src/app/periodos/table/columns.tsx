@@ -20,56 +20,87 @@ import { periodoParams } from "../addPeriodo";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/core/routes";
+import { format, parseISO } from "date-fns";
 
 const helper = createColumnHelper<any>();
+
 export const columns = [
 	helper.accessor("id", {}),
-	helper.accessor("nombreTipoCorte", {
+	helper.accessor("nombre", {
 		header: "Nombre/Tipo/Corte",
 	}),
 	helper.accessor("inicio", {
-		header: "inicio",
+		header: "Inicio",
+		cell: ({ cell }) => {
+			const inicio = cell.getValue();
+			return (
+				<>
+					<div>{format(parseISO(inicio), "dd/LL/yyyy")}</div>
+				</>
+			);
+		},
 	}),
 	helper.accessor("fin", {
 		header: "Fin",
+		cell: ({ cell }) => {
+			const fin = cell.getValue();
+			return (
+				<>
+					<div>{format(parseISO(fin), "dd/LL/yyyy")}</div>
+				</>
+			);
+		},
 	}),
-	helper.accessor("inscritos", {
+	helper.accessor("undefined", {
 		header: "Inscritos",
 	}),
-	helper.accessor("materias", {
+	helper.accessor("undefined", {
 		header: "Materias",
 	}),
-	helper.accessor("matriculas", {
+	helper.accessor("undefined", {
 		header: "Matriculas",
 	}),
 	helper.accessor("fechaMatriculas", {
 		header: "Fecha de matriculas",
 	}),
-	helper.accessor("matriculacion", {
+	helper.accessor("matriculas", {
 		header: "Matriculaciòn",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("estrucuraNivel", {
+	helper.accessor("estructuraParalelosAgrupadosPorNivel", {
 		header: "Estructura por nivel",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("nivelacion", {
+	helper.accessor("seImpartioNivelacion", {
 		header: "Nivelaciòn",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("legalizarMatricula", {
+	helper.accessor("legalizarMatriculas", {
 		header: "Legalizar Matricula",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("legalizacionPago", {
+	helper.accessor("legalizacionAutomaticaContraPagos", {
 		header: "Legalizaciòn por pago",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("cerrado", {
+	helper.accessor("abierto", {
 		header: "Cerrado",
+		cell: ({ getValue }) => (getValue() ? "NO" : "SI"),
 	}),
-	helper.accessor("vigente", {
+	helper.accessor("undefined", {
 		header: "Vigente",
+		cell: ({ row }) => {
+			const inicio = row.getValue("inicio");
+			const fin = row.getValue("fin");
+			const today = new Date(Date.now());
+			return <span>{today > inicio && today < fin ? "SI" : "NO"}</span>;
+		},
 	}),
-	helper.accessor("planifCargaHoraria", {
+	helper.accessor("planificacionCargaHoraria", {
 		header: "Planif. carga horaria",
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("planifProfObl", {
+	helper.accessor("planificacionProfesoresObligatoria", {
 		header: "Planif. profesores obl.",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
@@ -81,35 +112,35 @@ export const columns = [
 		header: "Aprob. Planificaciòn",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("NotasCoord", {
+	helper.accessor("cronogramaNotasCoordinacion", {
 		header: "Notas por coordinaciòn",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("AutoExtraordinaria", {
+	helper.accessor("automatriculaAlumnosFechaExtraordinaria", {
 		header: "Automat. extraordinaria",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("AutoArrastre", {
+	helper.accessor("puedenMatricularseArrastre", {
 		header: "Automat. con arrastre",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("AutoSecMatriculas", {
+	helper.accessor("puedenAutomatricularseSegundasOMasMatriculas", {
 		header: "Automat. 2das matriculas",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("matricula", {
+	helper.accessor("numeroMatricula", {
 		header: "# matricula",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("AutoMatriculas", {
+	helper.accessor("numeroMatriculaAutomatico", {
 		header: "# matricula automatica",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("matriculaLegal", {
+	helper.accessor("numeroMatricularAlLegalizar", {
 		header: "# matricula al legalizar",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("Secuencia", {
+	helper.accessor("numeroSecuencia", {
 		header: "Secuencia # especifico",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
@@ -117,15 +148,15 @@ export const columns = [
 		header: "Evaluaciòn al docente",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("CostoSeccion", {
+	helper.accessor("calculoCosto.costoPorSesion", {
 		header: "Costos por sesiòn",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("PlanCostos", {
+	helper.accessor("calculoCosto.estudiantesEligenOpcionPago", {
 		header: "Plan de costos",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("Activo", {
+	helper.accessor("estado", {
 		header: "Activo",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),

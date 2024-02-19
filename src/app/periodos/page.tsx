@@ -2,6 +2,7 @@ import React from "react";
 import PeriodosLectivosTables from "./table";
 import AddPeriodo from "./addPeriodo";
 import CortesPage from "./cortes/page";
+import { APIserver } from "@/core/api-server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,7 @@ type Context = {
 
 export default async function PeriodoPage({ searchParams }: Context) {
 	const seccion = searchParams.seccion;
-
+	const periodos = await APIserver.periodos.getMany();
 	if (seccion === "cortes") {
 		return (
 			<>
@@ -23,11 +24,12 @@ export default async function PeriodoPage({ searchParams }: Context) {
 			</>
 		);
 	}
+
 	return (
 		<>
 			<div className='mt-4'>
 				<AddPeriodo />
-				<PeriodosLectivosTables />
+				<PeriodosLectivosTables periodos={periodos.data} />
 			</div>
 		</>
 	);
