@@ -49,12 +49,12 @@ import { FormInputFile } from "@/app/_components/ui/form-input-file";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { Calendar } from "@/app/_components/ui/calendar";
-import { type PeriodoAPI } from "@/core/api/periodos-lectivos";
+import { type PeriodoLectivoFromAPI } from "@/core/api/periodos-lectivos";
 
 export default function PeriodosLectivosTables({
 	periodos,
 }: {
-	periodos: PeriodoAPI[];
+	periodos: PeriodoLectivoFromAPI[];
 }) {
 	return (
 		<section className='my-2'>
@@ -69,7 +69,7 @@ export default function PeriodosLectivosTables({
 	);
 }
 
-function UpdatePeriodoTableModal(props: { periodos: PeriodoAPI[] }) {
+function UpdatePeriodoTableModal(props: { periodos: PeriodoLectivoFromAPI[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -101,9 +101,11 @@ function UpdatePeriodoTableModal(props: { periodos: PeriodoAPI[] }) {
 
 	const {
 		mutation: { mutate, isPending },
+		open,
+		setOpen,
 		form,
 	} = useMutateModule({
-		mutationFn: async ({ data, id }: { data: Data; id: string }) => {
+		mutationFn: async ({ data, id }) => {
 			return API.periodos.update({ data, id });
 		},
 		onError: console.error,

@@ -35,7 +35,7 @@ import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { UbicacionClass } from "./ubicaciones";
 import { VarianteCursoClass } from "./variantes-curso";
-import { CronogramaMatriculas, PeriodosLectivosClass, TraduccionPeriodosClass } from "./periodos-lectivos";
+import { PeriodoLectivoClass } from "./periodos-lectivos";
 
 export type APIResponse<D> = {
 	data: D;
@@ -86,16 +86,16 @@ export class APIClass {
 	}
 
 	get periodos() {
-		return new PeriodosLectivosClass(this._apiUrl ,this._fetcher);
+		return new PeriodoLectivoClass(this._apiUrl ,this._fetcher);
 	}
 
-	get cronograma() {
+	/* get cronograma() {
 		return new CronogramaMatriculas(this._apiUrl ,this._fetcher);
 	}
 
 	get traduccion() {
 		return new TraduccionPeriodosClass(this._apiUrl ,this._fetcher);
-	}
+	} */
 
 	get asignaturas() {
 		return new AsignaturaClass(this._apiUrl, this._fetcher);
