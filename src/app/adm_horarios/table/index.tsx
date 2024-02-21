@@ -51,6 +51,9 @@ export default function HorariosAdminTable({ data }: HorariosAdminTableProps) {
 }
 
 function SendMessage({ horarios }: { horarios: HorariosAdminSchema[] }) {
+	
+	console.log(horarios)
+
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();

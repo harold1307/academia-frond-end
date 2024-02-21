@@ -119,7 +119,7 @@ export class NivelAcademicoClass {
 				data: nivelAcademicoSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/niveles-academicos",
+			this.apiUrl + "/api/niveles-academicos",	
 		);
 
 		return res;
