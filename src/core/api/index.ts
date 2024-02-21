@@ -9,6 +9,7 @@ import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
 import { CoordinacionClass } from "./coordinaciones";
+import { CorteClass } from "./cortes";
 import { CursoEscuelaClass } from "./curso-escuelas";
 import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
@@ -25,6 +26,7 @@ import { NivelMallaClass } from "./niveles-malla";
 import { NivelTitulacionClass } from "./niveles-titulacion";
 import { ParaleloClass } from "./paralelos";
 import { PerfilPracticaClass } from "./perfiles-practica";
+import { PeriodoLectivoClass } from "./periodos-lectivos";
 import { ProgramaClass } from "./programas";
 import { ProyectoIntegradorClass } from "./proyectos-integradores";
 import { SedeClass } from "./sede";
@@ -35,7 +37,6 @@ import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { UbicacionClass } from "./ubicaciones";
 import { VarianteCursoClass } from "./variantes-curso";
-import { PeriodoLectivoClass } from "./periodos-lectivos";
 
 export type APIResponse<D> = {
 	data: D;
@@ -86,7 +87,7 @@ export class APIClass {
 	}
 
 	get periodos() {
-		return new PeriodoLectivoClass(this._apiUrl ,this._fetcher);
+		return new PeriodoLectivoClass(this._apiUrl, this._fetcher);
 	}
 
 	/* get cronograma() {
@@ -226,6 +227,10 @@ export class APIClass {
 
 	get ubicaciones() {
 		return new UbicacionClass(this._apiUrl, this._fetcher);
+	}
+
+	get cortes() {
+		return new CorteClass(this._apiUrl, this._fetcher);
 	}
 }
 

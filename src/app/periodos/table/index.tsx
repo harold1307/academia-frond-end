@@ -1,22 +1,16 @@
 "use client";
+import { useMutation } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@/app/_components/ui/form";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/app/_components/ui/select";
-import { Input } from "@/app/_components/ui/input";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import ModalFallback from "@/app/_components/modals/modal-fallback";
+import { Button } from "@/app/_components/ui/button";
+import { Calendar } from "@/app/_components/ui/calendar";
+import { Checkbox } from "@/app/_components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -25,31 +19,38 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/app/_components/ui/dialog";
-import { Button } from "@/app/_components/ui/button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+} from "@/app/_components/ui/form";
+import { FormInputFile } from "@/app/_components/ui/form-input-file";
+import { Input } from "@/app/_components/ui/input";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/app/_components/ui/popover";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import { API } from "@/core/api-client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Checkbox } from "@/app/_components/ui/checkbox";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/app/_components/ui/select";
 import { Textarea } from "@/app/_components/ui/textarea";
-import { z } from "zod";
-import ModalFallback from "@/app/_components/modals/modal-fallback";
-import { ROUTES } from "@/core/routes";
-import { periodoParams } from "../addPeriodo";
-import { cn } from "@/utils";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { FormInputFile } from "@/app/_components/ui/form-input-file";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
-import { useMutateModule } from "@/hooks/use-mutate-module";
-import { Calendar } from "@/app/_components/ui/calendar";
+import { API } from "@/core/api-client";
 import { type PeriodoLectivoFromAPI } from "@/core/api/periodos-lectivos";
+import { ROUTES } from "@/core/routes";
+import { useMutateModule } from "@/hooks/use-mutate-module";
+import { cn } from "@/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { periodoParams } from "../addPeriodo";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
 
 export default function PeriodosLectivosTables({
 	periodos,
