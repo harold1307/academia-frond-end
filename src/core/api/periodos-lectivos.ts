@@ -30,7 +30,11 @@ export type PeriodoLectivoWithCronogramasMatriculacion =
 		cronogramasMatriculacion: CronogramaMatriculacionFromAPI[];
 	};
 
-export type CalculoCostoFromAPI = ReplaceDateToString<CalculoCosto>;
+export type CalculoCostoFromAPI = ReplaceDateToString<
+	CalculoCosto & {
+		planCostos: boolean;
+	}
+>;
 export type UpdateCalculoCosto = Partial<
 	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt">
 >;
@@ -89,6 +93,7 @@ export const calculoCostoSchema = z.object<ZodInferSchema<CalculoCostoFromAPI>>(
 			"COSTO_POR_PLAN_CUOTA",
 		] as const),
 		costoPorSesion: z.boolean().nullable(),
+		planCostos: z.boolean(),
 		cronogramaFechasOpcionPago: z.boolean().nullable(),
 		estudiantesEligenOpcionPago: z.boolean().nullable(),
 
