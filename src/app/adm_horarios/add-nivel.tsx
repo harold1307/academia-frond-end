@@ -1,4 +1,7 @@
 "use client";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
@@ -11,131 +14,143 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { API } from "@/core/api-client";
-import type { AreaConocimientoClass } from "@/core/api/areas-conocimiento";
+import type { CreateNivelAcademico } from "@/core/api/niveles-academicos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
-import type { ReplaceNullableToOptional, ZodInferSchema } from "@/utils/types";
-import { NivelAcademico } from "@prisma/client";
-import { CreateNivelAcademico } from "@/core/api/niveles-academicos";
-import { Textarea } from "../_components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../_components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "../_components/ui/popover";
-import { Button } from "../_components/ui/button";
 import { cn } from "@/utils";
-import { CalendarIcon } from "lucide-react";
+import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
+import type { ZodInferSchema } from "@/utils/types";
+import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
-import { format } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "../_components/ui/popover";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../_components/ui/select";
 import { MALLA_KEYS } from "../malla/query-keys";
 
 const schema = z.object<
 	ZodInferSchema<
 		Omit<
 			CreateNivelAcademico,
-			| "id"
-			| "profesores"
-			| "horarios"
-			| "cuposMaterias"
-			| "planificacionProfesores"
-			| "matriculacion"
-			| "estado"
-			| "createdAt"
-			| "updatedAt"
-			>
-		& { 
-			mallaId: string | null,
-			nivelId: string | null,
-			modeloEvaluativoId: string | null,
-			procesoPostMatricula: string | null,
-			paraleloId: string| null,
-			nombre: string | null,
-			practicasComunitarias: boolean & {
-				horas?: number | null
-			} | null
-			practicasProfesionales: boolean & {
-				horas?: number | null
-			} | null
-			}
-		>>({
-			id: z.string(),
-			nombre: z.string().nullable(),
-			estado: z.boolean(),
-			horarios: z.boolean(),
-			matriculacion: z.boolean(),
-			profesores: z.boolean(),
-			planificacionProfesores: z.boolean(),
-			cuposMaterias: z.boolean(),
-			fechaInicio: z.string().datetime(),
-			fechaFin: z.string().datetime(),
-			inicioAgregaciones: z.string().datetime(),
-			limiteAgregaciones: z.string().datetime(),
-			validaRequisitosMalla: z.boolean(),
-			validaCumplimientoMaterias: z.boolean(),
-			horasMinimasPracticasComunitarias: z.number().nullable(),
-			horasMinimasPracticasPreprofesionales: z.number().nullable(),
-			estudiantesPuedenSeleccionarMaterias: z.boolean(),
-			estudiantesPuedenSeleccionarMateriasOtrosHorarios: z.boolean(),
-			estudiantesPuedenSeleccionarMateriasOtrasModalidades: z.boolean(),
-			estudiantesRegistranProyectosIntegradores: z.boolean(),
-			redireccionAPagos: z.boolean(),
-			limiteOrdinaria: z.string().datetime(),
-			limiteExtraordinaria: z.string().datetime(),
-			limiteEspecial: z.string().datetime(),
-			diasVencimientoMatricula: z.number(),
-			capacidad: z.number().int().min(0),
-			mensaje: z.string().nullable(),
-			terminosCondiciones: z.string().nullable(),
+			| "nivelMallaId"
+			| "sesionId"
+			| "fechaInicio"
+			| "fechaFin"
+			| "inicioAgregaciones"
+			| "limiteAgregaciones"
+			| "limiteOrdinaria"
+			| "limiteExtraordinaria"
+			| "limiteEspecial"
+		> & {
+			fechaInicio: string;
+			fechaFin: string;
+			inicioAgregaciones: string;
+			limiteAgregaciones: string;
+			limiteOrdinaria: string;
+			limiteExtraordinaria: string;
+			limiteEspecial: string;
 
-			paraleloId: z.string(),
-			modeloEvaluativoId: z.string().uuid(),
-			sesionId: z.string().uuid(),
-			nivelMallaId: z.string().uuid(),
+			mallaId: string;
+			nivelId: string;
+			sesionId: string;
+		}
+	>
+>({
+	nombre: z.string().nullable(),
+	fechaInicio: z.string().datetime(),
+	fechaFin: z.string().datetime(),
+	inicioAgregaciones: z.string().datetime(),
+	limiteAgregaciones: z.string().datetime(),
+	validaRequisitosMalla: z.boolean(),
+	validaCumplimientoMaterias: z.boolean(),
+	horasMinimasPracticasComunitarias: z.number().nullable(),
+	horasMinimasPracticasPreprofesionales: z.number().nullable(),
+	estudiantesPuedenSeleccionarMaterias: z.boolean(),
+	estudiantesPuedenSeleccionarMateriasOtrosHorarios: z.boolean(),
+	estudiantesPuedenSeleccionarMateriasOtrasModalidades: z.boolean(),
+	estudiantesRegistranProyectosIntegradores: z.boolean(),
+	redireccionAPagos: z.boolean(),
+	limiteOrdinaria: z.string().datetime(),
+	limiteExtraordinaria: z.string().datetime(),
+	limiteEspecial: z.string().datetime(),
+	diasVencimientoMatricula: z.number(),
+	capacidad: z.number().int().min(0),
+	mensaje: z.string().nullable(),
+	terminosCondiciones: z.string().nullable(),
+
+	paraleloId: z.string(),
+	modeloEvaluativoId: z.string(),
+
+	mallaId: z.string(),
+	nivelId: z.string(),
+	sesionId: z.string(),
 });
-
 
 export default function AddNivelAcademico() {
 	const router = useRouter();
-	
+
 	const {
 		data: mallas,
 		isLoading: mallasAreLoading,
 		refetch: fetchMallas,
 	} = useQuery({
 		queryKey: MALLA_KEYS.list(""),
-		queryFn: async () => {
+		queryFn: () => {
 			return API.mallasCurriculares.getMany();
 		},
 		enabled: false,
 	});
-	
+
 	const {
-		data: modalidades,
-		isLoading: modalidadesAreLoading,
-		refetch: fetchModalidades,
+		data: niveles,
+		isLoading: nivelesAreLoading,
+		refetch: fetchNiveles,
 	} = useQuery({
-		queryKey: ["modalidades"],
-		queryFn: async () => {
-			return API.modalidades.getMany();
+		queryKey: MALLA_KEYS.list(""),
+		queryFn: () => {
+			return API.nivelesMalla.getMany();
 		},
 		enabled: false,
 	});
-	
+
+	const {
+		data: sesiones,
+		isLoading: sesionesAreLoading,
+		refetch: fetchSesiones,
+	} = useQuery({
+		queryKey: MALLA_KEYS.list(""),
+		queryFn: () => {
+			return API.sesiones.getMany();
+		},
+		enabled: false,
+	});
+
 	const {
 		data: paralelos,
 		isLoading: paralelosAreLoading,
 		refetch: fetchParalelos,
 	} = useQuery({
 		queryKey: ["Paralelos"],
-		queryFn: async () => {
-			return API.paralelos.getMany()
+		queryFn: () => {
+			return API.paralelos.getMany();
 		},
-		enabled: false
-	})
+		enabled: false,
+	});
 
 	const { form, mutation, open, setOpen } = useMutateModule({
-		//schema,
-		mutationFn: async data => {
-			return API.nivelesAcademicos.createMaterias({
-				...data
+		schema,
+		mutationFn: async ({ nivelId, sesionId, mallaId: _, ...data }) => {
+			return API.nivelesMalla.createNivelAcademico({
+				data,
+				nivelMallaId: nivelId,
+				sesionId,
 			});
 		},
 		onError: console.error,
@@ -145,15 +160,22 @@ export default function AddNivelAcademico() {
 			router.refresh();
 		},
 		hookFormProps: {
-			defaultValues : {
+			defaultValues: {
+				validaRequisitosMalla: false,
+				validaCumplimientoMaterias: false,
 				estudiantesPuedenSeleccionarMaterias: false,
 				estudiantesPuedenSeleccionarMateriasOtrosHorarios: false,
 				estudiantesPuedenSeleccionarMateriasOtrasModalidades: false,
 				estudiantesRegistranProyectosIntegradores: false,
-				redireccionAPagos: false
-			}
-		}
+				redireccionAPagos: false,
+
+				diasVencimientoMatricula: 0,
+				capacidad: 0,
+			},
+		},
 	});
+
+	const { mallaId } = form.watch();
 
 	return (
 		<section>
@@ -197,10 +219,7 @@ export default function AddNivelAcademico() {
 																disabled={field.disabled}
 															>
 																{field.value ? (
-																	format(
-																		field.value as unknown as Date,
-																		"PPP",
-																	)
+																	format(field.value as unknown as Date, "PPP")
 																) : (
 																	<span>Pick a date</span>
 																)}
@@ -208,10 +227,7 @@ export default function AddNivelAcademico() {
 															</Button>
 														</FormControl>
 													</PopoverTrigger>
-													<PopoverContent
-														className='w-auto p-0'
-														align='start'
-													>
+													<PopoverContent className='w-auto p-0' align='start'>
 														<Calendar
 															mode='single'
 															selected={field.value as unknown as Date}
@@ -235,37 +251,58 @@ export default function AddNivelAcademico() {
 											: undefined;
 										let loading;
 
-										 if (f.options === "niveles") {
-										// 	options = NIVELES_PREFIXES.slice(0, niveles).map(
-										// 		(v, idx) =>
-										// 			({
-										// 				value: `${idx + 1}`,
-										// 				label: `${v} NIVEL`,
-										// 			}) satisfies {
-										// 				label: string;
-										// 				value: string;
-										// 			},
-										// 	);
-										} else if (f.options === "custom") {
+										// if (f.options === "niveles") {
+										// 	// 	options = NIVELES_PREFIXES.slice(0, niveles).map(
+										// 	// 		(v, idx) =>
+										// 	// 			({
+										// 	// 				value: `${idx + 1}`,
+										// 	// 				label: `${v} NIVEL`,
+										// 	// 			}) satisfies {
+										// 	// 				label: string;
+										// 	// 				value: string;
+										// 	// 			},
+										// 	// 	);
+										// } else
+										if (f.options === "custom") {
 											switch (f.name) {
 												case "mallaId": {
 													options = mallas?.data.map(m => ({
-														label: m.codigo,
+														label: m.codigo || "",
 														value: m.id,
 													}));
 
 													loading = mallasAreLoading;
 													break;
 												}
-												case "modalidadId": {
-													options = modalidades?.data.map(m => ({
+												case "sesionId": {
+													options = sesiones?.data.map(m => ({
 														label: m.nombre,
 														value: m.id,
 													}));
 
-													loading = modalidadesAreLoading;
+													loading = sesionesAreLoading;
 													break;
 												}
+												case "nivelId": {
+													options = niveles?.data
+														.filter(n => n.mallaId === mallaId)
+														.map(m => ({
+															value: m.id,
+															label: `${NIVELES_PREFIXES[m.nivel - 1]} NIVEL`,
+														}));
+
+													loading = nivelesAreLoading;
+													break;
+												}
+												// case "modalidadId": {
+												// 	options = modalidades?.data.map(m => ({
+												// 		label: m.nombre,
+												// 		value: m.id,
+												// 	}));
+
+												// 	loading = modalidadesAreLoading;
+												// 	break;
+												// }
 												case "paraleloId": {
 													options = paralelos?.data.map(t => ({
 														label: t.nombre,
@@ -287,22 +324,16 @@ export default function AddNivelAcademico() {
 													defaultValue={field.value as string}
 													disabled={field.disabled}
 													onOpenChange={() => {
-														if (
-															f.name === "mallaId" &&
-															!mallas
-														) {
+														if (f.name === "mallaId" && !mallas) {
 															fetchMallas();
 														}
-														if (
-															f.name === "modalidadId" &&
-															!modalidades
-														) {
-															fetchModalidades();
+														if (f.name === "sesionId" && !sesiones) {
+															fetchSesiones();
 														}
-														if (
-															f.name === "paraleloId" &&
-															!paralelos
-														) {
+														if (f.name === "nivelId" && !niveles) {
+															fetchNiveles();
+														}
+														if (f.name === "paraleloId" && !paralelos) {
 															fetchParalelos();
 														}
 													}}
@@ -321,16 +352,11 @@ export default function AddNivelAcademico() {
 															: options?.length
 																? options.map(o =>
 																		typeof o === "string" ? (
-																			<SelectItem 
-																				value={o} 
-																				key={o}>
-																			{o}
+																			<SelectItem value={o} key={o}>
+																				{o}
 																			</SelectItem>
 																		) : (
-																			<SelectItem
-																				value={o.value}
-																				key={o.value}
-																			>
+																			<SelectItem value={o.value} key={o.value}>
 																				{o.label}
 																			</SelectItem>
 																		),
@@ -341,22 +367,22 @@ export default function AddNivelAcademico() {
 											</FormItem>
 										);
 									}
-									case "custom-text-area": {
-										return (
-											<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-												<FormLabel className='col-span-3 text-end'>
-													{f.label}
-												</FormLabel>
-												<FormControl>
-													<Textarea
-														className='col-span-9 resize-none'
-														{...field}
-														value={field.value as string}
-													/>
-												</FormControl>
-											</FormItem>
-										);
-									}
+									// case "custom-text-area": {
+									// 	return (
+									// 		<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
+									// 			<FormLabel className='col-span-3 text-end'>
+									// 				{f.label}
+									// 			</FormLabel>
+									// 			<FormControl>
+									// 				<Textarea
+									// 					className='col-span-9 resize-none'
+									// 					{...field}
+									// 					value={field.value as string}
+									// 				/>
+									// 			</FormControl>
+									// 		</FormItem>
+									// 	);
+									// }
 									case "checkbox": {
 										return (
 											<FormField
@@ -374,9 +400,7 @@ export default function AddNivelAcademico() {
 															<Input
 																{...field}
 																value={undefined}
-																onChange={e =>
-																	field.onChange(e.target.checked)
-																}
+																onChange={e => field.onChange(e.target.checked)}
 																checked={field.value as boolean}
 																type={f.inputType}
 																className='col-span-9'
@@ -424,8 +448,6 @@ export default function AddNivelAcademico() {
 	);
 }
 
-
-
 const fields = [
 	{
 		name: "mallaId",
@@ -441,13 +463,13 @@ const fields = [
 		options: "custom",
 		placeholder: "------------",
 	},
-	{
-		name: "modalidadId",
-		inputType: "custom-select",
-		label: "Modalidad",
-		options: "custom",
-		placeholder: "------------",
-	},
+	// {
+	// 	name: "modalidadId",
+	// 	inputType: "custom-select",
+	// 	label: "Modalidad",
+	// 	options: "custom",
+	// 	placeholder: "------------",
+	// },
 	{
 		name: "sesionId",
 		inputType: "custom-select",
@@ -464,7 +486,7 @@ const fields = [
 	},
 	{
 		name: "nombre",
-		inputType: "string",
+		inputType: "text",
 		label: "Nombre",
 	},
 	{
@@ -494,7 +516,7 @@ const fields = [
 	},
 	{
 		name: "validaRequisitosMalla",
-		inputType: "boolean",
+		inputType: "checkbox",
 		label: "Valida requisitos malla",
 	},
 	{
@@ -543,40 +565,31 @@ const fields = [
 		inputType: "custom-date",
 		label: "Limite especial",
 	},
-	{
-		name: "diasVencimientoMatricula",
-		inputType: "number",
-		label: "Días vencimiento matrícula",
-	},
+	// {
+	// 	name: "diasVencimientoMatricula",
+	// 	inputType: "number",
+	// 	label: "Días vencimiento matrícula",
+	// },
 	{
 		name: "capacidad",
 		inputType: "number",
 		label: "Capacidad",
-		placeholder: 0
+		// placeholder: 0,
 	},
 	{
 		name: "diasVencimientoMatricula",
 		inputType: "number",
 		label: "Días vencimiento matrícula",
-		placeholder: 0
+		// placeholder: 0,
 	},
 	{
 		name: "mensaje",
-		inputType: "string",
+		inputType: "text",
 		label: "Mensaje",
 	},
 	{
 		name: "terminosCondiciones",
-		inputType: "string",
+		inputType: "text",
 		label: "Terminos y Condiciones",
 	},
-	
-	
-	
-	
-	
-	
-	
-	
-	
-]
+] satisfies Field<keyof z.infer<typeof schema>>[];

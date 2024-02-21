@@ -36,6 +36,7 @@ export type CreateNivelAcademico = Omit<
 	| "createdAt"
 	| "updatedAt"
 	| "id"
+	| "sesion"
 >;
 
 export const baseNivelAcademicoSchema = z.object<
