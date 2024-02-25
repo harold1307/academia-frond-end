@@ -1,14 +1,16 @@
 import React from "react";
 import CortesTable from "./table";
 import AddCortes from "./addCortes";
+import { APIserver } from "@/core/api-server";
 
-function CortesPage() {
+async function CortesPage() {
+	const cortes = await APIserver.cortes.getMany();
 	return (
 		<>
 			<div className='mt-4'>
 				<React.Suspense fallback={"Cargando tabla..."}>
 					<AddCortes />
-					<CortesTable mallas={MUCortes} />
+					<CortesTable cortes={cortes.data} />
 				</React.Suspense>
 			</div>
 		</>

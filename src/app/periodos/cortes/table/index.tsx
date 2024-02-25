@@ -49,17 +49,18 @@ import { Textarea } from "@/app/_components/ui/textarea";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import { ROUTES } from "@/core/routes";
 import { cortesParams } from "../addCortes";
+import { CorteFromAPI } from "@/core/api/cortes";
 
-export default function CortesTable({ mallas }) {
+export default function CortesTable({ cortes }: { cortes: CorteFromAPI[] }) {
 	return (
-		<section className="my-2">
-			<DataTable columns={columns} data={mallas} />
-			<UpdateCortes cortes={mallas} />
+		<section className='my-2'>
+			<DataTable columns={columns} data={cortes} />
+			<UpdateCortes cortes={cortes} />
 		</section>
 	);
 }
 
-function UpdateCortes(props) {
+function UpdateCortes(props: { cortes: CorteFromAPI[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
@@ -70,12 +71,12 @@ function UpdateCortes(props) {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async ({ data, id }) => {
-			return API.cronograma.update({ cronograma: { data, id } });
+			return API.cortes.update({ data, id });
 		},
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			router.replace(ROUTES.periodo.cronograma(props.id));
+			router.replace(ROUTES.periodo.cortes);
 			router.refresh();
 		},
 	});
@@ -133,11 +134,7 @@ function UpdateCortes(props) {
 							<FormField
 								control={form.control}
 								name={f.name}
-								key={
-									f.name.includes("Desde")
-										? f.name + form.watch().niveles
-										: f.name
-								}
+								key={f.name}
 								render={({ field }) => {
 									switch (f.inputType) {
 										case "custom-date": {

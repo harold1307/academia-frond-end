@@ -1,5 +1,5 @@
 "use client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -43,7 +43,11 @@ import {
 import { Textarea } from "@/app/_components/ui/textarea";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
 import { API } from "@/core/api-client";
-import { type PeriodoLectivoFromAPI } from "@/core/api/periodos-lectivos";
+import {
+	type CreatePeriodoLectivo,
+	type UpdateCalculoCosto,
+	type PeriodoLectivoFromAPI,
+} from "@/core/api/periodos-lectivos";
 import { ROUTES } from "@/core/routes";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { cn } from "@/utils";
@@ -51,6 +55,77 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { periodoParams } from "../addPeriodo";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import {
+	type ReplaceNullableToOptional,
+	type ZodInferSchema,
+} from "@/utils/types";
+import { type Field } from "@/utils/forms";
+
+const schema = z.object<
+	ZodInferSchema<
+		ReplaceNullableToOptional<
+			CreatePeriodoLectivo & {
+				"dummy-fechaEnMatriculas": boolean;
+				"dummy-estructuraParalelos": boolean;
+				"dummy-planificacionProfesoresObligatoria": boolean;
+				"dummy-legalizarMatriculas": boolean;
+				"dummy-numeroMatricula": boolean;
+				"dummy-numeroSecuencia": boolean;
+			}
+		>
+	>
+>({
+	nombre: z.string(),
+	inicio: z.string().datetime(),
+	fin: z.string().datetime(),
+	tipo: z.enum(["GRADO", "POSGRADO"] as const),
+	limiteMatriculaOrdinaria: z.string().datetime().optional(),
+	limiteMatriculaExtraordinaria: z.string().datetime().optional(),
+	limiteMatriculaEspecial: z.string().datetime().optional(),
+	automatriculaAlumnosFechaExtraordinaria: z.boolean().optional(),
+	estudianteSeleccionaParaleloAutomatricula: z.boolean().optional(),
+	seImpartioNivelacion: z.boolean(),
+	planificacionCargaHoraria: z.boolean(),
+	planificacionProfesoresFormaTotal: z.boolean().optional(),
+	aprobacionPlanificacionProfesores: z.boolean().optional(),
+	legalizacionAutomaticaContraPagos: z.boolean().optional(),
+	numeroSecuencia: z.number().optional(),
+	corteId: z.string().uuid().optional(),
+	cronogramaNotasCoordinacion: z.boolean(),
+	puedenAutomatricularseSegundasOMasMatriculas: z.boolean(),
+	puedenMatricularseArrastre: z.boolean(),
+	numeroMatriculaAutomatico: z.boolean().optional(),
+	numeroMatricularAlLegalizar: z.boolean().optional(),
+
+	"dummy-fechaEnMatriculas": z.boolean(),
+	"dummy-estructuraParalelos": z.boolean(),
+	"dummy-planificacionProfesoresObligatoria": z.boolean(),
+	"dummy-legalizarMatriculas": z.boolean(),
+	"dummy-numeroMatricula": z.boolean(),
+	"dummy-numeroSecuencia": z.boolean(),
+});
+
+const schemaCosto = z.object<
+	ZodInferSchema<
+		UpdateCalculoCosto & {
+			costoPorSesion?: boolean | undefined | null;
+			estudiantesEligenOpcionPago?: boolean | undefined | null;
+			cronogramaFechasOpcionPago?: boolean | undefined | null;
+			planCostos?: boolean | undefined;
+			"dummy-opcionesDePago": boolean;
+		}
+	>
+>({
+	tipo: z
+		.enum(["COSTO_POR_PLAN_CUOTA", "COSTO_POR_NIVEL_Y_MATERIAS"] as const)
+		.optional(),
+	costoPorSesion: z.boolean().nullable().optional(),
+	estudiantesEligenOpcionPago: z.boolean().nullable().optional(),
+	cronogramaFechasOpcionPago: z.boolean().nullable().optional(),
+	planCostos: z.boolean().optional(),
+
+	"dummy-opcionesDePago": z.boolean(),
+});
 
 export default function PeriodosLectivosTables({
 	periodos,
@@ -74,39 +149,11 @@ function UpdatePeriodoTableModal(props: { periodos: PeriodoLectivoFromAPI[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	const PeriodoClass = z.object({
-		nombre: z.string(),
-		inicio: z.coerce.date(),
-		fin: z.coerce.date(),
-		tipo: z.string(),
-		limiteMatriculaOrdinaria: z.null().nullable(),
-		limiteMatriculaExtraordinaria: z.null().nullable(),
-		limiteMatriculaEspecial: z.null().nullable(),
-		automatriculaAlumnosFechaExtraordinaria: z.null().nullable(),
-		estudianteSeleccionaParaleloAutomatricula: z.null().nullable(),
-		seImpartioNivelacion: z.boolean(),
-		planificacionCargaHoraria: z.boolean(),
-		planificacionProfesoresFormaTotal: z.null().nullable(),
-		aprobacionPlanificacionProfesores: z.null().nullable(),
-		legalizacionAutomaticaContraPagos: z.null().nullable(),
-		numeroSecuencia: z.null().nullable(),
-		corteId: z.null().nullable(),
-		cronogramaNotasCoordinacion: z.boolean(),
-		puedenAutomatricularseSegundasOMasMatriculas: z.boolean(),
-		puedenMatricularseArrastre: z.boolean(),
-		numeroMatriculaAutomatico: z.null().nullable(),
-		numeroMatricularAlLegalizar: z.null().nullable(),
-	});
-
-	type Data = z.infer<typeof PeriodoClass>;
-
 	const {
 		mutation: { mutate, isPending },
-		open,
-		setOpen,
 		form,
 	} = useMutateModule({
-		mutationFn: async ({ data, id }) => {
+		mutationFn: async ({ data, id }: { data: any; id: string }) => {
 			return API.periodos.update({ data, id });
 		},
 		onError: console.error,
@@ -115,6 +162,19 @@ function UpdatePeriodoTableModal(props: { periodos: PeriodoLectivoFromAPI[] }) {
 			router.refresh();
 		},
 	});
+
+	const {
+		data: cortes,
+		isLoading: cortesAreLoading,
+		refetch: fetchCortes,
+	} = useQuery({
+		queryKey: ["cortes"],
+		queryFn: () => {
+			return API.cortes.getMany();
+		},
+		enabled: false,
+	});
+	const formValues = form.watch();
 
 	const paramPeriodoId = React.useMemo(
 		() => searchParams.get(periodoParams.update),
@@ -156,175 +216,184 @@ function UpdatePeriodoTableModal(props: { periodos: PeriodoLectivoFromAPI[] }) {
 						)}
 						className='space-y-8'
 					>
-						{fields.map(f => (
-							<FormField
-								control={form.control}
-								name={f.name}
-								defaultValue={selectedPeriodo[f.name]}
-								key={f.name}
-								disabled={isPending}
-								render={({ field }) => {
-									switch (f.inputType) {
-										case "custom-date": {
-											return (
-												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-													<FormLabel className='col-span-3 text-end'>
-														{f.label}
-													</FormLabel>
-													<Popover>
-														<PopoverTrigger asChild>
-															<FormControl>
-																<Button
-																	variant={"outline"}
-																	className={cn(
-																		"col-span-9 w-[240px] pl-3 text-left font-normal",
-																		!field.value && "text-muted-foreground",
-																	)}
-																	defaultValue={field.value as string}
-																	disabled={field.disabled}
-																>
-																	{field.value ? (
-																		format(
-																			field.value as unknown as Date,
-																			"PPP",
-																		)
-																	) : (
-																		<span>Pick a date</span>
-																	)}
-																	<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-																</Button>
-															</FormControl>
-														</PopoverTrigger>
-														<PopoverContent
-															className='w-auto p-0'
-															align='start'
-														>
-															<Calendar
-																mode='single'
-																selected={field.value as unknown as Date}
-																onSelect={field.onChange}
-																disabled={(date: any) =>
-																	date < new Date() || !!field.disabled
-																}
-																initialFocus
-															/>
-														</PopoverContent>
-													</Popover>
-												</FormItem>
-											);
-										}
-										case "custom-select": {
-											return (
-												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-													<FormLabel className='col-span-3 text-end'>
-														{f.label}
-													</FormLabel>
-													<Select
-														onValueChange={field.onChange}
-														defaultValue={field.value as string}
-														disabled={field.disabled}
-													>
-														<FormControl>
-															<SelectTrigger className='col-span-9'>
-																<SelectValue
-																	placeholder={f.placeholder}
-																	defaultValue={field.value}
-																	className='w-full'
+						{fields.map(f => {
+							if (f.dependsOn && !formValues[f.dependsOn]) {
+								return null;
+							}
+
+							return (
+								<FormField
+									control={form.control}
+									name={f.name}
+									key={f.name}
+									defaultValue={selectedPeriodo[f.name]}
+									shouldUnregister={true}
+									render={({ field }) => {
+										switch (f.inputType) {
+											case "custom-date": {
+												return (
+													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+														<FormLabel className='col-span-3 text-end'>
+															{f.label}
+														</FormLabel>
+														<Popover>
+															<PopoverTrigger asChild>
+																<FormControl>
+																	<Button
+																		variant={"outline"}
+																		className={cn(
+																			"col-span-9 w-[240px] pl-3 text-left font-normal",
+																			!field.value && "text-muted-foreground",
+																		)}
+																		disabled={field.disabled}
+																		defaultValue={field.value}
+																	>
+																		{field.value ? (
+																			format(
+																				field.value as unknown as Date,
+																				"PPP",
+																			)
+																		) : (
+																			<span>Pick a date</span>
+																		)}
+																		<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+																	</Button>
+																</FormControl>
+															</PopoverTrigger>
+															<PopoverContent
+																className='w-auto p-0'
+																align='start'
+															>
+																<Calendar
+																	mode='single'
+																	selected={field.value as unknown as Date}
+																	onSelect={date =>
+																		field.onChange(date?.toISOString())
+																	}
+																	disabled={date =>
+																		date < new Date() || !!field.disabled
+																	}
+																	initialFocus
 																/>
-															</SelectTrigger>
+															</PopoverContent>
+														</Popover>
+													</FormItem>
+												);
+											}
+											case "custom-select": {
+												let options:
+													| string[]
+													| undefined
+													| { value: string; label: string }[] =
+													f.name === "tipo" ? f.options : undefined;
+												let loading: boolean | undefined = undefined;
+
+												if (f.name === "corteId") {
+													options = cortes?.data.map(c => ({
+														value: c.id,
+														label: c.nombre,
+													}));
+
+													loading = cortesAreLoading;
+												}
+
+												return (
+													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+														<FormLabel className='col-span-3 text-end'>
+															{f.label}
+														</FormLabel>
+														<Select
+															onValueChange={field.onChange}
+															defaultValue={field.value as string}
+															disabled={field.disabled}
+															onOpenChange={() => {
+																if (f.name === "corteId" && !cortes) {
+																	fetchCortes();
+																}
+															}}
+														>
+															<FormControl>
+																<SelectTrigger className='col-span-9'>
+																	<SelectValue
+																		placeholder={f.placeholder}
+																		className='w-full'
+																	/>
+																</SelectTrigger>
+															</FormControl>
+															<SelectContent>
+																{loading
+																	? "Cargando opciones..."
+																	: options?.length
+																		? options.map(o =>
+																				typeof o === "string" ? (
+																					<SelectItem value={o} key={o}>
+																						{o}
+																					</SelectItem>
+																				) : (
+																					<SelectItem
+																						value={o.value}
+																						key={o.value}
+																					>
+																						{o.label}
+																					</SelectItem>
+																				),
+																			)
+																		: "No hay resultados"}
+															</SelectContent>
+														</Select>
+													</FormItem>
+												);
+											}
+											case "custom-toggle": {
+												return (
+													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+														<FormLabel className='col-span-3 text-end'>
+															{f.label}
+														</FormLabel>
+														<FormControl>
+															<ToggleSwitch
+																checked={field.value as boolean}
+																defaultChecked={field.value as boolean}
+																defaultValue={field.value as string}
+																onCheckedChange={field.onChange}
+															/>
 														</FormControl>
-														<SelectContent>
-															{f.options.map(o => (
-																<SelectItem value={o} key={o}>
-																	{o}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-												</FormItem>
-											);
+													</FormItem>
+												);
+											}
+											default: {
+												return (
+													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+														<FormLabel className='col-span-3 text-end'>
+															{f.label}
+														</FormLabel>
+														<FormControl>
+															<Input
+																{...field}
+																value={
+																	typeof field.value === "boolean"
+																		? undefined
+																		: field.value || undefined
+																}
+																onChange={e =>
+																	f.inputType === "number"
+																		? field.onChange(+e.target.value)
+																		: field.onChange(e.target.value)
+																}
+																type={f.inputType}
+																defaultValue={field.value as string}
+																placeholder={f.placeholder}
+																className='col-span-9'
+															/>
+														</FormControl>
+													</FormItem>
+												);
+											}
 										}
-										case "custom-text-area": {
-											return (
-												<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-													<FormLabel className='col-span-3 text-end'>
-														{f.label}
-													</FormLabel>
-													<FormControl>
-														<Textarea
-															className='col-span-9 resize-none'
-															{...field}
-															value={field.value as string}
-															defaultValue={field.value as string}
-														/>
-													</FormControl>
-												</FormItem>
-											);
-										}
-										case "checkbox": {
-											return (
-												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-													<FormLabel className='col-span-3 text-end'>
-														{f.label}
-													</FormLabel>
-													<FormControl>
-														<Checkbox
-															checked={field.value as boolean}
-															onCheckedChange={field.onChange}
-															defaultValue={field.value as string}
-														/>
-													</FormControl>
-												</FormItem>
-											);
-										}
-										case "toggle": {
-											return (
-												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-													<FormLabel className='col-span-3 text-end'>
-														{f.label}
-													</FormLabel>
-													<FormControl>
-														<ToggleSwitch
-															checked={field.value as boolean}
-															onCheckedChange={field.onChange}
-															defaultChecked={field.value as boolean}
-														/>
-													</FormControl>
-												</FormItem>
-											);
-										}
-										default: {
-											return (
-												<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-													<FormLabel className='col-span-3 text-end'>
-														{f.label}
-													</FormLabel>
-													<FormControl>
-														<Input
-															{...field}
-															value={
-																typeof field.value === "boolean"
-																	? undefined
-																	: field.value || undefined
-															}
-															onChange={e =>
-																f.inputType === "number"
-																	? field.onChange(+e.target.value)
-																	: field.onChange(e.target.value)
-															}
-															type={f.inputType}
-															placeholder={f.placeholder}
-															defaultValue={field.value as string}
-															className='col-span-9'
-														/>
-													</FormControl>
-												</FormItem>
-											);
-										}
-									}
-								}}
-							/>
-						))}
+									}}
+								/>
+							);
+						})}
 						<DialogFooter>
 							<Button disabled={isPending} type='submit' variant='success'>
 								Guardar
@@ -587,18 +656,41 @@ function TiposActividades(props) {
 	);
 }
 
-function Costos(props) {
+function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 
-	const createPeriodoSchema: z.ZodType = z.object({
-		data: z.string(),
-		id: z.string(),
-	});
-
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async ({ data, id }) => {
-			return API.periodos.costos(data, id);
+	const {
+		mutation: { mutate, isPending },
+		form,
+		open,
+		setOpen,
+	} = useMutateModule({
+		mutationFn: async ({
+			periodoLectivoId,
+			tipo,
+			costoPorSesion,
+			cronogramaFechasOpcionPago,
+			estudiantesEligenOpcionPago,
+			data,
+		}: {
+			data: UpdateCalculoCosto;
+			periodoLectivoId: string;
+		}) => {
+			return API.periodos.updateCalculoCosto({
+				data: {
+					tipo,
+					costoPorSesion: costoPorSesion || null,
+					cronogramaFechasOpcionPago: !costoPorSesion
+						? cronogramaFechasOpcionPago ?? false
+						: null,
+					estudiantesEligenOpcionPago: !costoPorSesion
+						? estudiantesEligenOpcionPago ?? false
+						: null,
+					...data,
+				},
+				periodoLectivoId,
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -608,17 +700,11 @@ function Costos(props) {
 		},
 	});
 
-	const form = useForm({
-		resolver: zodResolver(createPeriodoSchema),
-		defaultValues: {},
-		disabled: isSubmitting,
-		shouldUnregister: true,
-	});
-
 	const paramPeriodoId = React.useMemo(
 		() => searchParams.get(periodoParams.costos),
 		[searchParams],
 	);
+	const formValues = form.watch();
 
 	if (!paramPeriodoId) return null;
 
@@ -637,7 +723,7 @@ function Costos(props) {
 		<Dialog
 			defaultOpen={true}
 			onOpenChange={open => {
-				if (isSubmitting) return;
+				if (isPending) return;
 				if (!open) {
 					router.replace(ROUTES.periodo.path);
 					return;
@@ -649,171 +735,145 @@ function Costos(props) {
 					<DialogTitle>Editar tipo de calculo</DialogTitle>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data =>
+								mutate({ data, periodoLectivoId: paramPeriodoId }),
+							)}
 							className='space-y-8'
 						>
-							{fieldsCostos.map(f => (
-								<FormField
-									control={form.control}
-									name={f.name}
-									key={
-										f.name.includes("Desde") ? f.name + form.watch() : f.name
+							{fieldsCostos.map(f => {
+								if (formValues.tipo === "COSTO_POR_PLAN_CUOTA") {
+									if (f.dependsOn && f.name !== "estudiantesEligenOpcionPago") {
+										return null;
 									}
-									render={({ field }) => {
-										switch (f.inputType) {
-											case "custom-date": {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<Popover>
-															<PopoverTrigger asChild>
-																<FormControl>
-																	<Button
-																		variant={"outline"}
-																		className={cn(
-																			"col-span-9 w-[240px] pl-3 text-left font-normal",
-																			!field.value && "text-muted-foreground",
-																		)}
-																		disabled={field.disabled}
-																	>
-																		{field.value ? (
-																			format(
-																				field.value as unknown as Date,
-																				"PPP",
-																			)
-																		) : (
-																			<span>Pick a date</span>
-																		)}
-																		<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-																	</Button>
-																</FormControl>
-															</PopoverTrigger>
-															<PopoverContent
-																className='w-auto p-0'
-																align='start'
+								}
+								if (formValues.tipo === "COSTO_POR_NIVEL_Y_MATERIAS") {
+									if (
+										f.dependsOn === "dummy-opcionesDePago" &&
+										!formValues[f.dependsOn] &&
+										f.name !== "costoPorSesion"
+									) {
+										return null;
+									}
+									if (
+										f.dependsOn === "dummy-opcionesDePago" &&
+										formValues[f.dependsOn] &&
+										f.name === "costoPorSesion"
+									) {
+										return null;
+									}
+									if (
+										f.dependsOn === "costoPorSesion" &&
+										formValues[f.dependsOn] &&
+										f.name === "dummy-opcionesDePago"
+									) {
+										return null;
+									}
+								}
+								if (formValues.tipo === "COSTO_FIJO_POR_NIVEL_Y_NO_MATERIAS") {
+									if (f.dependsOn) {
+										return null;
+									}
+								}
+								return (
+									<FormField
+										control={form.control}
+										name={f.name}
+										defaultValue={selectedPeriodo.calculoCosto[f.name]}
+										key={f.name}
+										render={({ field }) => {
+											switch (f.inputType) {
+												case "custom-select": {
+													const options = f.options;
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<Select
+																onValueChange={field.onChange}
+																defaultValue={field.value as string}
+																disabled={field.disabled}
 															>
-																<Calendar
-																	mode='single'
-																	selected={field.value as unknown as Date}
-																	onSelect={field.onChange}
-																	disabled={(date: any) =>
-																		date < new Date() || !!field.disabled
-																	}
-																	initialFocus
-																/>
-															</PopoverContent>
-														</Popover>
-													</FormItem>
-												);
-											}
-											case "custom-select": {
-												const options = f.options;
-
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<Select
-															onValueChange={field.onChange}
-															defaultValue={field.value as string}
-															disabled={field.disabled}
-														>
+																<FormControl>
+																	<SelectTrigger className='col-span-9'>
+																		<SelectValue
+																			placeholder={f.placeholder}
+																			className='w-full'
+																		/>
+																	</SelectTrigger>
+																</FormControl>
+																<SelectContent>
+																	{options?.map(o =>
+																		typeof o === "string" ? (
+																			<SelectItem value={o} key={o}>
+																				{o.split("_").join(" ")}
+																			</SelectItem>
+																		) : (
+																			<SelectItem value={o} key={o}>
+																				{o}
+																			</SelectItem>
+																		),
+																	)}
+																</SelectContent>
+															</Select>
+														</FormItem>
+													);
+												}
+												case "custom-toggle": {
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
 															<FormControl>
-																<SelectTrigger className='col-span-9'>
-																	<SelectValue
-																		placeholder={f.placeholder}
-																		className='w-full'
-																	/>
-																</SelectTrigger>
+																<ToggleSwitch
+																	checked={field.value as boolean}
+																	defaultChecked={field.value as boolean}
+																	defaultValue={field.value as string}
+																	onCheckedChange={field.onChange}
+																/>
 															</FormControl>
-															<SelectContent>
-																{options?.map(o =>
-																	typeof o === "string" ? (
-																		<SelectItem value={o} key={o}>
-																			{o}
-																		</SelectItem>
-																	) : (
-																		<SelectItem value={o.value} key={o.value}>
-																			{o.label}
-																		</SelectItem>
-																	),
-																)}
-															</SelectContent>
-														</Select>
-													</FormItem>
-												);
+														</FormItem>
+													);
+												}
+												default: {
+													return (
+														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+															<FormLabel className='col-span-3 text-end'>
+																{f.label}
+															</FormLabel>
+															<FormControl>
+																<Input
+																	{...field}
+																	value={
+																		typeof field.value === "boolean"
+																			? undefined
+																			: field.value || undefined
+																	}
+																	onChange={e =>
+																		f.inputType === "number"
+																			? field.onChange(+e.target.value)
+																			: field.onChange(e.target.value)
+																	}
+																	type={f.inputType}
+																	placeholder={f.placeholder}
+																	className='col-span-9'
+																/>
+															</FormControl>
+														</FormItem>
+													);
+												}
 											}
-											case "custom-text-area": {
-												return (
-													<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Textarea
-																className='col-span-9 resize-none'
-																{...field}
-																value={field.value as string}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-											case "checkbox": {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Checkbox
-																checked={field.value as boolean}
-																onCheckedChange={field.onChange}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-											default: {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Input
-																{...field}
-																value={
-																	typeof field.value === "boolean"
-																		? undefined
-																		: field.value || undefined
-																}
-																onChange={e =>
-																	f.inputType === "number"
-																		? field.onChange(+e.target.value)
-																		: field.onChange(e.target.value)
-																}
-																type={f.inputType}
-																placeholder={f.placeholder}
-																className='col-span-9'
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-										}
-									}}
-								/>
-							))}
+										}}
+									/>
+								);
+							})}
 							<DialogFooter>
-								<Button disabled={isSubmitting} type='submit' variant='success'>
+								<Button disabled={isPending} type='submit' variant='success'>
 									Guardar
 								</Button>
 								<Button
-									disabled={isSubmitting}
+									disabled={isPending}
 									variant='destructive'
 									type='button'
 									onClick={() => router.replace(ROUTES.periodo.path)}
@@ -1119,113 +1179,138 @@ const fields = [
 	{ name: "inicio", inputType: "custom-date", label: "Inicio" },
 	{ name: "fin", inputType: "custom-date", label: "Fin" },
 	{
+		name: "dummy-fechaEnMatriculas",
+		inputType: "custom-toggle",
+		label: "Usa fecha en matriculas",
+	},
+	{
 		name: "limiteMatriculaOrdinaria",
 		inputType: "custom-date",
 		placeholder: "",
 		label: "Limite matricula ordinaria",
+		dependsOn: "dummy-fechaEnMatriculas",
 	},
 	{
 		name: "limiteMatriculaExtraordinaria",
 		inputType: "custom-date",
 		placeholder: "",
 		label: "Limite matricula extraordinaria",
+		dependsOn: "dummy-fechaEnMatriculas",
 	},
 	{
 		name: "limiteMatriculaEspecial",
 		inputType: "custom-date",
 		placeholder: "",
 		label: "Limite matricula especial",
-	},
-	{
-		name: "automatriculaAlumnosFechaExtraordinaria",
-		inputType: "toggle",
-		placeholder: "",
-		label: "Automatricula de alumnos fecha extraordinaria",
+		dependsOn: "dummy-fechaEnMatriculas",
 	},
 	{
 		name: "tipo",
 		inputType: "custom-select",
 		options: ["GRADO", "POSGRADO"],
-		placeholder: "",
 		label: "Tipo de periodo",
 	},
 	{
-		name: "corte",
+		name: "corteId",
 		inputType: "custom-select",
-		options: ["SI"],
-		label: "Fecha de Matriculas",
+		options: "custom",
+		label: "Corte",
 	},
 	{
-		name: "seImpartioNivelacion:",
-		inputType: "toggle",
+		name: "dummy-estructuraParalelos",
+		inputType: "custom-toggle",
+		label: "Estructura de paralelos agrupados por nivel",
+	},
+	{
+		name: "estudianteSeleccionaParaleloAutomatricula",
+		inputType: "custom-toggle",
+		label: "Estudiante seleccione paralelo en automatricula",
+		dependsOn: "dummy-estructuraParalelos",
+	},
+	{
+		name: "seImpartioNivelacion",
+		inputType: "custom-toggle",
 		label: "Se impartio nivelacion",
 	},
 	{
-		name: "planificacionProfesoresObligatoria",
-		inputType: "toggle",
+		name: "planificacionCargaHoraria",
+		inputType: "custom-toggle",
+		placeholder: "",
+		label: "Planificacion carga horaria",
+	},
+	{
+		name: "dummy-planificacionProfesoresObligatoria",
+		inputType: "custom-toggle",
 		label: "Planificacion de profesores obligatoria",
 	},
 	{
 		name: "planificacionProfesoresFormaTotal",
-		inputType: "toggle",
+		inputType: "custom-toggle",
 		label: "Planificacion de profesores de forma total",
 	},
 	{
 		name: "aprobacionPlanificacionProfesores",
-		inputType: "toggle",
+		inputType: "custom-toggle",
 		label: "Aprobacion de planificacion de profesores",
 	},
 	{
 		name: "cronogramaNotasCoordinacion",
-		inputType: "toggle",
+		inputType: "custom-toggle",
 		label: "Cronograma por coordinacion",
 	},
 	{
-		name: "legalizarMatriculas",
-		inputType: "toggle",
+		name: "dummy-legalizarMatriculas",
+		inputType: "custom-toggle",
 		label: "Legalizar Matricula",
 	},
 	{
 		name: "legalizacionAutomaticaContraPagos",
-		inputType: "toggle",
+		inputType: "custom-toggle",
 		label: "Legalizaciòn por pago",
+		dependsOn: "dummy-legalizarMatriculas",
 	},
 	{
-		name: "automatriculaAlumnosFechaExtraordinaria:",
-		inputType: "toggle",
+		name: "automatriculaAlumnosFechaExtraordinaria",
+		inputType: "custom-toggle",
 		label: "Automat. extraordinaria",
 	},
 	{
 		name: "puedenMatricularseArrastre",
-		inputType: "toggle",
+		inputType: "custom-toggle",
 		label: "Automat. con arrastre",
 	},
 	{
 		name: "puedenAutomatricularseSegundasOMasMatriculas",
-		inputType: "toggle",
+		inputType: "custom-toggle",
 		label: "Automat. 2das matriculas",
 	},
 	{
-		name: "numeroMatricula",
-		inputType: "toggle",
-		label: "# Matricula",
+		name: "dummy-numeroMatricula",
+		inputType: "custom-toggle",
+		label: "Numero de Matricula",
+	},
+	{
+		name: "dummy-numeroSecuencia",
+		inputType: "custom-toggle",
+		label: "Secuencia desde numero especifico",
 	},
 	{
 		name: "numeroSecuencia",
-		inputType: "toggle",
-		label: "Secuencia",
+		inputType: "number",
+		label: "Numero secuencia",
+		dependsOn: "dummy-numeroSecuencia",
 	},
 	{
 		name: "numeroMatriculaAutomatico",
-		inputType: "toggle",
-		label: "# matricula automatica",
+		inputType: "custom-toggle",
+		label: "Numero de matricula automatica",
 	},
 	{
 		name: "numeroMatricularAlLegalizar",
-		inputType: "toggle",
-		label: "# matricula al legalizar",
+		inputType: "custom-toggle",
+		label: "Numero de matricula al legalizar",
 	},
-];
+] satisfies Field<keyof z.infer<typeof schema>>[];
 
 const fieldsActs = [
 	{
@@ -1274,21 +1359,38 @@ const fieldsActs = [
 
 const fieldsCostos = [
 	{
-		name: "tipoCalculo",
+		name: "tipo",
 		inputType: "custom-select",
 		placeholder: "-----------",
 		options: [
-			"COSTO POR NIVEL Y MATERIAS",
-			"COSTO POR PLAN CUOTA",
-			"COSTO FIJO POR NIVEL Y NO POR MATERIA",
+			"COSTO_POR_NIVEL_Y_MATERIAS",
+			"COSTO_POR_PLAN_CUOTA",
+			"COSTO_FIJO_POR_NIVEL_Y_NO_MATERIAS",
 		],
 		label: "Tipo càlculo costo",
 	},
 	{
-		name: "costosPorSesion",
-		inputType: "custom-select",
-		placeholder: "-----------",
-		options: ["si", "no"],
+		name: "costoPorSesion",
+		inputType: "custom-toggle",
 		label: "Costos por sesion",
+		dependsOn: "dummy-opcionesDePago",
 	},
-];
+	{
+		name: "dummy-opcionesDePago",
+		inputType: "custom-toggle",
+		label: "Opciones de pago",
+		dependsOn: "costoPorSesion",
+	},
+	{
+		name: "estudiantesEligenOpcionPago",
+		inputType: "custom-toggle",
+		label: "Estudiantes eligen opciones de pago",
+		dependsOn: "dummy-opcionesDePago",
+	},
+	{
+		name: "cronogramaFechasOpcionPago",
+		inputType: "custom-toggle",
+		label: "Cronograma de fechas en opciones de pago",
+		dependsOn: "dummy-opcionesDePago",
+	},
+] satisfies Field<keyof z.infer<typeof schemaCosto>>[];

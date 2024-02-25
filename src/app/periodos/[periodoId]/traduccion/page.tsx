@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import TraduccionTable from "./table";
 import { notFound } from "next/navigation";
