@@ -672,17 +672,23 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 			costoPorSesion,
 			cronogramaFechasOpcionPago,
 			estudiantesEligenOpcionPago,
-			...data
+			data,
+		}: {
+			data: UpdateCalculoCosto;
+			periodoLectivoId: string;
 		}) => {
 			return API.periodos.updateCalculoCosto({
-				tipo,
-				costoPorSesion: costoPorSesion || null,
-				cronogramaFechasOpcionPago: data["dummy-opcionesDePago"]
-					? cronogramaFechasOpcionPago ?? false
-					: null,
-				estudiantesEligenOpcionPago: data["dummy-opcionesDePago"]
-					? estudiantesEligenOpcionPago ?? false
-					: null,
+				data: {
+					tipo,
+					costoPorSesion: costoPorSesion || null,
+					cronogramaFechasOpcionPago: !costoPorSesion
+						? cronogramaFechasOpcionPago ?? false
+						: null,
+					estudiantesEligenOpcionPago: !costoPorSesion
+						? estudiantesEligenOpcionPago ?? false
+						: null,
+					...data,
+				},
 				periodoLectivoId,
 				...data,
 			});

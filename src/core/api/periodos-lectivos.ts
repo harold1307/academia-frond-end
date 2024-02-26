@@ -36,7 +36,7 @@ export type CalculoCostoFromAPI = ReplaceDateToString<
 	}
 >;
 export type UpdateCalculoCosto = Partial<
-	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt" | "planCostos">
+	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt">
 >;
 
 type UpdatePeriodoLectivoParams = {
