@@ -12,9 +12,22 @@ export type CursoEscuelaFromAPI = ReplaceDateToString<
 	}
 >;
 
+export type CreateCursoEscuela = Omit<
+	CursoEscuelaFromAPI,
+	"id" | "createdAt" | "updatedAt" | "enUso" | "estado"
+>;
+
+export type UpdateCursoEscuela = Partial<
+	Omit<
+		CursoEscuelaFromAPI,
+		"plantillaId" | "id" | "createdAt" | "updatedAt" | "enUso" | "periodoId"
+	>
+>;
+
 const schema = z
 	.object<ZodInferSchema<CursoEscuelaFromAPI>>({
 		id: z.string().uuid(),
+		estado: z.boolean(),
 		nombre: z.string(),
 		enUso: z.boolean(),
 		codigo: z.string().nullable(),
@@ -43,6 +56,7 @@ const schema = z
 		pasarRecord: z.boolean(),
 
 		plantillaId: z.string().uuid().nullable(),
+		periodoId: z.string().uuid(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -79,19 +93,7 @@ export class CursoEscuelaClass {
 	// 	return res;
 	// }
 
-	async create(
-		data: Omit<
-			CursoEscuelaFromAPI,
-			| "id"
-			| "enUso"
-			| "createdAt"
-			| "updatedAt"
-			| "plantillaId"
-			| "fechaInicio"
-			| "fechaFin"
-			| "fechaLimiteRegistro"
-		> & { fechaInicio: string; fechaFin: string; fechaLimiteRegistro: string },
-	): Promise<SimpleAPIResponse> {
+	async create(data: CreateCursoEscuela): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/curso-escuelas`, {
 			method: "POST",
 			headers: {
