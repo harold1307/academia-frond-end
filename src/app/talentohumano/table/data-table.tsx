@@ -74,11 +74,11 @@ export function DataTable({ columns, data }: DataTableProps) {
 						table.getRowModel().rows.map(row => (
 							<TableRow
 								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
+								
 							>
 								{row.getVisibleCells().map((cell, index) => (
-									<TableCell key={cell.id} className={`p-0`}>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									<TableCell key={cell.id} className={`p-0` }>
+										{ flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
 							</TableRow>
