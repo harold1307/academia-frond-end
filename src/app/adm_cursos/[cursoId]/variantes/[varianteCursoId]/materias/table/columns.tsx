@@ -1,15 +1,8 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, Lock } from "lucide-react";
 
+import BaseTableActions from "@/app/_components/table-actions";
 import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
-import { Button } from "@/app/_components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
 export type MateriaTableItem = {
@@ -23,12 +16,15 @@ export type MateriaTableItem = {
 	notaParaAprobar: number;
 	requeridaAprobar: boolean;
 	sumaHoras: boolean;
+
+	varianteEstado: boolean;
 };
 
 const helper = createColumnHelper<MateriaTableItem>();
 
 export const materiasColumns = [
 	helper.accessor("id", {}),
+	helper.accessor("varianteEstado", {}),
 	helper.accessor("asignaturaModelo", {
 		header: "Asignatura / Modelo",
 	}),
@@ -77,9 +73,28 @@ export const materiasColumns = [
 
 	helper.display({
 		id: "actions",
-		cell: ({ row }) => {
-			const programaId = row.getValue("id") as string;
-			return <Actions programaId={programaId} showDelete={true} />;
+		cell: function Actions({ row }) {
+			const { replaceSet } = useMutateSearchParams();
+
+			const estado = row.getValue("varianteEstado") as boolean;
+			const id = row.getValue("id") as string;
+
+			return (
+				<BaseTableActions
+					updateOptions={{
+						buttonProps: {
+							onClick: () => replaceSet(materiasParams.update, id),
+						},
+						show: !estado,
+					}}
+					deleteOptions={{
+						buttonProps: {
+							onClick: () => replaceSet(materiasParams.deactivate, id),
+						},
+						show: !estado,
+					}}
+				/>
+			);
 		},
 	}),
 ];
@@ -88,30 +103,3 @@ export const materiasParams = {
 	update: "actualizarMateria",
 	deactivate: "desactivarMateria",
 };
-function Actions(props: { programaId: string; showDelete: boolean }) {
-	const { replaceSet } = useMutateSearchParams();
-
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button>Acciones</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent className='w-56'>
-				<DropdownMenuItem
-					onClick={() => replaceSet(materiasParams.update, props.programaId)}
-				>
-					<FileSignature className='mr-2 h-4 w-4' />
-					<span>Editar</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() =>
-						replaceSet(materiasParams.deactivate, props.programaId)
-					}
-				>
-					<Lock className='mr-2 h-4 w-4' />
-					<span>Desactivar</span>
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-}

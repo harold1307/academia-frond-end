@@ -2,6 +2,8 @@ import React from "react";
 import AddMateria from "./add-materia";
 import MateriasTableServer from "./table/server";
 
+export const dynamic = "force-dynamic";
+
 type Context = {
 	params: {
 		varianteCursoId: string;

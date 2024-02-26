@@ -27,6 +27,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({
 			id: false,
+			varianteEstado: false,
 		});
 	const table = useReactTable({
 		data,

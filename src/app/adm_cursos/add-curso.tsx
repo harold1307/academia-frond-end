@@ -31,9 +31,7 @@ export default function AddCurso() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
 		mutationFn: async data => {
-			return API.cursos.create({
-				...data,
-			});
+			return API.cursos.create(data);
 		},
 		onError: console.error,
 		onSuccess: response => {

@@ -1,4 +1,5 @@
 "use client";
+import { PlusCircle } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 
 import {
@@ -16,7 +17,7 @@ type MutateModalProps =
 	| {
 			onSubmit: React.FormEventHandler<HTMLFormElement>;
 			form: UseFormReturn<any>;
-			dialogProps: Parameters<typeof Dialog>[0];
+			dialogProps: React.ComponentProps<typeof Dialog>;
 			disabled: boolean;
 			title: string;
 			withTrigger?: false;
@@ -25,7 +26,7 @@ type MutateModalProps =
 	| {
 			onSubmit: React.FormEventHandler<HTMLFormElement>;
 			form: UseFormReturn<any>;
-			dialogProps: Parameters<typeof Dialog>[0];
+			dialogProps: React.ComponentProps<typeof Dialog>;
 			disabled: boolean;
 			title: string;
 			withTrigger: true;
@@ -50,7 +51,10 @@ export default function MutateModal({
 		<Dialog {...dialogProps}>
 			{withTrigger && (
 				<DialogTrigger asChild>
-					<Button variant='success'>{triggerLabel}</Button>
+					<Button variant='outline'>
+						<PlusCircle className='mr-2' />
+						{triggerLabel}
+					</Button>
 				</DialogTrigger>
 			)}
 			<DialogContent className='max-h-[80%] max-w-max overflow-y-auto sm:max-w-[425px] md:max-w-5xl'>

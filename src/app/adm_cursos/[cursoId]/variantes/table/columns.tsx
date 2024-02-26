@@ -1,8 +1,9 @@
 "use client";
+import { useMutation } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
-import { StretchHorizontal } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { Lock, StretchHorizontal, Unlock } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
 import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
 import { Button } from "@/app/_components/ui/button";
@@ -12,6 +13,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
+import { useToast } from "@/app/_components/ui/use-toast";
+import { API } from "@/core/api-client";
 import { ROUTES } from "@/core/routes";
 
 export type VarianteCursoTableItem = {
@@ -179,8 +182,9 @@ export const columns = [
 		id: "actions",
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
+			const status = row.getValue("activa") as boolean;
 
-			return <Actions varianteCursoId={id} />;
+			return <Actions varianteCursoId={id} status={status} />;
 		},
 	}),
 ];
@@ -190,9 +194,35 @@ export const variantesParams = {
 	deactivate: "desactivarVariante",
 };
 
-function Actions({ varianteCursoId }: { varianteCursoId: string }) {
+function Actions({
+	varianteCursoId,
+	status,
+}: {
+	varianteCursoId: string;
+	status: boolean;
+}) {
+	const { toast } = useToast();
 	const router = useRouter();
 	const pathname = usePathname();
+
+	const { mutate } = useMutation({
+		mutationFn: (estado: boolean) => {
+			return API.variantesCurso.update({ varianteCursoId, data: { estado } });
+		},
+		onSuccess: data => {
+			toast({
+				title: `Variante ${data.data.estado ? "activada" : "desactivada"}`,
+			});
+			router.refresh();
+		},
+		onError: err => {
+			toast({
+				title: "Error",
+				description: err.message,
+				variant: "destructive",
+			});
+		},
+	});
 
 	return (
 		<DropdownMenu>
@@ -224,6 +254,19 @@ function Actions({ varianteCursoId }: { varianteCursoId: string }) {
 				>
 					<StretchHorizontal className='mr-2 h-4 w-4' />
 					<span>Costos</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem onClick={() => mutate(!status)}>
+					{status ? (
+						<>
+							<Lock className='mr-2 h-4 w-4' />
+							<span>Desactivar</span>
+						</>
+					) : (
+						<>
+							<Unlock className='mr-2 h-4 w-4' />
+							<span>Activar</span>
+						</>
+					)}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
