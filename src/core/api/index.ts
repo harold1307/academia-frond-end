@@ -5,6 +5,7 @@ import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
 import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
+import { AsignaturaEnVarianteCursoClass } from "./asignaturas-variantes-curso";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
@@ -231,6 +232,10 @@ export class APIClass {
 
 	get cortes() {
 		return new CorteClass(this._apiUrl, this._fetcher);
+	}
+
+	get asignaturasEnVariantesCurso() {
+		return new AsignaturaEnVarianteCursoClass(this._apiUrl, this._fetcher);
 	}
 }
 
