@@ -56,8 +56,8 @@ const talentoHumano: TalentoHumano[] = [
 	},
 ];
 
-export default async function HorariosTableServer() {
-	//Fetch horarios
+export default async function TalentoHumanoTableServer() {
+
 
 	return <TalentoHumanoTable data={talentoHumano} />;
 }

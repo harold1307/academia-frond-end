@@ -1,11 +1,11 @@
 import React from "react";
-import TalentoHumanoTable from "./table/server";
+import TalentoHumanoTableServer from "./table/server";
 
-export default function HorariosPage() {
+export default function TalentoHumanoPage() {
 	return (
 		<>
 			<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
-				<TalentoHumanoTable />
+				<TalentoHumanoTableServer />
 			</React.Suspense>
 		</>
 	);

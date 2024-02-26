@@ -7,6 +7,7 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { Button } from "@/app/_components/ui/button";
 import { Lock, FileSignature } from "lucide-react";
+import { useState } from "react";
 
 export type TalentoHumano = {
 	nombre: string;
@@ -48,35 +49,35 @@ export const TalentoHumanoColumns = [
 	helper.accessor("asesor", {
 		header: "Asesor",
 		cell: ({ getValue }) => {
-			const value = (getValue() ? "SI" : "NO") as string;
+			const value = getValue();
 			return <Border value={value} />;
 		},
 	}),
 	helper.accessor("discapacidad", {
 		header: "Discapacidad",
 		cell: ({ getValue }) => {
-			const value = (getValue() ? "SI" : "NO") as string;
+			const value = getValue();
 			return <Border value={value} />;
 		},
 	}),
 	helper.accessor("admin", {
 		header: "Admin",
 		cell: ({ getValue }) => {
-			const value = (getValue() ? "SI" : "NO") as string;
+			const value = getValue();
 			return <Border value={value} />;
 		},
 	}),
 	helper.accessor("profesor", {
 		header: "Profesor",
 		cell: ({ getValue }) => {
-			const value = (getValue() ? "SI" : "NO") as string;
+			const value = getValue();
 			return <Border value={value} />;
 		},
 	}),
 	helper.accessor("foto", {
 		header: "Foto",
 		cell: ({ getValue }) => {
-			const value = (getValue() ? "SI" : "NO") as string;
+			const value = getValue();
 			return <Border value={value} />;
 		},
 	}),
@@ -90,11 +91,16 @@ export const TalentoHumanoColumns = [
 	}),
 ];
 
-function Border({ value }: { value: string }) {
+function Border({ value }: { value: boolean }) {
+	const [valor, setValor] = useState(value);
+
 	return (
-		<span className='border border-current rounded bg-transparent text-current p-1.5'>
-			{value}
-		</span>
+		<Button
+			className='h-8 w-4 rounded border border-current bg-transparent text-current hover:text-black '
+			onClick={() => setValor(!valor)}
+		>
+			{valor ? "SI" : "NO"}
+		</Button>
 	);
 }
 
