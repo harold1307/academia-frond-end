@@ -1,4 +1,5 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -45,21 +46,21 @@ import { ToggleSwitch } from "@/app/_components/ui/toggle";
 import { API } from "@/core/api-client";
 import {
 	type CreatePeriodoLectivo,
-	type UpdateCalculoCosto,
 	type PeriodoLectivoFromAPI,
+	type UpdateCalculoCosto,
 } from "@/core/api/periodos-lectivos";
 import { ROUTES } from "@/core/routes";
 import { useMutateModule } from "@/hooks/use-mutate-module";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { cn } from "@/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { periodoParams } from "../addPeriodo";
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import { type Field } from "@/utils/forms";
 import {
 	type ReplaceNullableToOptional,
 	type ZodInferSchema,
 } from "@/utils/types";
-import { type Field } from "@/utils/forms";
+import { periodoParams } from "../addPeriodo";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
 
 const schema = z.object<
 	ZodInferSchema<
@@ -108,23 +109,20 @@ const schema = z.object<
 const schemaCosto = z.object<
 	ZodInferSchema<
 		UpdateCalculoCosto & {
-			costoPorSesion?: boolean | undefined | null;
-			estudiantesEligenOpcionPago?: boolean | undefined | null;
-			cronogramaFechasOpcionPago?: boolean | undefined | null;
+			costoPorSesion?: boolean | undefined;
+			estudiantesEligenOpcionPago?: boolean | undefined;
+			cronogramaFechasOpcionPago?: boolean | undefined;
 			planCostos?: boolean | undefined;
-			"dummy-opcionesDePago": boolean;
 		}
 	>
 >({
 	tipo: z
 		.enum(["COSTO_POR_PLAN_CUOTA", "COSTO_POR_NIVEL_Y_MATERIAS"] as const)
 		.optional(),
-	costoPorSesion: z.boolean().nullable().optional(),
-	estudiantesEligenOpcionPago: z.boolean().nullable().optional(),
-	cronogramaFechasOpcionPago: z.boolean().nullable().optional(),
+	costoPorSesion: z.boolean().optional(),
+	estudiantesEligenOpcionPago: z.boolean().optional(),
+	cronogramaFechasOpcionPago: z.boolean().optional(),
 	planCostos: z.boolean().optional(),
-
-	"dummy-opcionesDePago": z.boolean(),
 });
 
 export default function PeriodosLectivosTables({
@@ -657,8 +655,9 @@ function TiposActividades(props) {
 }
 
 function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
-	const router = useRouter();
-	const searchParams = useSearchParams();
+	// const router = useRouter();
+	// const searchParams = useSearchParams();
+	const { replaceDelete, router, searchParams } = useMutateSearchParams();
 
 	const {
 		mutation: { mutate, isPending },
@@ -666,28 +665,31 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 		open,
 		setOpen,
 	} = useMutateModule({
+		schema: schemaCosto,
 		mutationFn: async ({
 			periodoLectivoId,
-			tipo,
-			costoPorSesion,
-			cronogramaFechasOpcionPago,
-			estudiantesEligenOpcionPago,
-			data,
+			data: {
+				costoPorSesion,
+				tipo,
+				cronogramaFechasOpcionPago,
+				estudiantesEligenOpcionPago,
+				planCostos,
+			},
 		}: {
-			data: UpdateCalculoCosto;
+			data: z.infer<typeof schemaCosto>;
 			periodoLectivoId: string;
 		}) => {
 			return API.periodos.updateCalculoCosto({
 				data: {
 					tipo,
-					costoPorSesion: costoPorSesion || null,
-					cronogramaFechasOpcionPago: !costoPorSesion
-						? cronogramaFechasOpcionPago ?? false
-						: null,
-					estudiantesEligenOpcionPago: !costoPorSesion
+					costoPorSesion: costoPorSesion ?? null,
+					cronogramaFechasOpcionPago:
+						!costoPorSesion && planCostos
+							? cronogramaFechasOpcionPago ?? false
+							: null,
+					estudiantesEligenOpcionPago: planCostos
 						? estudiantesEligenOpcionPago ?? false
 						: null,
-					...data,
 				},
 				periodoLectivoId,
 			});
@@ -695,7 +697,7 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
-			router.replace(ROUTES.periodo.path);
+			replaceDelete(periodoParams.costos);
 			router.refresh();
 		},
 	});
@@ -706,6 +708,8 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 	);
 	const formValues = form.watch();
 
+	console.log(formValues);
+
 	if (!paramPeriodoId) return null;
 
 	const selectedPeriodo = props.periodos.find(i => i.id === paramPeriodoId);
@@ -714,10 +718,12 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 		return (
 			<ModalFallback
 				action='update'
-				redirectTo={() => router.replace(ROUTES.periodo.path)}
+				redirectTo={() => replaceDelete(periodoParams.costos)}
 			/>
 		);
 	}
+
+	console.log(selectedPeriodo.calculoCosto);
 
 	return (
 		<Dialog
@@ -725,7 +731,7 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 			onOpenChange={open => {
 				if (isPending) return;
 				if (!open) {
-					router.replace(ROUTES.periodo.path);
+					replaceDelete(periodoParams.costos);
 					return;
 				}
 			}}
@@ -748,14 +754,14 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 								}
 								if (formValues.tipo === "COSTO_POR_NIVEL_Y_MATERIAS") {
 									if (
-										f.dependsOn === "dummy-opcionesDePago" &&
+										f.dependsOn === "planCostos" &&
 										!formValues[f.dependsOn] &&
 										f.name !== "costoPorSesion"
 									) {
 										return null;
 									}
 									if (
-										f.dependsOn === "dummy-opcionesDePago" &&
+										f.dependsOn === "planCostos" &&
 										formValues[f.dependsOn] &&
 										f.name === "costoPorSesion"
 									) {
@@ -764,22 +770,25 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 									if (
 										f.dependsOn === "costoPorSesion" &&
 										formValues[f.dependsOn] &&
-										f.name === "dummy-opcionesDePago"
+										f.name === "planCostos"
 									) {
 										return null;
 									}
 								}
-								if (formValues.tipo === "COSTO_FIJO_POR_NIVEL_Y_NO_MATERIAS") {
-									if (f.dependsOn) {
-										return null;
-									}
-								}
+								// if (formValues.tipo === "COSTO_FIJO_POR_NIVEL_Y_NO_MATERIAS") {
+								// 	if (f.dependsOn) {
+								// 		return null;
+								// 	}
+								// }
 								return (
 									<FormField
 										control={form.control}
 										name={f.name}
-										defaultValue={selectedPeriodo.calculoCosto[f.name]}
+										defaultValue={
+											selectedPeriodo.calculoCosto[f.name] ?? undefined
+										}
 										key={f.name}
+										shouldUnregister={true}
 										render={({ field }) => {
 											switch (f.inputType) {
 												case "custom-select": {
@@ -829,35 +838,7 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 																<ToggleSwitch
 																	checked={field.value as boolean}
 																	defaultChecked={field.value as boolean}
-																	defaultValue={field.value as string}
 																	onCheckedChange={field.onChange}
-																/>
-															</FormControl>
-														</FormItem>
-													);
-												}
-												default: {
-													return (
-														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-															<FormLabel className='col-span-3 text-end'>
-																{f.label}
-															</FormLabel>
-															<FormControl>
-																<Input
-																	{...field}
-																	value={
-																		typeof field.value === "boolean"
-																			? undefined
-																			: field.value || undefined
-																	}
-																	onChange={e =>
-																		f.inputType === "number"
-																			? field.onChange(+e.target.value)
-																			: field.onChange(e.target.value)
-																	}
-																	type={f.inputType}
-																	placeholder={f.placeholder}
-																	className='col-span-9'
 																/>
 															</FormControl>
 														</FormItem>
@@ -876,7 +857,7 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 									disabled={isPending}
 									variant='destructive'
 									type='button'
-									onClick={() => router.replace(ROUTES.periodo.path)}
+									onClick={() => replaceDelete(periodoParams.costos)}
 								>
 									Cancelar
 								</Button>
@@ -1365,7 +1346,7 @@ const fieldsCostos = [
 		options: [
 			"COSTO_POR_NIVEL_Y_MATERIAS",
 			"COSTO_POR_PLAN_CUOTA",
-			"COSTO_FIJO_POR_NIVEL_Y_NO_MATERIAS",
+			// "COSTO_FIJO_POR_NIVEL_Y_NO_MATERIAS", // funcionalidad desconocida, por lo tanto no implementado.
 		],
 		label: "Tipo càlculo costo",
 	},
@@ -1373,10 +1354,10 @@ const fieldsCostos = [
 		name: "costoPorSesion",
 		inputType: "custom-toggle",
 		label: "Costos por sesion",
-		dependsOn: "dummy-opcionesDePago",
+		dependsOn: "planCostos",
 	},
 	{
-		name: "dummy-opcionesDePago",
+		name: "planCostos",
 		inputType: "custom-toggle",
 		label: "Opciones de pago",
 		dependsOn: "costoPorSesion",
@@ -1385,12 +1366,12 @@ const fieldsCostos = [
 		name: "estudiantesEligenOpcionPago",
 		inputType: "custom-toggle",
 		label: "Estudiantes eligen opciones de pago",
-		dependsOn: "dummy-opcionesDePago",
+		dependsOn: "planCostos",
 	},
 	{
 		name: "cronogramaFechasOpcionPago",
 		inputType: "custom-toggle",
 		label: "Cronograma de fechas en opciones de pago",
-		dependsOn: "dummy-opcionesDePago",
+		dependsOn: "planCostos",
 	},
 ] satisfies Field<keyof z.infer<typeof schemaCosto>>[];
