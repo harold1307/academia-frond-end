@@ -677,10 +677,10 @@ function Costos(props: { periodos: PeriodoLectivoFromAPI[] }) {
 			return API.periodos.updateCalculoCosto({
 				tipo,
 				costoPorSesion: costoPorSesion || null,
-				cronogramaFechasOpcionPago: data['dummy-opcionesDePago']
+				cronogramaFechasOpcionPago: data["dummy-opcionesDePago"]
 					? cronogramaFechasOpcionPago ?? false
 					: null,
-				estudiantesEligenOpcionPago: data['dummy-opcionesDePago']
+				estudiantesEligenOpcionPago: data["dummy-opcionesDePago"]
 					? estudiantesEligenOpcionPago ?? false
 					: null,
 				periodoLectivoId,
