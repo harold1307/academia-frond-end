@@ -13,7 +13,7 @@ type Context = {
 export default async function PeriodoPage({ searchParams }: Context) {
 	const seccion = searchParams.seccion;
 	const periodos = await APIserver.periodos.getMany();
-	console.log(periodos.data[0]?.calculoCosto)
+	//console.log(periodos.data[0]?.calculoCosto)
 	if (seccion === "cortes") {
 		return (
 			<>
