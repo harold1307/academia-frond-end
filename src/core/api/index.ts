@@ -5,10 +5,12 @@ import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
 import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
+import { AsignaturaEnVarianteCursoClass } from "./asignaturas-variantes-curso";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
 import { CoordinacionClass } from "./coordinaciones";
+import { CorteClass } from "./cortes";
 import { CursoEscuelaClass } from "./curso-escuelas";
 import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
@@ -25,6 +27,7 @@ import { NivelMallaClass } from "./niveles-malla";
 import { NivelTitulacionClass } from "./niveles-titulacion";
 import { ParaleloClass } from "./paralelos";
 import { PerfilPracticaClass } from "./perfiles-practica";
+import { PeriodoLectivoClass } from "./periodos-lectivos";
 import { ProgramaClass } from "./programas";
 import { ProyectoIntegradorClass } from "./proyectos-integradores";
 import { SedeClass } from "./sede";
@@ -46,7 +49,6 @@ export type SimpleAPIResponse = {
 
 const defaultFetcher = async (...args: Parameters<typeof fetch>) => {
 	const response = await fetch(...args);
-
 	if (!response.ok) {
 		const json = (await response.json()) as APIResponse<unknown>;
 		throw new APIError(json.message);
@@ -84,6 +86,18 @@ export class APIClass {
 	get mallasCurriculares() {
 		return new MallaCurricularClass(this._apiUrl, this._fetcher);
 	}
+
+	get periodos() {
+		return new PeriodoLectivoClass(this._apiUrl, this._fetcher);
+	}
+
+	/* get cronograma() {
+		return new CronogramaMatriculas(this._apiUrl ,this._fetcher);
+	}
+
+	get traduccion() {
+		return new TraduccionPeriodosClass(this._apiUrl ,this._fetcher);
+	} */
 
 	get asignaturas() {
 		return new AsignaturaClass(this._apiUrl, this._fetcher);
@@ -214,6 +228,14 @@ export class APIClass {
 
 	get ubicaciones() {
 		return new UbicacionClass(this._apiUrl, this._fetcher);
+	}
+
+	get cortes() {
+		return new CorteClass(this._apiUrl, this._fetcher);
+	}
+
+	get asignaturasEnVariantesCurso() {
+		return new AsignaturaEnVarianteCursoClass(this._apiUrl, this._fetcher);
 	}
 }
 

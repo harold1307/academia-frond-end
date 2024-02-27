@@ -185,7 +185,7 @@ export class ProgramaClass {
 
 	async createMalla({ programaId, data }: CreateMallaParams) {
 		const res = await fetch(
-			this.apiUrl + `/api/programas/${programaId}/titulos-obtenidos`,
+			this.apiUrl + `/api/programas/${programaId}/mallas-curriculares`,
 			{
 				method: "POST",
 				headers: {

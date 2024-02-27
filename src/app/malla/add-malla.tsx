@@ -1,8 +1,9 @@
 "use client";
 import { TipoDuracion } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusCircle } from "lucide-react";
 import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
 
@@ -42,7 +43,6 @@ import {
 	type Field,
 } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
-import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
 import { Checkbox } from "../_components/ui/checkbox";
@@ -57,6 +57,7 @@ import { ASIGNATURA_KEYS } from "../asignatura/query-keys";
 
 export const mallaParams = {
 	update: "actualizarMalla",
+	delete: "eliminarMalla",
 };
 
 const createMallaSchema = z.object<
@@ -104,9 +105,9 @@ const createMallaSchema = z.object<
 				  })
 				| null;
 			"reference-practicasPreProfesionales": boolean;
-			"reference-pppLigadasAMaterias": boolean;
+			"reference-pppLigadasAMaterias"?: boolean;
 			"reference-practicasComunitarias": boolean;
-			"reference-pcLigadasAMaterias": boolean;
+			"reference-pcLigadasAMaterias"?: boolean;
 			"reference-calculoAvanceNivel": boolean;
 			"reference-puedeAdelantarMaterias": boolean;
 		}
@@ -156,9 +157,9 @@ const createMallaSchema = z.object<
 		.optional(),
 
 	"reference-practicasPreProfesionales": z.boolean(),
-	"reference-pppLigadasAMaterias": z.boolean(),
+	"reference-pppLigadasAMaterias": z.boolean().optional(),
 	"reference-practicasComunitarias": z.boolean(),
-	"reference-pcLigadasAMaterias": z.boolean(),
+	"reference-pcLigadasAMaterias": z.boolean().optional(),
 	"reference-calculoAvanceNivel": z.boolean(),
 	"reference-puedeAdelantarMaterias": z.boolean(),
 });
@@ -242,7 +243,6 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 				},
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -268,13 +268,15 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 
 	const { niveles, ...formValues } = form.watch();
 
+	console.log(form.formState.errors);
+
 	const {
 		data: modalidades,
 		isLoading: modalidadesAreLoading,
 		refetch: fetchModalidades,
 	} = useQuery({
 		queryKey: ASIGNATURA_KEYS.list(""),
-		queryFn: async () => {
+		queryFn: () => {
 			return API.modalidades.getMany();
 		},
 		enabled: false,
@@ -286,21 +288,22 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 		refetch: fetchTitulosObtenidos,
 	} = useQuery({
 		queryKey: ["titulosObtenidos"],
-		queryFn: async () => {
+		queryFn: () => {
 			return API.titulosObtenidos.getMany();
 		},
 		enabled: false,
 	});
 
 	return (
-		<section>
+		<section className='mb-2'>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant='success' disabled={!programaId}>
-						Adicionar
+					<Button variant='outline' disabled={!programaId}>
+						<PlusCircle className='mr-2' />
+						Agregar
 					</Button>
 				</DialogTrigger>
-				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
+				<DialogContent className='max-h-[80%] max-w-max overflow-y-auto sm:max-w-[425px] md:max-w-5xl'>
 					<DialogHeader>
 						<DialogTitle>Adicionar malla</DialogTitle>
 					</DialogHeader>
@@ -507,7 +510,9 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 																	<Calendar
 																		mode='single'
 																		selected={field.value as unknown as Date}
-																		onSelect={field.onChange}
+																		onSelect={date =>
+																			field.onChange(date?.toISOString())
+																		}
 																		disabled={date =>
 																			date < new Date() || !!field.disabled
 																		}

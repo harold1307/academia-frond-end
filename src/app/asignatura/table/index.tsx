@@ -17,20 +17,21 @@ import type { AsignaturaFromAPI } from "@/core/api/asignaturas";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import type { ZodInferSchema } from "@/utils/types";
-import { asignaturasParams, columns } from "./columns";
+import {
+	type AsignaturaTableItem,
+	asignaturasParams,
+	columns,
+} from "./columns";
 import { DataTable } from "./data-table";
 
 type AsignaturaTableProps = {
-	asignaturas: AsignaturaFromAPI[];
+	asignaturas: AsignaturaTableItem[];
 };
 
 export default function AsignaturaTable({ asignaturas }: AsignaturaTableProps) {
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={columns} data={asignaturas} />
-			<UpdateAsignaturaTableModal asignaturas={asignaturas} />
-			<DeleteAsignaturaTableModal asignaturas={asignaturas} />
 		</section>
 	);
 }
@@ -44,7 +45,7 @@ const schema = z.object<
 
 type UpdateAsignatura = z.infer<typeof schema>;
 
-function UpdateAsignaturaTableModal(props: {
+export function UpdateAsignaturaTableModal(props: {
 	asignaturas: AsignaturaFromAPI[];
 }) {
 	const { searchParams, replaceDelete, router } = useMutateSearchParams();
@@ -54,7 +55,7 @@ function UpdateAsignaturaTableModal(props: {
 		form,
 	} = useMutateModule({
 		schema,
-		mutationFn: async ({
+		mutationFn: ({
 			data: { codigo, ...data },
 			id,
 		}: {
@@ -66,7 +67,6 @@ function UpdateAsignaturaTableModal(props: {
 				id,
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(asignaturasParams.update);
@@ -152,7 +152,7 @@ function UpdateAsignaturaTableModal(props: {
 	);
 }
 
-function DeleteAsignaturaTableModal(props: {
+export function DeleteAsignaturaTableModal(props: {
 	asignaturas: AsignaturaFromAPI[];
 }) {
 	const { searchParams, router, replaceDelete } = useMutateSearchParams();

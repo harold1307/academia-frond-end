@@ -24,6 +24,7 @@ export default async function SedeTableServer({
 				inscritos: 0,
 				egresados: 0,
 				graduados: 0,
+				id: l.id,
 			}) satisfies SedeTableItem,
 	);
 

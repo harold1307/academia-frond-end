@@ -4,8 +4,10 @@ import type { MallaCurricularTableItem } from "./columns";
 
 export default async function MallaCurricularTableServer({
 	programaId,
+	programaName,
 }: {
 	programaId?: string;
+	programaName: string;
 }) {
 	if (!programaId) {
 		return <div>Debes seleccionar un programa para ver sus mallas</div>;
@@ -73,5 +75,7 @@ export default async function MallaCurricularTableServer({
 		} satisfies MallaCurricularTableItem;
 	});
 
-	return <MallaCurricularTable mallas={tableData} />;
+	return (
+		<MallaCurricularTable mallas={tableData} programaName={programaName} />
+	);
 }

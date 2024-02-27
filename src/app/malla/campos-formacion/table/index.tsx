@@ -33,7 +33,6 @@ export default function CamposFormacionTable({
 }: CamposFormacionTableProps) {
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={columns} data={camposFormacion} />
 		</section>
 	);
@@ -51,7 +50,7 @@ export function UpdateCampoFormacion({
 	const { searchParams, router, replaceDelete } = useMutateSearchParams();
 	const { form, mutation } = useMutateModule({
 		schema,
-		mutationFn: async ({
+		mutationFn: ({
 			id,
 			data,
 		}: {
@@ -60,7 +59,6 @@ export function UpdateCampoFormacion({
 		}) => {
 			return API.camposFormacion.update({ id, data });
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(camposParams.update);
@@ -127,10 +125,9 @@ export function DeleteCampoFormacion({
 }: CamposFormacionTableProps) {
 	const { searchParams, router, replaceDelete } = useMutateSearchParams();
 	const { mutation } = useMutateModule({
-		mutationFn: async (id: string) => {
+		mutationFn: (id: string) => {
 			return API.camposFormacion.deleteById(id);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(camposParams.delete);

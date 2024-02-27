@@ -1,3 +1,4 @@
+import { APIserver } from "@/core/api-server";
 import { Input } from "../_components/ui/input";
 import {
 	Select,
@@ -19,21 +20,24 @@ const mallas = [
 	},
 ];
 
-export default function SelectMalla() {
-	return (
-		<div className='my-4 flex h-full w-full items-center justify-center'>
-			<Select>
-				<SelectTrigger>
-					<SelectValue placeholder='select malla' />
-				</SelectTrigger>
-				<SelectContent>
-					{mallas.map(el => (
-						<SelectItem key={el.nombre} value={el.nombre}>
-							{el.nombre}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
-		</div>
-	);
+export default async function SelectMalla() {
+	// const mallas = await APIserver.mallasCurriculares.getMany({
+	// 	programaId,
+	// });
+	// return (
+	// 	<div className='my-4 flex h-full w-full items-center justify-center'>
+	// 		<Select>
+	// 			<SelectTrigger>
+	// 				<SelectValue placeholder='select malla' />
+	// 			</SelectTrigger>
+	// 			<SelectContent>
+	// 				{mallas.map(el => (
+	// 					<SelectItem key={el.nombre} value={el.nombre}>
+	// 						{el.nombre}
+	// 					</SelectItem>
+	// 				))}
+	// 			</SelectContent>
+	// 		</Select>
+	// 	</div>
+	// );
 }

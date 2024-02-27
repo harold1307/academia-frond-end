@@ -1,33 +1,50 @@
 import { ROUTES } from "@/core/routes";
-import Link from "next/link";
+import { ActiveTab } from "../_components/ui/active-tab";
+
+export const mallaSeccionParams = {
+	mallas: "mallas",
+	ejesFormativos: "ejes-formativos",
+	areasConocimiento: "areas-de-conocimiento",
+	camposFormacion: "campos-de-formacion",
+} as const;
 
 const tabs = [
 	{
-		href: ROUTES.malla.path,
-		label: "Malla",
+		href: ROUTES.malla.path + "?seccion=mallas",
+		label: "Mallas",
 	},
 	{
-		href: ROUTES.malla.path + "?seccion=ejesFormativos",
-		label: "Ejes Formativos",
+		href: ROUTES.malla.path + "?seccion=ejes-formativos",
+		label: "Ejes formativos",
 	},
 	{
-		href: ROUTES.malla.path + "?seccion=areasConocimiento",
+		href: ROUTES.malla.path + "?seccion=areas-de-conocimiento",
 		label: "Areas de conocimiento",
 	},
 	{
-		href: ROUTES.malla.path + "?seccion=camposFormacion",
+		href: ROUTES.malla.path + "?seccion=campos-de-formacion",
 		label: "Campos de formacion",
 	},
 ];
 
-export default function MallaPageTabs() {
+export default function MallaPageTabs({
+	seccion,
+	className,
+}: {
+	seccion: (typeof mallaSeccionParams)[keyof typeof mallaSeccionParams];
+	className?: string;
+}) {
 	return (
-		<ul className='flex gap-2'>
-			{tabs.map(t => (
-				<li key={t.label}>
-					<Link href={t.href}>{t.label}</Link>
-				</li>
-			))}
-		</ul>
+		<div className={className}>
+			<ul className={"mb-4 flex gap-4"}>
+				{tabs.map(t => (
+					<li key={t.href}>
+						<ActiveTab href={t.href} isActive={t.href.includes(seccion)}>
+							{t.label}
+						</ActiveTab>
+					</li>
+				))}
+			</ul>
+		</div>
 	);
 }

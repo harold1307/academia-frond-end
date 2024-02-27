@@ -27,10 +27,6 @@ export default function AsignaturaEnMallaTable({
 	const [cols, setCols] = React.useState(columns);
 
 	React.useEffect(() => {
-		// const totalNiveles = malla.niveles;
-
-		// const nivelesPrefixes = NIVELES_PREFIXES.slice(0, totalNiveles.length);
-
 		setCols([
 			...columns,
 			...malla.niveles.map(nivel => ({
@@ -44,16 +40,6 @@ export default function AsignaturaEnMallaTable({
 						getValue() as (AsignaturaEnNivelMallaFromAPI & { nivel: number })[]
 					).map(a => <AsignaturaEnMalla asignaturaEnMalla={a} key={a.id} />),
 			})),
-			// ...nivelesPrefixes.map(prefix => ({
-			// 	accessorKey: prefix + " NIVEL",
-			// 	id: prefix + " NIVEL",
-			// 	header: prefix + " NIVEL",
-			// 	// @ts-expect-error not well typed because dynamic columns
-			// 	cell: ({ getValue }) =>
-			// 		(getValue() as MallaCurricularFromAPI["niveles"]).map(a => (
-			// 			<AsignaturaEnMalla asignaturaEnMalla={a.asignaturas} key={a.id} />
-			// 		)),
-			// })),
 			{
 				accessorKey: "total",
 				id: "total",
@@ -64,7 +50,6 @@ export default function AsignaturaEnMallaTable({
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={cols as any} data={tableRows as any} />
 		</section>
 	);
@@ -93,7 +78,7 @@ function AsignaturaEnMalla({ asignaturaEnMalla }: AsignaturaEnMallaProps) {
 		horasPracticas;
 
 	return (
-		<Card className='w-fit'>
+		<Card>
 			<CardHeader className='p-4'>
 				<CardTitle className='text-sm'>
 					{identificacion + " - " + asignatura.nombre}

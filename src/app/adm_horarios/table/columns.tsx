@@ -10,6 +10,8 @@ import {
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
 import Link from "next/link";
+import { APIserver } from "@/core/api-server";
+import { ParaleloTableItem } from "@/app/institucion/datos-academicos/paralelos/table/columns";
 
 export type HorariosAdminSchema = {
 	id: string;
@@ -18,7 +20,7 @@ export type HorariosAdminSchema = {
 	cupos: boolean;
 	planificacion: boolean;
 	paralelo: string;
-	cupo: number;
+	capacidad: number;
 	matriculados: number;
 	retirados: number;
 	disponibles: number;
@@ -57,7 +59,7 @@ export const horariosAdminColumns = [
 	helper.accessor("paralelo", {
 		header: "Paralelo",
 	}),
-	helper.accessor("cupo", {
+	helper.accessor("capacidad", {
 		header: "Cupo",
 	}),
 	helper.accessor("matriculados", {
@@ -143,3 +145,10 @@ function Actions({ id }: { id: string }) {
 		</DropdownMenu>
 	);
 }
+
+// async function Paralelo ({value}: { value: string }) {
+
+// 	const paralelo = await APIserver.nivelesMalla.getById(value)
+
+// 	return <p>{paralelo.data.nombre}</p>
+// }

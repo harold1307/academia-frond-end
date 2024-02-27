@@ -14,16 +14,20 @@ import type { MallaCurricularTableItem } from "./columns";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { ZodInferSchema } from "@/utils/types";
+import DeleteModal from "@/app/_components/modals/delete-modal";
+import { formatDate } from "@/utils";
 
 export default function MallaCurricularTable({
 	mallas,
+	programaName,
 }: {
 	mallas: MallaCurricularTableItem[];
+	programaName: string;
 }) {
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={columns} data={mallas} />
+			<DeleteMalla mallas={mallas} programaName={programaName} />
 		</section>
 	);
 }
@@ -50,6 +54,11 @@ export default function MallaCurricularTable({
 // 	perfilEgreso: z.string().nullable().optional(),
 // 	observaciones: z.string().nullable().optional(),
 // });
+
+type UpdateMallaProps = {
+	mallas: MallaCurricularTableItem[];
+	programaName: string;
+};
 
 // la malla no es editable por cualquiera
 // function UpdateMallaModal(props: { mallas: MallaCurricularTableItem[] }) {
@@ -90,7 +99,7 @@ export default function MallaCurricularTable({
 // 		);
 // 	}
 
-// 	return null;
+// return null;
 // <MutateModal
 // 	form={form}
 // 	title='Actualizar asignatura'
@@ -146,3 +155,61 @@ export default function MallaCurricularTable({
 // 	/>
 // </MutateModal>
 // }
+
+export function DeleteMalla({ mallas, programaName }: UpdateMallaProps) {
+	const { searchParams, router, replaceDelete } = useMutateSearchParams();
+	const { mutation } = useMutateModule({
+		mutationFn: (id: string) => {
+			return API.mallasCurriculares.deleteById(id);
+		},
+		onSuccess: response => {
+			console.log({ response });
+			replaceDelete(mallaParams.delete);
+			router.refresh();
+		},
+	});
+
+	const paramMallaId = React.useMemo(
+		() => searchParams.get(mallaParams.delete),
+		[searchParams],
+	);
+
+	if (!paramMallaId) return null;
+
+	const selectedMalla = mallas.find(i => i.id === paramMallaId);
+
+	if (!selectedMalla) {
+		return (
+			<ModalFallback
+				action='delete'
+				redirectTo={() => replaceDelete(mallaParams.delete)}
+			/>
+		);
+	}
+
+	return (
+		<DeleteModal
+			description={`Estas seguro que deseas eliminar la malla: ${programaName}, ${
+				selectedMalla.modalidad
+			} del ${formatDate(selectedMalla.vigencia.fechaAprobacion, {
+				day: "2-digit",
+				month: "2-digit",
+				year: "numeric",
+			})}`}
+			title='Eliminar malla'
+			onDelete={() => mutation.mutate(selectedMalla.id)}
+			disabled={mutation.isPending}
+			onClose={() => replaceDelete(mallaParams.delete)}
+			dialogProps={{
+				defaultOpen: true,
+				onOpenChange: open => {
+					if (mutation.isPending) return;
+					if (!open) {
+						replaceDelete(mallaParams.delete);
+						return;
+					}
+				},
+			}}
+		/>
+	);
+}

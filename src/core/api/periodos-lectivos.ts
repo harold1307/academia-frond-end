@@ -36,7 +36,7 @@ export type CalculoCostoFromAPI = ReplaceDateToString<
 	}
 >;
 export type UpdateCalculoCosto = Partial<
-	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt">
+	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt" | "planCostos">
 >;
 
 type UpdatePeriodoLectivoParams = {
@@ -180,6 +180,7 @@ export class PeriodoLectivoClass {
 		data,
 		id,
 	}: UpdatePeriodoLectivoParams): Promise<APIResponse<PeriodoLectivoFromAPI>> {
+		console.log(data);
 		const res = this.fetcher(
 			z.object({
 				data: periodoLectivoSchema,
@@ -259,6 +260,7 @@ export class PeriodoLectivoClass {
 		periodoLectivoId,
 		data,
 	}: UpdateCalculoCostoParams): Promise<APIResponse<CalculoCostoFromAPI>> {
+		console.log(data, periodoLectivoId);
 		const res = this.fetcher(
 			z.object({
 				data: calculoCostoSchema,
