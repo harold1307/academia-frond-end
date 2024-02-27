@@ -1,6 +1,7 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
 
+
 export type ModuloTableItem = {
 	id: string;
 	nombre: string;
@@ -62,4 +63,32 @@ export const columns = [
 		header: "Valida promedio",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
+	// helper.display({
+	// 	id: "actions",
+	// 	cell: function Actions({ row }) {
+	// 		const { replaceSet } = useMutateSearchParams();
+	// 		const id = row.getValue("id") as string;
+
+	// 		return (
+	// 			<BaseTableActions
+	// 				updateOptions={{
+	// 					show: false,
+	// 					buttonProps: {
+	// 						onClick: () => {
+	// 							// replaceSet(coordinacionesParams.update, id);
+	// 						},
+	// 					},
+	// 				}}
+	// 				deleteOptions={{
+	// 					show: true,
+	// 					buttonProps: {
+	// 						onClick: () => {
+	// 							replaceSet(mallaModulosParams.delete, id);
+	// 						},
+	// 					},
+	// 				}}
+	// 			/>
+	// 		);
+	// 	},
+	// }),
 ];

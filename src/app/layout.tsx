@@ -25,7 +25,7 @@ export default function RootLayout({
 			<body className={inter.className + " dark"}>
 				<Providers>
 					<main className='p-6'>
-						<header className='w-100 mb-4 flex h-16 items-center justify-between pl-6 pr-6'>
+						<header className='w-100 mb-6 flex h-16 items-center justify-between pl-6 pr-6'>
 							<Link href='/'>
 								<Logo />
 							</Link>

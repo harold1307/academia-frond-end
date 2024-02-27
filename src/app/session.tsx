@@ -4,8 +4,11 @@ import {
 	useAccount,
 	useMsal,
 } from "@azure/msal-react";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Button } from "./_components/ui/button";
 import KeyIcon from "./_components/ui/icons/key";
 import LogoutIcon from "./_components/ui/icons/logout";
 import SelectGlobalPeriodo from "./select-global-periodo";
@@ -13,6 +16,7 @@ import SelectGlobalPeriodo from "./select-global-periodo";
 export default function UserSession() {
 	const { instance, inProgress } = useMsal();
 	const activeAccount = useAccount();
+	const router = useRouter();
 	const [clock, setClock] = useState<any>(formatAMPM(new Date()));
 
 	function formatAMPM(date: any) {
@@ -36,6 +40,17 @@ export default function UserSession() {
 		<>
 			{/* {inProgress !== InteractionStatus.None && <div>Cargando...</div>} */}
 			<div className='flex flex-row items-center gap-6'>
+				<div className='shadow-default'>
+					<Button
+						className='rounded-lg border-white'
+						size={"icon"}
+						variant={"outline"}
+						title='Atras'
+						onClick={() => router.back()}
+					>
+						<ArrowLeft className='h-6 w-6' />
+					</Button>
+				</div>
 				<section className='shadow-default flex flex-row items-center gap-4 rounded-xl border border-slate-500 p-2 px-4'>
 					<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
 						<span className='font-bold'>Correo:</span> {activeAccount?.username}

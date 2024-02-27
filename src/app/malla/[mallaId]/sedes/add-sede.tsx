@@ -1,5 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import MutateModal from "@/app/_components/modals/mutate-modal";
@@ -31,6 +32,7 @@ const schema = z.object<
 });
 
 export default function AddSede({ mallaId }: { mallaId: string }) {
+	const router = useRouter();
 	const {
 		data: instituciones,
 		refetch,
@@ -53,15 +55,14 @@ export default function AddSede({ mallaId }: { mallaId: string }) {
 				},
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
+			router.refresh();
 		},
 	});
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar lugar de ejecucion</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -72,7 +73,7 @@ export default function AddSede({ mallaId }: { mallaId: string }) {
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar lugar de ejecucion'
 				withTrigger
-				triggerLabel='Adicionar'
+				triggerLabel='Agregar'
 			>
 				<FormField
 					control={form.control}
