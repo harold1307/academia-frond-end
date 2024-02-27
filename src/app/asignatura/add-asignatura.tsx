@@ -59,7 +59,7 @@ export default function AddAsignatura() {
 	});
 
 	return (
-		<section className="mb-2">
+		<section className='mb-2'>
 			<Dialog
 				open={open}
 				onOpenChange={state => {

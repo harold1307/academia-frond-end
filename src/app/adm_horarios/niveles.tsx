@@ -18,17 +18,18 @@ const niveles = [
 ];
 
 interface MallaData {
-	data: MallaCurricular[]
+	data: MallaCurricular[];
 }
 
-export default async function Niveles({ programaId } : { programaId: string | undefined }) {
+export default async function Niveles({
+	programaId,
+}: {
+	programaId: string | undefined;
+}) {
+	//const mallas = await APIserver.mallasCurriculares.getMany( { programaId } )
 
-	//const mallas = await APIserver.mallasCurriculares.getMany( { programaId } ) 
-
-	
 	return (
 		<ul className='flex w-full items-center justify-start'>
-			
 			{niveles.map(el => {
 				return (
 					<Button key={el.label} className='mx-4'>

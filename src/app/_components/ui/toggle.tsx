@@ -11,7 +11,7 @@ const ToggleSwitch = React.forwardRef<
 	<CheckBox.Root
 		ref={ref}
 		className={cn(
-			"peer h-8 w-8 shrink-0 rounded-sm border border-gray-500 data-[state=checked]:bg-blue-400 after:content-['NO'] data-[state='checked']:after:content-['SI'] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-inherit data-[state=checked]:text-slate-100 text-slate-400",
+			"peer h-8 w-8 shrink-0 rounded-sm border border-gray-500 bg-inherit text-slate-400 ring-offset-background after:content-['NO'] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-blue-400 data-[state=checked]:text-slate-100 data-[state='checked']:after:content-['SI']",
 		)}
 		{...props}
 	>

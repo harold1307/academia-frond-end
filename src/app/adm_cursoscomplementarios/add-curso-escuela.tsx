@@ -3,17 +3,17 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
 } from "@/app/_components/ui/form";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
 import type { CreateCursoEscuela } from "@/core/api/curso-escuelas";
@@ -29,9 +29,9 @@ import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
 import { Input } from "../_components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
 import { useAppContext } from "../app-context";
@@ -162,7 +162,7 @@ export default function AddCursoEscuela() {
 
 	const formValues = form.watch();
 
-  console.log(form.formState.errors)
+	console.log(form.formState.errors);
 
 	return (
 		<section>

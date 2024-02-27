@@ -146,7 +146,6 @@ function Actions({ id }: { id: string }) {
 	);
 }
 
-
 // async function Paralelo ({value}: { value: string }) {
 
 // 	const paralelo = await APIserver.nivelesMalla.getById(value)

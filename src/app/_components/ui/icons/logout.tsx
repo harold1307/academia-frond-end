@@ -7,7 +7,7 @@ const LogoutIcon = ({ ...props }) => (
 		fill='none'
 		xmlns='http://www.w3.org/2000/svg'
 		xmlnsXlink='http://www.w3.org/1999/xlink'
-        {...props}
+		{...props}
 	>
 		<rect y='0.5' width='20' height='20' fill='url(#pattern0)' />
 		<defs>

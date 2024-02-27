@@ -21,11 +21,9 @@ const mallas = [
 ];
 
 export default async function SelectMalla() {
-
 	// const mallas = await APIserver.mallasCurriculares.getMany({
 	// 	programaId,
 	// });
-	
 	// return (
 	// 	<div className='my-4 flex h-full w-full items-center justify-center'>
 	// 		<Select>

@@ -83,7 +83,7 @@ export default function AddCronograma() {
 	const [open, setOpen] = React.useState(false);
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data) => {
+		mutationFn: async data => {
 			return API.periodos.create(data);
 		},
 		onError: console.error,

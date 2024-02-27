@@ -51,7 +51,7 @@ export default function MutateModal({
 		<Dialog {...dialogProps}>
 			{withTrigger && (
 				<DialogTrigger asChild>
-					<Button variant='outline' className="mb-2">
+					<Button variant='outline' className='mb-2'>
 						<PlusCircle className='mr-2' />
 						{triggerLabel}
 					</Button>

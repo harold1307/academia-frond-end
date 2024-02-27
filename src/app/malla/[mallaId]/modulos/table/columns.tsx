@@ -1,7 +1,6 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
 
-
 export type ModuloTableItem = {
 	id: string;
 	nombre: string;

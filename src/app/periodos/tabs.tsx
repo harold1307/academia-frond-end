@@ -14,9 +14,12 @@ const tabs = [
 
 export default function PeriodosPageTabs() {
 	return (
-		<ul className='flex gap-2 mt-4'>
+		<ul className='mt-4 flex gap-2'>
 			{tabs.map(t => (
-				<li key={t.label} className="focus:border focus:border-slate-400 p-2 rounded-md hover:underline">
+				<li
+					key={t.label}
+					className='rounded-md p-2 hover:underline focus:border focus:border-slate-400'
+				>
 					<Link href={t.href}>{t.label}</Link>
 				</li>
 			))}

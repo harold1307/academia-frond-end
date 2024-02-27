@@ -102,9 +102,7 @@ export default function AddTrad() {
 
 	return (
 		<section className='my-4'>
-			<h1 className='my-2 text-2xl font-semibold'>
-				Traducción
-			</h1>
+			<h1 className='my-2 text-2xl font-semibold'>Traducción</h1>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
 					<button className='flex flex-row items-center gap-2 rounded-md border border-slate-400 p-2 hover:bg-slate-200 hover:text-slate-800'>
