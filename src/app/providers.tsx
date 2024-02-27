@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	EventType,
 	PublicClientApplication,
@@ -10,6 +11,7 @@ import React from "react";
 
 import { queryClient } from "@/core/react-query";
 import { env } from "@/env.mjs";
+import { AppProvider } from "./app-context";
 
 export default function Providers({ children }: React.PropsWithChildren) {
 	const [msalInstance] = React.useState(
@@ -53,7 +55,9 @@ export default function Providers({ children }: React.PropsWithChildren) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<MsalProvider instance={msalInstance}>{children}</MsalProvider>
+			<AppProvider>
+				<MsalProvider instance={msalInstance}>{children}</MsalProvider>
+			</AppProvider>
 		</QueryClientProvider>
 	);
 }
