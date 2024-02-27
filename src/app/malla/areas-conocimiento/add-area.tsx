@@ -33,13 +33,12 @@ export default function AddArea() {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
-		mutationFn: async data => {
+		mutationFn: data => {
 			return API.areasConocimiento.create({
 				...data,
 				codigo: data.codigo || null,
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 
@@ -49,7 +48,6 @@ export default function AddArea() {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar eje formativo</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -58,9 +56,9 @@ export default function AddArea() {
 				disabled={mutation.isPending}
 				form={form}
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
-				title='Adicionar eje formativo'
+				title='Adicionar area de conocimiento'
 				withTrigger
-				triggerLabel='Adicionar'
+				triggerLabel='Agregar'
 			>
 				<FormField
 					control={form.control}
