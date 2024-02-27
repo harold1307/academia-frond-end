@@ -1,3 +1,4 @@
+"use client";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
 	DropdownMenu,
@@ -8,26 +9,14 @@ import {
 import { Button } from "@/app/_components/ui/button";
 import { Lock, FileSignature } from "lucide-react";
 import { useState } from "react";
+import { type PersonalSchema } from "../add-personal";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
-export type TalentoHumano = {
-	nombre: string;
-	departamento: string;
-	id: string;
-	emailtelefono: string;
-	datos: string;
-	etnia: string;
-	asesor: boolean;
-	discapacidad: boolean;
-	admin: boolean;
-	profesor: boolean;
-	foto: boolean;
-};
+export type PersonalTableItem = PersonalSchema;
 
-export type TalentoHumanoTableItem = TalentoHumano;
+const helper = createColumnHelper<PersonalTableItem>();
 
-const helper = createColumnHelper<TalentoHumanoTableItem>();
-
-export const TalentoHumanoColumns = [
+export const PersonalColumns = [
 	helper.accessor("nombre", {
 		header: "Nombre",
 	}),
@@ -86,7 +75,7 @@ export const TalentoHumanoColumns = [
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
 
-			return <Actions id={id} />;
+			return <Actions personalId={id} />;
 		},
 	}),
 ];
@@ -104,18 +93,29 @@ function Border({ value }: { value: boolean }) {
 	);
 }
 
-function Actions({ id }: { id: string }) {
+export const personalParams = {
+	update: "actualizarpersonal",
+	deactivate: "desactivarpersonal",
+};
+
+function Actions({ personalId }: { personalId: string }) {
+	const { replaceSet } = useMutateSearchParams();
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button>Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(personalParams.update, personalId)}
+				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(personalParams.deactivate, personalId)}
+				>
 					<Lock className='mr-2 h-4 w-4' />
 					<span>Desactivar</span>
 				</DropdownMenuItem>

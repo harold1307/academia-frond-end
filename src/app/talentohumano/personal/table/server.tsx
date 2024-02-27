@@ -1,7 +1,7 @@
-import TalentoHumanoTable from ".";
-import { type TalentoHumano } from "./columns";
+import PersonalTable from ".";
+import { type Personal } from "./columns";
 
-const talentoHumano: TalentoHumano[] = [
+const personal: Personal[] = [
 	{
 		nombre: "jorge",
 		departamento: "fisica",
@@ -56,8 +56,8 @@ const talentoHumano: TalentoHumano[] = [
 	},
 ];
 
-export default async function TalentoHumanoTableServer() {
+export default async function PersonalTableServer() {
 
 
-	return <TalentoHumanoTable data={talentoHumano} />;
+	return <PersonalTable data={personal} />;
 }

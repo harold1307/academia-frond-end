@@ -60,7 +60,7 @@ export default function AddPersonal() {
 				triggerLabel='Agregar Personal'
 			>
 				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
-					{modeloEvaluativoFields.map(f =>
+					{personalFields.map(f =>
 						f.inputType === "checkbox" ? (
 							<FormField
 								control={form.control}
@@ -127,7 +127,7 @@ export default function AddPersonal() {
 	);
 }
 
-export const modeloEvaluativoFields = [
+export const personalFields = [
 	{
 		name: "nombre",
 		inputType: "text",

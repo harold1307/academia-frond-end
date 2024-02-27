@@ -1,12 +1,12 @@
 import React from "react";
 import AddPersonal from "./personal/add-personal";
-import TalentoHumanoTableServer from "./personal/table/server";
+import PersonalTableServer from "./personal/table/server";
 
 type Context = {
 	searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export default function TalentoHumanoPage({ searchParams }: Context) {
+export default function PersonalPage({ searchParams }: Context) {
 	const section = searchParams.section;
 
 	if (section === "1") {
@@ -41,7 +41,7 @@ export default function TalentoHumanoPage({ searchParams }: Context) {
 		<>
 			<AddPersonal />
 			<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
-				<TalentoHumanoTableServer />
+				<PersonalTableServer />
 			</React.Suspense>
 		</>
 	);

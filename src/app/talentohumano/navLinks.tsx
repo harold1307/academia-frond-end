@@ -26,7 +26,7 @@ const SECTIONS = [
 		section: "3",
 	},
 ];
-export default function TalentoHumanoNavLinks() {
+export default function PersonalNavLinks() {
 	const params = useSearchParams();
 
 	return (
@@ -43,7 +43,6 @@ export default function TalentoHumanoNavLinks() {
 					</li>
 				))}
 			</ul>
-	
 		</div>
 	);
 }

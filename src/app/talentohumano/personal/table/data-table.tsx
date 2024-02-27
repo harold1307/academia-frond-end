@@ -15,11 +15,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { TalentoHumanoColumns, TalentoHumanoTableItem } from "./columns";
+import type { PersonalColumns, PersonalTableItem } from "./columns";
 
 interface DataTableProps {
-	columns: typeof TalentoHumanoColumns;
-	data: TalentoHumanoTableItem[];
+	columns: typeof PersonalColumns;
+	data: PersonalTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {

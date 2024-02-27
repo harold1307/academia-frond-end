@@ -1,6 +1,6 @@
 import React from "react";
 import { fontPlay } from "../_components/ui/fonts";
-import TalentoHumanoNavLinks from "./navLinks";
+import PersonalNavLinks from "./navLinks";
 
 export default function TalentoHumanoLayout({
 	children,
@@ -13,7 +13,7 @@ export default function TalentoHumanoLayout({
 				>
 					Talento Humano
 				</h1>
-				<TalentoHumanoNavLinks />
+				<PersonalNavLinks />
 			</div>
 			{children}
 		</div>
