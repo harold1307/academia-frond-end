@@ -15,6 +15,7 @@ import type { CreateParalelo } from "@/core/api/paralelos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
+import { PARALELO_KEYS } from "./query-keys";
 
 const schema = z.object<ZodInferSchema<CreateParalelo>>({
 	nombre: z.string(),
@@ -35,16 +36,18 @@ export default function AddParalelo({ sedeId }: { sedeId?: string }) {
 		setOpen,
 	} = useMutateModule({
 		schema,
-		mutationFn: async data => {
-			if (!sedeId) return;
+		mutationFn: data => {
+			if (!sedeId) {
+				throw new Error("No se ha seleccionado una sede");
+			}
 
 			return API.paralelos.create(data);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
 		},
+		invalidateQueryKey: PARALELO_KEYS.all,
 	});
 
 	return (

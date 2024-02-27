@@ -4,6 +4,8 @@ import { APIserver } from "@/core/api-server";
 import { InstitucionTabs } from "../tabs";
 import AddModalidad from "./modalidades/add-modalidad";
 import ModalidadTableServer from "./modalidades/table/server";
+import AddParalelo from "./paralelos/add-paralelo";
+import ParaleloTableServer from "./paralelos/table/server";
 import AddSesion from "./sesiones/add-sesion";
 import SesionTableServer from "./sesiones/table/server";
 import DatosAcademicosTabs, { subSeccionParams } from "./tabs";
@@ -48,9 +50,9 @@ export default async function DatosAcademicos({
 				<InstitucionTabs seccion='datos-academicos' className={"mb-5"} />
 				<DatosAcademicosTabs seccion='paralelos' className='mb-5' />
 				<div className='mt-4'>
-					<AddModalidad />
+					<AddParalelo />
 					<React.Suspense fallback={"Cargando tabla..."}>
-						<ModalidadTableServer />
+						<ParaleloTableServer />
 					</React.Suspense>
 				</div>
 			</>
