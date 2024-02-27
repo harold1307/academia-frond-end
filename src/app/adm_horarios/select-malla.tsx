@@ -22,24 +22,24 @@ const mallas = [
 
 export default async function SelectMalla() {
 
-	const mallas = await APIserver.mallasCurriculares.getMany({
-		programaId,
-	});
+	// const mallas = await APIserver.mallasCurriculares.getMany({
+	// 	programaId,
+	// });
 	
-	return (
-		<div className='my-4 flex h-full w-full items-center justify-center'>
-			<Select>
-				<SelectTrigger>
-					<SelectValue placeholder='select malla' />
-				</SelectTrigger>
-				<SelectContent>
-					{mallas.map(el => (
-						<SelectItem key={el.nombre} value={el.nombre}>
-							{el.nombre}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
-		</div>
-	);
+	// return (
+	// 	<div className='my-4 flex h-full w-full items-center justify-center'>
+	// 		<Select>
+	// 			<SelectTrigger>
+	// 				<SelectValue placeholder='select malla' />
+	// 			</SelectTrigger>
+	// 			<SelectContent>
+	// 				{mallas.map(el => (
+	// 					<SelectItem key={el.nombre} value={el.nombre}>
+	// 						{el.nombre}
+	// 					</SelectItem>
+	// 				))}
+	// 			</SelectContent>
+	// 		</Select>
+	// 	</div>
+	// );
 }

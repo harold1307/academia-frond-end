@@ -86,13 +86,13 @@ export const horariosAdminColumns = [
 	helper.accessor("agregaciones", {
 		header: "Agregaciones",
 	}),
-	helper.accessor("limiteOrdinaria", {
+	helper.accessor("matReg", {
 		header: "Mat. Reg.",
 	}),
-	helper.accessor("limiteExtraordinaria", {
+	helper.accessor("matExt", {
 		header: "Mat. Ext.",
 	}),
-	helper.accessor("limiteEspecial", {
+	helper.accessor("matEsp", {
 		header: "Mat. Esp.",
 	}),
 	helper.accessor("matriculacion", {

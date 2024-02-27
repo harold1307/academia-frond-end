@@ -1,5 +1,5 @@
-import type { VarianteCursoTableItem } from "@/app/curso/[cursoId]/variantes/table/columns";
-import type { CursoTableItem } from "@/app/curso/table/columns";
+import type { VarianteCursoTableItem } from "@/app/adm_cursos/[cursoId]/variantes/table/columns";
+import type { CursoTableItem } from "@/app/adm_cursos/table/columns";
 
 export const isLoading = false;
 

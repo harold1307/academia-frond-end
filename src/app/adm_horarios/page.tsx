@@ -28,11 +28,11 @@ export default async function Adm_HorariosPage({ searchParams } : Context) {
 			<div className='flex h-16 w-full flex-col items-center justify-center'>
 				<React.Suspense fallback={<h1>Cargando mallas </h1>}>
 				</React.Suspense>
-				<Niveles programaId={programaId} />
+				{/* <Niveles programaId={programaId} /> */}
 			</div>
-			<React.Suspense fallback={<h1>Cargando tabla...</h1>}>
+			{/* <React.Suspense fallback={<h1>Cargando tabla...</h1>}>
 				<HorariosAdminTableServer />
-			</React.Suspense>
+			</React.Suspense> */}
 		</div>
 	);
 }

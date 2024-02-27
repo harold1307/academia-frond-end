@@ -34,6 +34,7 @@ import {
 	SelectValue,
 } from "../_components/ui/select";
 import { MALLA_KEYS } from "../malla/query-keys";
+import { useAppContext } from "../app-context";
 
 const schema = z.object<
 	ZodInferSchema<
@@ -48,6 +49,7 @@ const schema = z.object<
 			| "limiteOrdinaria"
 			| "limiteExtraordinaria"
 			| "limiteEspecial"
+			| "periodoId"
 		> & {
 			fechaInicio: string;
 			fechaFin: string;
@@ -95,6 +97,7 @@ const schema = z.object<
 
 export default function AddNivelAcademico() {
 	const router = useRouter();
+	const { selectedPeriodoId } = useAppContext();
 
 	const {
 		data: mallas,
@@ -146,9 +149,15 @@ export default function AddNivelAcademico() {
 
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
-		mutationFn: async ({ nivelId, sesionId, mallaId: _, ...data }) => {
+		mutationFn: ({ nivelId, sesionId, mallaId: _, ...data }) => {
+			if (!selectedPeriodoId) {
+				throw new Error("No hay un periodo lectivo seleccionado");
+			}
 			return API.nivelesMalla.createNivelAcademico({
-				data,
+				data: {
+					...data,
+					periodoId: selectedPeriodoId,
+				},
 				nivelMallaId: nivelId,
 				sesionId,
 			});
