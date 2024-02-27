@@ -10,22 +10,16 @@ import { Input } from "@/app/_components/ui/input";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 
-//Esquema de MockUp hasta tener el esquema de Prisma
-export type PersonalSchema = {
-	nombre: string;
-	departamento: string;
+export type ModeloDeContratoSchema = {
+	nombredescripcion: string;
 	id: string;
-	emailtelefono: string;
-	datos: string;
-	etnia: string;
-	asesor: boolean;
-	discapacidad: boolean;
-	admin: boolean;
-	profesor: boolean;
-	foto: boolean;
+	paraprofesores: boolean;
+	archivo: string;
+	campos: string;
+	activo: boolean;
 };
 
-export default function AddPersonal() {
+export default function AddModeloDeContrato() {
 	const { form, mutation, open, setOpen } = useMutateModule({
 		// schema: ModeloEvaluativoSchema,
 		mutationFn: async data => {},
@@ -55,12 +49,12 @@ export default function AddPersonal() {
 					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
-				title={`Agregar Personal`}
+				title={`Agregar Modelo de Contrato`}
 				withTrigger
-				triggerLabel='Agregar Personal'
+				triggerLabel='Agregar Modelo de Contrato'
 			>
 				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
-					{personalFields.map(f =>
+					{modeloDeContratoFields.map(f =>
 						f.inputType === "checkbox" ? (
 							<FormField
 								control={form.control}
@@ -127,55 +121,20 @@ export default function AddPersonal() {
 	);
 }
 
-export const personalFields = [
+export const modeloDeContratoFields = [
 	{
-		name: "nombre",
+		name: "nombredescripcion",
 		inputType: "text",
-		label: "Nombre",
+		label: "Nombre/Descripcion",
 	},
 	{
-		name: "departamento",
-		inputType: "text",
-		label: "Departamento",
-	},
-	{
-		name: "id",
-		inputType: "number",
-		label: "ID",
-	},
-	{
-		name: "emailtelefono",
-		inputType: "text",
-		label: "Email/Telefono",
-	},
-	{
-		name: "datos",
-		inputType: "text",
-		label: "Datos",
-	},
-	{
-		name: "etnia",
-		inputType: "text",
-		label: "Etnia",
-	},
-	{
-		name: "asesor",
+		name: "paraprofesores",
 		inputType: "checkbox",
-		label: "Asesor",
+		label: "Para Profesores",
 	},
 	{
-		name: "discapacidad",
-		inputType: "checkbox",
-		label: "Discapacidad",
-	},
-	{
-		name: "profesor",
-		inputType: "checkbox",
-		label: "Profesor",
-	},
-	{
-		name: "foto",
+		name: "archivo",
 		inputType: "file",
-		label: "Foto",
+		label: "Archivo",
 	},
-] satisfies Field<keyof PersonalSchema>[];
+] satisfies Field<keyof ModeloDeContratoSchema>[];

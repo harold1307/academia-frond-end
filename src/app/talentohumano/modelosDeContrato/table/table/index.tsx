@@ -2,9 +2,9 @@
 import React from "react";
 import { DataTable } from "./data-table";
 import {
-	type PersonalTableItem,
-	PersonalColumns,
-	personalParams,
+	type ModeloDeContratoTableItem,
+	ModeloDeContratoColumns,
+	modeloDeContratoParams,
 } from "./columns";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -18,32 +18,41 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import { PersonalSchema, personalFields } from "../add-personal";
+import {
+	modeloDeContratoFields,
+	type ModeloDeContratoSchema,
+} from "../add-modeloDeContrato";
 
-interface PersonalTableProps {
-	data: PersonalSchema[];
+interface ModeloDeContratoTableProps {
+	data: ModeloDeContratoSchema[];
 }
 
-export default function PersonalTable({ data }: PersonalTableProps) {
-	const personal = React.useMemo(() => {
+export default function ModeloDeContratoTable({
+	data,
+}: ModeloDeContratoTableProps) {
+	const modeloDeContrato = React.useMemo(() => {
 		return data?.map(
-			PersonalTable =>
+			ModeloDeContratoTable =>
 				({
-					...PersonalTable,
-				}) satisfies PersonalTableItem,
+					...ModeloDeContratoTable,
+				}) satisfies ModeloDeContratoTableItem,
 		);
 	}, [data]);
 
 	return (
 		<section className=''>
-			<DataTable columns={PersonalColumns} data={personal} />
-			<UpdatePersonalModal personal={personal} />
-			<DeactivatePersonal personal={personal} />
+			<DataTable columns={ModeloDeContratoColumns} data={modeloDeContrato} />
+			<UpdateModeloDeContratoModal modeloDeContrato={modeloDeContrato} />
+			<DeactivateModeloDeContrato modeloDeContrato={modeloDeContrato} />
 		</section>
 	);
 }
 
-function UpdatePersonalModal({ personal }: { personal: PersonalSchema[] }) {
+function UpdateModeloDeContratoModal({
+	modeloDeContrato,
+}: {
+	modeloDeContrato: ModeloDeContratoSchema[];
+}) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
@@ -62,21 +71,23 @@ function UpdatePersonalModal({ personal }: { personal: PersonalSchema[] }) {
 
 	const dismissModal = () => {
 		const newParams = new URLSearchParams(searchParams);
-		newParams.delete(personalParams.update);
+		newParams.delete(modeloDeContratoParams.update);
 
 		router.replace(pathname + "?" + newParams.toString());
 	};
 
-	const personalParamsId = React.useMemo(
-		() => searchParams.get(personalParams.update),
+	const modeloDeContratoParamsId = React.useMemo(
+		() => searchParams.get(modeloDeContratoParams.update),
 		[searchParams],
 	);
 
-	if (!personalParamsId) return null;
+	if (!modeloDeContratoParamsId) return null;
 
-	const selectedPersonal = personal.find(i => i.id === personalParamsId);
+	const selectedModeloDeContrato = modeloDeContrato.find(
+		i => i.id === modeloDeContratoParamsId,
+	);
 
-	if (!selectedPersonal) {
+	if (!selectedModeloDeContrato) {
 		return <ModalFallback action='update' redirectTo={() => dismissModal()} />;
 	}
 	return (
@@ -98,18 +109,18 @@ function UpdatePersonalModal({ personal }: { personal: PersonalSchema[] }) {
 					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
-				title={`Editar Personal ${selectedPersonal.nombre}`}
+				title={`Editar modelo de Contrato ${selectedModeloDeContrato.nombredescripcion}`}
 				withTrigger
-				triggerLabel='Editar Personal'
+				triggerLabel='Editar modelo de Contrato'
 			>
 				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
-					{personalFields.map(f =>
+					{modeloDeContratoFields.map(f =>
 						f.inputType === "checkbox" ? (
 							<FormField
 								control={form.control}
 								name={f.name}
 								key={f.name}
-								defaultValue={selectedPersonal[f.name]}
+								defaultValue={selectedModeloDeContrato[f.name]}
 								render={({ field }) => {
 									return (
 										<FormItem
@@ -141,7 +152,7 @@ function UpdatePersonalModal({ personal }: { personal: PersonalSchema[] }) {
 								control={form.control}
 								name={f.name}
 								key={f.name}
-								defaultValue={selectedPersonal[f.name]}
+								defaultValue={selectedModeloDeContrato[f.name]}
 								render={({ field }) => {
 									return (
 										<FormItem className='flex w-full items-center justify-start gap-2'>
@@ -171,14 +182,18 @@ function UpdatePersonalModal({ personal }: { personal: PersonalSchema[] }) {
 	);
 }
 
-function DeactivatePersonal({ personal }: { personal: PersonalSchema[] }) {
+function DeactivateModeloDeContrato({
+	modeloDeContrato,
+}: {
+	modeloDeContrato: ModeloDeContratoSchema[];
+}) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 
 	const dismissModal = () => {
 		const newParams = new URLSearchParams(searchParams);
-		newParams.delete(personalParams.deactivate);
+		newParams.delete(modeloDeContratoParams.deactivate);
 
 		router.replace(pathname + "?" + newParams.toString());
 	};
@@ -193,25 +208,30 @@ function DeactivatePersonal({ personal }: { personal: PersonalSchema[] }) {
 		},
 	});
 
-	const personalId = React.useMemo(
-		() => searchParams.get(personalParams.deactivate),
+	const modeloDeContratoId = React.useMemo(
+		() => searchParams.get(modeloDeContratoParams.deactivate),
 		[searchParams],
 	);
 
-	if (!personalId) return null;
+	if (!modeloDeContratoId) return null;
 
-	const selectedPersonal = personal.find(i => i.id === personalId);
+	const selectedModeloDeContrato = modeloDeContrato.find(
+		i => i.id === modeloDeContratoId,
+	);
 
-	if (!selectedPersonal) {
+	if (!selectedModeloDeContrato) {
 		return <ModalFallback action='delete' redirectTo={() => dismissModal()} />;
 	}
 
 	return (
 		<DeleteModal
-			description={`Estas seguro que deseas desactivar la variante: ${selectedPersonal.nombre}`}
+			description={`Estas seguro que deseas desactivar la variante: ${selectedModeloDeContrato.nombredescripcion}`}
 			title='Desactivar variante'
 			onDelete={() =>
-				console.log("falta implementar lógica de delete", selectedPersonal)
+				console.log(
+					"falta implementar lógica de delete",
+					selectedModeloDeContrato,
+				)
 			}
 			disabled={mutation.isPending}
 			onClose={() => dismissModal()}

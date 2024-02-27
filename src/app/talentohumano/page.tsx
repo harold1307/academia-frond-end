@@ -1,6 +1,8 @@
 import React from "react";
 import AddPersonal from "./personal/add-personal";
 import PersonalTableServer from "./personal/table/server";
+import ModeloDeContratoTableServer from "./modelosDeContrato/table/table/server";
+import AddModeloDeContrato from "./modelosDeContrato/table/add-modeloDeContrato";
 
 type Context = {
 	searchParams: { [key: string]: string | string[] | undefined };
@@ -30,8 +32,9 @@ export default function PersonalPage({ searchParams }: Context) {
 	if (section === "3") {
 		return (
 			<div>
+				<AddModeloDeContrato />
 				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}>
-					<h1>Algo3</h1>
+					<ModeloDeContratoTableServer />
 				</React.Suspense>
 			</div>
 		);

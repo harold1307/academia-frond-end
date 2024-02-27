@@ -37,38 +37,30 @@ export const PersonalColumns = [
 	}),
 	helper.accessor("asesor", {
 		header: "Asesor",
-		cell: ({ getValue }) => {
-			const value = getValue();
-			return <Border value={value} />;
-		},
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		// return <Border value={value} />;,
 	}),
 	helper.accessor("discapacidad", {
 		header: "Discapacidad",
-		cell: ({ getValue }) => {
-			const value = getValue();
-			return <Border value={value} />;
-		},
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		// return <Border value={value} />;
 	}),
 	helper.accessor("admin", {
 		header: "Admin",
 		cell: ({ getValue }) => {
 			const value = getValue();
-			return <Border value={value} />;
+			return <Switcher value={value} />;
 		},
 	}),
 	helper.accessor("profesor", {
 		header: "Profesor",
-		cell: ({ getValue }) => {
-			const value = getValue();
-			return <Border value={value} />;
-		},
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		// return <Border value={value} />;
 	}),
 	helper.accessor("foto", {
 		header: "Foto",
-		cell: ({ getValue }) => {
-			const value = getValue();
-			return <Border value={value} />;
-		},
+		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		// return <Border value={value} />;
 	}),
 	helper.display({
 		id: "actions",
@@ -80,12 +72,12 @@ export const PersonalColumns = [
 	}),
 ];
 
-function Border({ value }: { value: boolean }) {
+function Switcher({ value }: { value: boolean }) {
 	const [valor, setValor] = useState(value);
 
 	return (
 		<Button
-			className='h-8 w-4 rounded border border-current bg-transparent text-current hover:text-black '
+			className='m-2 h-8 w-8 border border-current bg-transparent p-2 text-current hover:text-black'
 			onClick={() => setValor(!valor)}
 		>
 			{valor ? "SI" : "NO"}

@@ -1,7 +1,7 @@
 import PersonalTable from ".";
-import { type Personal } from "./columns";
+import { type PersonalSchema } from "../add-personal";
 
-const personal: Personal[] = [
+const personal: PersonalSchema[] = [
 	{
 		nombre: "jorge",
 		departamento: "fisica",
@@ -57,7 +57,5 @@ const personal: Personal[] = [
 ];
 
 export default async function PersonalTableServer() {
-
-
 	return <PersonalTable data={personal} />;
 }
