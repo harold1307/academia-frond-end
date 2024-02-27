@@ -33,7 +33,6 @@ export default function AreasConocimientoTable({
 }: AreasConocimientoTableProps) {
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={columns} data={areasConocimiento} />
 		</section>
 	);
@@ -52,7 +51,7 @@ export function UpdateAreaConocimiento({
 	const { searchParams, router, replaceDelete } = useMutateSearchParams();
 	const { form, mutation } = useMutateModule({
 		schema,
-		mutationFn: async ({
+		mutationFn: ({
 			id,
 			data,
 		}: {
@@ -61,7 +60,6 @@ export function UpdateAreaConocimiento({
 		}) => {
 			return API.areasConocimiento.update({ id, data });
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(areasConocimientoParams.update);
@@ -145,10 +143,9 @@ export function DeleteAreaConocimiento({
 }: AreasConocimientoTableProps) {
 	const { searchParams, router, replaceDelete } = useMutateSearchParams();
 	const { mutation } = useMutateModule({
-		mutationFn: async (id: string) => {
+		mutationFn: (id: string) => {
 			return API.areasConocimiento.deleteById(id);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(areasConocimientoParams.delete);

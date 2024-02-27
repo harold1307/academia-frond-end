@@ -11,14 +11,14 @@ export const ROUTES = {
 	},
 	asignatura: "/asignatura",
 	curso: {
-		path: "/curso",
+		path: "/adm_cursos",
 		variantes: (cursoId: string) => ROUTES.curso.path + `/${cursoId}/variantes`,
 		programas: (varianteId: string) => `/${varianteId}/programas`,
 		materias: (varianteId: string) => `/${varianteId}/materias`,
 		costos: (varianteId: string) => `/${varianteId}/costos`,
-		asignaturasVariantes: (cursoId: string, varianteCursoId: string) =>
-			ROUTES.curso.path +
-			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
+	},
+	cursoEscuelas: {
+		path: "adm_cursoscomplementarios",
 	},
 	modelosEvaluativos: {
 		path: "/modelosevaluativos",
@@ -36,5 +36,32 @@ export const ROUTES = {
 		path: "/adm_horarios",
 		detalleHorario: (horarioId: string) =>
 			ROUTES.admHorarios.path + `/${horarioId}`,
+	},
+	periodoEvaluacion: {
+		path: "/periodosevaluacion",
+		materias: (sectionId: string) =>
+			ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma`,
+	},
+	periodo: {
+		path: "/periodos",
+		cortes: "/periodos?seccion=cortes",
+		traduccion: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/traduccion`,
+		cronograma: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/cronograma`,
+		requisito: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/requisito`,
+		subperiodos: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/subperiodos`,
+		matriculas: (periodoId: string) =>
+			ROUTES.periodo.path + `/${periodoId}/matriculas`,
+	},
+	crm: {
+		path: "/crm",
+		inscritos: "/crm?seccion=inscritos",
+		respuestas: "/crm?seccion=respuestas",
+		seguimiento: "/crm?seccion=seguimiento",
+		documentos: (crmId: string) => ROUTES.crm.path + `/${crmId}/documentos`,
+		depositos: (crmId: string) => ROUTES.crm.path + `/${crmId}/depositos`,
 	},
 } as const;

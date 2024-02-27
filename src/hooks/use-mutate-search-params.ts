@@ -9,14 +9,14 @@ export function useMutateSearchParams() {
 		const newParams = new URLSearchParams(searchParams);
 		newParams.set(param, value);
 
-		router.replace(pathname + "?" + newParams.toString());
+		router.replace(pathname + "?" + newParams.toString(), { scroll: false });
 	};
 
 	const replaceDelete = (param: string) => {
 		const newParams = new URLSearchParams(searchParams);
 		newParams.delete(param);
 
-		router.replace(pathname + "?" + newParams.toString());
+		router.replace(pathname + "?" + newParams.toString(), { scroll: false });
 	};
 
 	return {

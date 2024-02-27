@@ -36,6 +36,7 @@ export type CreateNivelAcademico = Omit<
 	| "createdAt"
 	| "updatedAt"
 	| "id"
+	| "sesion"
 >;
 
 export const baseNivelAcademicoSchema = z.object<
@@ -75,6 +76,7 @@ export const baseNivelAcademicoSchema = z.object<
 	modeloEvaluativoId: z.string().uuid(),
 	sesionId: z.string().uuid(),
 	nivelMallaId: z.string().uuid(),
+	periodoId: z.string().uuid(),
 
 	createdAt: z.string().datetime(),
 	updatedAt: z.string().datetime(),

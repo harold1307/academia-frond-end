@@ -27,7 +27,7 @@ export default function SelectPrograma({
 			}}
 			defaultValue={programaId}
 		>
-			<SelectTrigger className='w-[300px]'>
+			<SelectTrigger className='mb-2 w-[300px]'>
 				<SelectValue placeholder='Selecciona un programa' />
 			</SelectTrigger>
 			<SelectContent>
@@ -37,9 +37,6 @@ export default function SelectPrograma({
 							{p.nombre}
 						</SelectItem>
 					))}
-					<SelectItem key={"Programa"} value={"Programa"}>
-						{"Programa"}
-					</SelectItem>
 				</SelectGroup>
 			</SelectContent>
 		</Select>

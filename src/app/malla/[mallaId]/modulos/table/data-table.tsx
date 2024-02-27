@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,7 +15,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { ModuloTableItem, columns } from "./columns";
+import type { columns, ModuloTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;

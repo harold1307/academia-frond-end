@@ -38,6 +38,13 @@ const schema = z.object<
 			| "esAnexo"
 			| "nivel"
 			| "ejeFormativoId"
+			| "cantidadMatriculasAutorizadas"
+			| "minimoCreditosRequeridos"
+			| "objetivosEspecificos"
+			| "aporteAsignaturaAlPerfil"
+			| "objetivoGeneral"
+			| "mallaId"
+			| "aprobarGuiaPracticaMetodologica"
 		> & {
 			asignaturaId: string;
 			descripcion?: string;
@@ -46,6 +53,13 @@ const schema = z.object<
 			objetivos?: string;
 			"dummy-validaCantidadMatriculas"?: boolean;
 			"dummy-minimoCreditos"?: boolean;
+
+			cantidadMatriculasAutorizadas?: number | null;
+			minimoCreditosRequeridos?: number | null;
+			objetivosEspecificos?: string | null;
+			aporteAsignaturaAlPerfil?: string | null;
+			objetivoGeneral?: string | null;
+			aprobarGuiaPracticaMetodologica?: boolean;
 		}
 	>
 >({
@@ -57,8 +71,8 @@ const schema = z.object<
 	costoEnMatricula: z.boolean(),
 	requeridaParaGraduar: z.boolean(),
 	cantidadMatriculas: z.number(),
-	cantidadMatriculasAutorizadas: z.number().nullable(),
-	minimoCreditosRequeridos: z.number().nullable(),
+	cantidadMatriculasAutorizadas: z.number().nullable().optional(),
+	minimoCreditosRequeridos: z.number().nullable().optional(),
 	maximaCantidadHorasSemanalas: z.number(),
 	horasColaborativas: z.number(),
 	horasAsistidasDocente: z.number(),
@@ -69,19 +83,18 @@ const schema = z.object<
 	noValidaAsistencia: z.boolean(),
 	materiaGeneral: z.boolean(),
 	guiaPracticaMetodologiaObligatoria: z.boolean(),
-	aprobarGuiaPracticaMetodologica: z.boolean(),
+	aprobarGuiaPracticaMetodologica: z.boolean().optional(),
 	competencia: z.string().optional(),
-	objetivosEspecificos: z.string().nullable(),
+	objetivosEspecificos: z.string().nullable().optional(),
 	descripcion: z.string().optional(),
 	resultados: z.string().optional(),
-	aporteAsignaturaAlPerfil: z.string().nullable(),
-	objetivoGeneral: z.string().nullable(),
+	aporteAsignaturaAlPerfil: z.string().nullable().optional(),
+	objetivoGeneral: z.string().nullable().optional(),
 	objetivos: z.string().optional(),
 
 	asignaturaId: z.string().uuid(),
 	areaConocimientoId: z.string().uuid(),
 	campoFormacionId: z.string(),
-	mallaId: z.string().uuid(),
 
 	"dummy-validaCantidadMatriculas": z.boolean().optional(),
 	"dummy-minimoCreditos": z.boolean().optional(),
@@ -146,20 +159,19 @@ export default function AddModulo({ mallaCurricularId }: AddModuloProps) {
 					aporteAsignaturaAlPerfil: aporteAsignaturaAlPerfil || null,
 					objetivoGeneral: objetivoGeneral || null,
 					cantidadMatriculasAutorizadas: data["dummy-validaCantidadMatriculas"]
-						? cantidadMatriculasAutorizadas
+						? cantidadMatriculasAutorizadas ?? null
 						: null,
 					minimoCreditosRequeridos: data["dummy-minimoCreditos"]
-						? minimoCreditosRequeridos
+						? minimoCreditosRequeridos ?? null
 						: null,
 					guiaPracticaMetodologiaObligatoria:
 						guiaPracticaMetodologiaObligatoria,
 					aprobarGuiaPracticaMetodologica: guiaPracticaMetodologiaObligatoria
-						? aprobarGuiaPracticaMetodologica
+						? aprobarGuiaPracticaMetodologica ?? false
 						: false,
 				},
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -207,9 +219,10 @@ export default function AddModulo({ mallaCurricularId }: AddModuloProps) {
 		...formValues
 	} = form.watch();
 
+	console.log(form.formState.errors);
+
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar modulo</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -220,7 +233,7 @@ export default function AddModulo({ mallaCurricularId }: AddModuloProps) {
 				onSubmit={form.handleSubmit(data => mutate(data))}
 				title='Adicionar modulo'
 				withTrigger
-				triggerLabel='Adicionar'
+				triggerLabel='Agregar'
 			>
 				{fields.map(f => {
 					if (assertReferenceInput(f.name)) {

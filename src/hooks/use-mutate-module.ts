@@ -1,3 +1,4 @@
+import { useToast } from "@/app/_components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	useMutation,
@@ -14,7 +15,7 @@ type UseMutateModuleProps<T extends z.ZodType, R, P> = {
 	invalidateQueryKey?: QueryKey;
 	mutationFn: (data: P extends undefined ? z.infer<T> : P) => Promise<R>;
 	onSuccess: (response: R) => void;
-	onError: (error: any) => void;
+	onError?: (error: any) => void;
 };
 
 export function useMutateModule<T extends z.ZodType, R, P = undefined>({
@@ -25,13 +26,22 @@ export function useMutateModule<T extends z.ZodType, R, P = undefined>({
 	onError,
 	hookFormProps,
 }: UseMutateModuleProps<T, R, P>) {
+	const { toast } = useToast();
 	const [open, setOpen] = React.useState(false);
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
 		mutationKey: invalidateQueryKey,
 		mutationFn,
-		onError,
+		onError:
+			onError ||
+			(err => {
+				toast({
+					title: "Error",
+					description: err.message,
+					variant: "destructive",
+				});
+			}),
 		onSuccess: async response => {
 			await queryClient.invalidateQueries({
 				queryKey: invalidateQueryKey,

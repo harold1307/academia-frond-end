@@ -1,6 +1,7 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, X } from "lucide-react";
 
+import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
 import { Button } from "@/app/_components/ui/button";
 import {
 	DropdownMenu,
@@ -14,6 +15,8 @@ export type AsignaturaTableItem = {
 	id: string;
 	nombre: string;
 	codigo: string | null;
+	record: number;
+	mallas: number;
 	enUso: boolean; // si esta ligada a una malla
 };
 
@@ -27,9 +30,20 @@ export const columns = [
 	helper.accessor("codigo", {
 		header: "Codigo",
 	}),
+	helper.accessor("record", {
+		header: "Record",
+	}),
+	helper.accessor("mallas", {
+		header: "Mallas",
+	}),
 	helper.accessor("enUso", {
 		header: "Uso",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
 	helper.display({
 		id: "actions",

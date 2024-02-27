@@ -25,6 +25,7 @@ import type { ZodInferSchema } from "@/utils/types";
 import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
+import { PlusCircle } from "lucide-react";
 
 const schema = z.object<ZodInferSchema<CreateAsignatura>>({
 	nombre: z.string(),
@@ -58,8 +59,7 @@ export default function AddAsignatura() {
 	});
 
 	return (
-		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar asignatura</h1>
+		<section className='mb-2'>
 			<Dialog
 				open={open}
 				onOpenChange={state => {
@@ -68,7 +68,10 @@ export default function AddAsignatura() {
 				}}
 			>
 				<DialogTrigger asChild>
-					<Button variant='success'>Adicionar</Button>
+					<Button variant='outline'>
+						<PlusCircle className='mr-2' />
+						Agregar
+					</Button>
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-auto sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>

@@ -5,6 +5,7 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import { asignaturaSchema, type AsignaturaFromAPI } from "./asignaturas";
+import type { CreateCursoEscuela } from "./curso-escuelas";
 
 export type VarianteCursoFromAPI = ReplaceDateToString<VarianteCurso>;
 
@@ -180,4 +181,46 @@ export class VarianteCursoClass {
 
 		return res.json();
 	}
+
+	async createCursoEscuela({
+		data,
+		varianteCursoId,
+	}: CreateCursoEscuelaParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/variantes-curso/${varianteCursoId}/curso-escuelas`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
+
+type CreateCursoEscuelaParams = {
+	varianteCursoId: string;
+	data: Omit<
+		CreateCursoEscuela,
+		| "plantillaId"
+		| "registroExterno"
+		| "registroInterno"
+		| "verificarSesion"
+		| "registroDesdeOtraSede"
+		| "edadMinima"
+		| "edadMaxima"
+		| "costoPorMateria"
+		| "cumpleRequisitosMalla"
+		| "pasarRecord"
+		| "aprobarCursoPrevio"
+	>;
+};

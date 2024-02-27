@@ -1,7 +1,10 @@
 "use client";
 import React from "react";
 import { DataTable } from "./data-table";
-import { type ModelosEvaluativoSchema, modeloEvaluativoFields } from "../add-modelo";
+import {
+	type ModelosEvaluativoSchema,
+	modeloEvaluativoFields,
+} from "../add-modelo";
 import {
 	type ModelosEvaluativosTableItem,
 	modelosEvaluativosColumns,
