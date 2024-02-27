@@ -40,7 +40,6 @@ const schema = z
 		fechaFin: z.string().datetime(),
 		fechaLimiteRegistro: z.string().datetime(),
 		diasLimitePago: z.number(),
-		nivel: z.number(),
 		cupos: z.number().nullable(),
 		evaluaProfesor: z.boolean(),
 		matriculaConDeuda: z.boolean(),
@@ -93,7 +92,9 @@ export class CursoEscuelaClass {
 	// 	return res;
 	// }
 
-	async create(data: CreateCursoEscuela): Promise<SimpleAPIResponse> {
+	async create(
+		data: Omit<CreateCursoEscuela, "plantillaId">,
+	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/curso-escuelas`, {
 			method: "POST",
 			headers: {

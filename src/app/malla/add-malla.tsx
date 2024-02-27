@@ -1,5 +1,6 @@
 "use client";
 import { TipoDuracion } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
@@ -42,7 +43,6 @@ import {
 	type Field,
 } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
-import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
 import { Checkbox } from "../_components/ui/checkbox";

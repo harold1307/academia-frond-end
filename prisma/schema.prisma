@@ -122,7 +122,7 @@ model AsignaturaEnNivelMalla {
   asignatura                         Asignatura                @relation(fields: [asignaturaId], references: [id])
   campoFormacion                     CampoFormacion?           @relation(fields: [campoFormacionId], references: [id])
   ejeFormativo                       EjeFormativo              @relation(fields: [ejeFormativoId], references: [id])
-  nivelMalla                         NivelMalla                @relation(fields: [nivelMallaId], references: [id])
+  nivelMalla                         NivelMalla                @relation(fields: [nivelMallaId], references: [id], onDelete: Cascade)
   nivelesAcademicos                  MateriaEnNivelAcademico[]
 
   @@index([areaConocimientoId], map: "asignaturas_niveles_mallas_areaConocimientoId_fkey")
@@ -332,7 +332,6 @@ model CursoEscuela {
   fechaFin              DateTime
   fechaLimiteRegistro   DateTime
   diasLimitePago        Int
-  nivel                 Int
   cupos                 Int?
   evaluaProfesor        Boolean
   matriculaConDeuda     Boolean
