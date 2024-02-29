@@ -30,7 +30,6 @@ export default function EjesFormativosTable({
 }: EjesFormativosTableProps) {
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Tabla</h1>
 			<DataTable columns={columns} data={ejesFormativos} />
 		</section>
 	);
@@ -56,7 +55,7 @@ export function UpdateEjeFormativo({
 	const { searchParams, router, replaceDelete } = useMutateSearchParams();
 	const { form, mutation } = useMutateModule({
 		schema,
-		mutationFn: async ({
+		mutationFn: ({
 			id,
 			data,
 		}: {
@@ -65,7 +64,6 @@ export function UpdateEjeFormativo({
 		}) => {
 			return API.ejesFormativos.update({ id, data });
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(ejesFormativosParams.update);
@@ -135,7 +133,6 @@ export function DeleteEjeFormativo({
 		mutationFn: async (id: string) => {
 			return API.ejesFormativos.deleteById(id);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(ejesFormativosParams.delete);

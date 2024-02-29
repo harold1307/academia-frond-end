@@ -18,6 +18,7 @@ import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import type { ZodInferSchema } from "@/utils/types";
 import { paraleloFields, paralelosParams } from "../add-paralelo";
+import { PARALELO_KEYS } from "../query-keys";
 import { columns, type ParaleloTableItem } from "./columns";
 import { DataTable } from "./data-table";
 
@@ -51,7 +52,7 @@ export function UpdateParalelo({
 		mutation: { isPending, mutate },
 	} = useMutateModule({
 		schema,
-		mutationFn: async ({
+		mutationFn: ({
 			id,
 			data,
 		}: {
@@ -63,12 +64,12 @@ export function UpdateParalelo({
 				data,
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(paralelosParams.update);
 			router.refresh();
 		},
+		invalidateQueryKey: PARALELO_KEYS.all,
 	});
 
 	const paramParaleloId = React.useMemo(
@@ -155,15 +156,15 @@ export function DeleteParalelo({
 	const {
 		mutation: { isPending, mutate },
 	} = useMutateModule({
-		mutationFn: async (id: string) => {
+		mutationFn: (id: string) => {
 			return API.paralelos.deleteById(id);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(paralelosParams.delete);
 			router.refresh();
 		},
+		invalidateQueryKey: PARALELO_KEYS.all,
 	});
 
 	const paramParaleloId = React.useMemo(

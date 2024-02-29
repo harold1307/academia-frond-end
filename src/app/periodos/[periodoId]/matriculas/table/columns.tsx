@@ -34,4 +34,3 @@ export const columns = [
 		header: "Fecha Matricula",
 	}),
 ];
-

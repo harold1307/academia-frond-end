@@ -22,13 +22,13 @@ export default async function DocumentosPage({ searchParams }: Context) {
 const MUDocs = [
 	{
 		id: "1",
-		fecha: '10/12/24',
-		referencia: '121614652',
-		tipo: 'pago matricula',
-		motivo: 'deposito',
-		cuenta: 'BANCO PICHINCHA',
-		procesado: 'si',
-		autorizado: 'si',
+		fecha: "10/12/24",
+		referencia: "121614652",
+		tipo: "pago matricula",
+		motivo: "deposito",
+		cuenta: "BANCO PICHINCHA",
+		procesado: "si",
+		autorizado: "si",
 		valor: 400,
 	},
 ];

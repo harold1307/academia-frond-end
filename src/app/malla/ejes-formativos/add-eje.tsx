@@ -30,10 +30,9 @@ export default function AddEje() {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
-		mutationFn: async data => {
+		mutationFn: data => {
 			return API.ejesFormativos.create(data);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -42,7 +41,6 @@ export default function AddEje() {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar eje formativo</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -53,7 +51,7 @@ export default function AddEje() {
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar eje formativo'
 				withTrigger
-				triggerLabel='Adicionar'
+				triggerLabel='Agregar'
 			>
 				<FormField
 					control={form.control}

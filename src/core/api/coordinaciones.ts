@@ -10,12 +10,13 @@ export type CoordinacionFromAPI = ReplaceDateToString<
 	Coordinacion & {
 		enUso: boolean;
 		programas: ProgramaFromAPI[];
+		profesores: number;
 	}
 >;
 
 export type CreateCoordinacion = Omit<
 	CoordinacionFromAPI,
-	"id" | "enUso" | "createdAt" | "updatedAt" | "programas"
+	"id" | "enUso" | "createdAt" | "updatedAt" | "programas" | "profesores"
 >;
 
 const schema = z
@@ -26,6 +27,7 @@ const schema = z
 		alias: z.string(),
 		sedeId: z.string().uuid(),
 		programas: programaSchema.array(),
+		profesores: z.number(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -43,7 +45,13 @@ export class CoordinacionClass {
 		data: Partial<
 			Omit<
 				CoordinacionFromAPI,
-				"id" | "enUso" | "createdAt" | "updatedAt" | "programas" | "sedeId"
+				| "id"
+				| "enUso"
+				| "createdAt"
+				| "updatedAt"
+				| "programas"
+				| "sedeId"
+				| "profesores"
 			>
 		>;
 	}): Promise<APIResponse<CoordinacionFromAPI>> {

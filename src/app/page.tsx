@@ -25,6 +25,10 @@ const modulos = [
 		href: ROUTES.curso.path,
 	},
 	{
+		label: "Cursos y Escuelas",
+		href: ROUTES.cursoEscuelas.path,
+	},
+	{
 		label: "Modelos Evaluativos",
 		href: ROUTES.modelosEvaluativos.path + "?section=0",
 	},
@@ -58,7 +62,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
 	const session = await getServerAuthSession();
-	console.log(session);
+	// console.log(session);
 	return (
 		<>
 			<section className='m-auto mt-2 sm:w-full lg:w-11/12'>

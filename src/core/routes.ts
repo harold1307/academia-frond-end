@@ -11,14 +11,14 @@ export const ROUTES = {
 	},
 	asignatura: "/asignatura",
 	curso: {
-		path: "/curso",
+		path: "/adm_cursos",
 		variantes: (cursoId: string) => ROUTES.curso.path + `/${cursoId}/variantes`,
 		programas: (varianteId: string) => `/${varianteId}/programas`,
 		materias: (varianteId: string) => `/${varianteId}/materias`,
 		costos: (varianteId: string) => `/${varianteId}/costos`,
-		asignaturasVariantes: (cursoId: string, varianteCursoId: string) =>
-			ROUTES.curso.path +
-			`/${cursoId}/variantes/${varianteCursoId}/asignaturas`,
+	},
+	cursoEscuelas: {
+		path: "adm_cursoscomplementarios",
 	},
 	modelosEvaluativos: {
 		path: "/modelosevaluativos",

@@ -20,6 +20,7 @@ import type { ZodInferSchema } from "@/utils/types";
 import { modalidadFields, modalidadesParams } from "../add-modalidad";
 import { columns, type ModalidadTableItem } from "./columns";
 import { DataTable } from "./data-table";
+import { MODALIDAD_KEYS } from "../query-keys";
 
 type ModalidadTableProps = {
 	modalidades: ModalidadTableItem[];
@@ -53,7 +54,7 @@ export function UpdateModalidad({
 		mutation: { isPending, mutate },
 	} = useMutateModule({
 		schema,
-		mutationFn: async ({
+		mutationFn: ({
 			id,
 			data,
 		}: {
@@ -65,12 +66,12 @@ export function UpdateModalidad({
 				data: { ...data, alias: data.alias || null },
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(modalidadesParams.update);
 			router.refresh();
 		},
+		invalidateQueryKey: MODALIDAD_KEYS.all,
 	});
 
 	const paramModalidadId = React.useMemo(
@@ -157,15 +158,15 @@ export function DeleteModalidad({
 	const {
 		mutation: { isPending, mutate },
 	} = useMutateModule({
-		mutationFn: async (id: string) => {
+		mutationFn: (id: string) => {
 			return API.modalidades.deleteById(id);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			replaceDelete(modalidadesParams.delete);
 			router.refresh();
 		},
+		invalidateQueryKey: MODALIDAD_KEYS.all,
 	});
 
 	const paramModalidadId = React.useMemo(

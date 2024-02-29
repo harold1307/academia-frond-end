@@ -15,6 +15,7 @@ import type { CreateModalidad } from "@/core/api/modalidades";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
+import { MODALIDAD_KEYS } from "./query-keys";
 
 const schema = z.object<ZodInferSchema<CreateModalidad>>({
 	nombre: z.string(),
@@ -35,14 +36,14 @@ export default function AddModalidad() {
 		setOpen,
 	} = useMutateModule({
 		schema,
-		mutationFn: async data => {
+		mutationFn: data => {
 			return API.modalidades.create({ ...data, alias: data.alias || null });
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
 		},
+		invalidateQueryKey: MODALIDAD_KEYS.all,
 	});
 
 	return (

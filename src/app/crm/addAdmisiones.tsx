@@ -529,7 +529,7 @@ const fields = [
 	{
 		name: "sector",
 		inputType: "custom-select",
-		options: 'sectors',
+		options: "sectors",
 		label: "Sector reside",
 	},
 	{

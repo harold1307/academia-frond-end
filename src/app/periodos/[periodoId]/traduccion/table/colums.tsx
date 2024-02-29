@@ -1,8 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import {
-	FileSignature,
-	XCircle,
-} from "lucide-react";
+import { FileSignature, XCircle } from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
 import {

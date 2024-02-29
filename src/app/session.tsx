@@ -1,22 +1,23 @@
 "use client";
 import {
-	AuthenticatedTemplate,
 	UnauthenticatedTemplate,
 	useAccount,
 	useMsal,
 } from "@azure/msal-react";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { Button } from "./_components/ui/button";
-import { InteractionStatus } from "@azure/msal-browser";
-import { useEffect, useState } from "react";
-import LogoutIcon from "./_components/ui/icons/logout";
 import KeyIcon from "./_components/ui/icons/key";
-import StatusIcon from "./_components/ui/icons/connect-status";
+import LogoutIcon from "./_components/ui/icons/logout";
+import SelectGlobalPeriodo from "./select-global-periodo";
 
 export default function UserSession() {
 	const { instance, inProgress } = useMsal();
 	const activeAccount = useAccount();
-	const [clock, setClock] = useState<any>();
+	const router = useRouter();
+	const [clock, setClock] = useState<any>(formatAMPM(new Date()));
 
 	function formatAMPM(date: any) {
 		let hours = date.getHours();
@@ -30,8 +31,6 @@ export default function UserSession() {
 	}
 
 	useEffect(() => {
-		setClock(formatAMPM(new Date()));
-
 		setTimeout(() => {
 			setClock(formatAMPM(new Date()));
 		}, 1000);
@@ -39,8 +38,19 @@ export default function UserSession() {
 
 	return (
 		<>
-			{inProgress !== InteractionStatus.None && <div>Cargando...</div>}
+			{/* {inProgress !== InteractionStatus.None && <div>Cargando...</div>} */}
 			<div className='flex flex-row items-center gap-6'>
+				<div className='shadow-default'>
+					<Button
+						className='rounded-lg border-white'
+						size={"icon"}
+						variant={"outline"}
+						title='Atras'
+						onClick={() => router.back()}
+					>
+						<ArrowLeft className='h-6 w-6' />
+					</Button>
+				</div>
 				<section className='shadow-default flex flex-row items-center gap-4 rounded-xl border border-slate-500 p-2 px-4'>
 					<div className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'>
 						<span className='font-bold'>Correo:</span> {activeAccount?.username}
@@ -58,14 +68,12 @@ export default function UserSession() {
 							})
 						}
 						className='cursor-pointer rounded-xl border border-slate-300 p-2 px-4'
+						title='Logout'
 					>
 						<LogoutIcon className='w-6' />
 					</div>
 				</section>
-				<div className='shadow-default flex flex-row items-center gap-2 rounded-lg border border-slate-300 p-2'>
-					<StatusIcon className='w-6' />
-					Período de Prueba
-				</div>
+				<SelectGlobalPeriodo />
 				<p className='text-lg font-bold'>{clock}</p>
 			</div>
 			<UnauthenticatedTemplate>

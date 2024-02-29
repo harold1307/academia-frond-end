@@ -4,6 +4,7 @@ import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
 import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
+import { AsignaturaEnVarianteCursoClass } from "./asignaturas-variantes-curso";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
@@ -226,12 +227,17 @@ export class APIClass {
 		return new CorteClass(this._apiUrl, this._fetcher);
 	}
 
+<<<<<<< HEAD
 	get requisitos() {
 		return new RequisitoMatriculacionClass(this._apiUrl, this._fetcher);
 	}
 
 	get subperiodos() {
 		return new SubPeriodoLectivoClass(this._apiUrl, this._fetcher);
+=======
+	get asignaturasEnVariantesCurso() {
+		return new AsignaturaEnVarianteCursoClass(this._apiUrl, this._fetcher);
+>>>>>>> 141acad7653eea714b3def88cf98e017bc0e9bb4
 	}
 }
 

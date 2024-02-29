@@ -23,9 +23,9 @@ const MUDocs = [
 	{
 		id: "1",
 		documento: "PRUEBA",
-		tipo: 'si',
-		archivo: 'no',
-		fecha: '10/12/24',
-		visible: 'si',
+		tipo: "si",
+		archivo: "no",
+		fecha: "10/12/24",
+		visible: "si",
 	},
 ];

@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 export default function AsignaturaPage() {
 	return (
 		<>
-			<div className='mt-4'>
+			<h1 className='mb-4 text-xl font-semibold'>Asignaturas</h1>
+			<div>
 				<AddAsignatura />
 				<React.Suspense fallback={"Cargando tabla..."}>
 					<AsignaturaTableServer />

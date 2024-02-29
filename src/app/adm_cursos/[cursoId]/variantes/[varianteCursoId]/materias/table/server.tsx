@@ -16,6 +16,8 @@ export default async function MateriasTableServer({
 
 	if (!varianteWithAsignaturas.data) return notFound();
 
+	// console.log(varianteWithAsignaturas.data);
+
 	return (
 		<MateriasTable
 			tableData={varianteWithAsignaturas.data.asignaturas.map(a => ({
@@ -36,6 +38,7 @@ export default async function MateriasTableServer({
 					(!a.modeloEvaluativoId &&
 						(a.notaMaxima !== null || a.notaMinima !== null)),
 				notaMaxima: a.notaMaxima || 0, // implementar con modelo evaluativo
+				varianteEstado: varianteWithAsignaturas.data?.estado ?? false,
 			}))}
 			data={varianteWithAsignaturas.data.asignaturas}
 		/>

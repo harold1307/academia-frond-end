@@ -1,4 +1,5 @@
 import React from "react";
+
 import LupaIcon from "../_components/ui/icons/lupa";
 import { Input } from "../_components/ui/input";
 import AddCurso from "./add-curso";

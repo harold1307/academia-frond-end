@@ -1,6 +1,12 @@
+"use client";
 import { createColumnHelper } from "@tanstack/react-table";
 
+// import BaseTableActions from "@/app/_components/table-actions";
+// import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+// import { lugaresEjecucionParams } from ".";
+
 export type SedeTableItem = {
+	id: string;
 	sede: string;
 	codigo: string;
 	inscritos: number;
@@ -11,6 +17,7 @@ export type SedeTableItem = {
 const helper = createColumnHelper<SedeTableItem>();
 
 export const columns = [
+	helper.accessor("id", {}),
 	helper.accessor("sede", {
 		header: "Sede",
 	}),
@@ -26,4 +33,32 @@ export const columns = [
 	helper.accessor("graduados", {
 		header: "Graduados",
 	}),
+	// helper.display({
+	// 	id: "actions",
+	// 	cell: function Actions({ row }) {
+	// 		const { replaceSet } = useMutateSearchParams();
+	// 		const enUso = row.getValue("enUso") as boolean;
+	// 		const id = row.getValue("id") as string;
+
+	// 		return (
+	// 			<BaseTableActions
+	// 				updateOptions={{
+	// 					buttonProps: {
+	// 						onClick: () => {
+	// 							replaceSet(lugaresEjecucionParams.update, id);
+	// 						},
+	// 					},
+	// 				}}
+	// 				deleteOptions={{
+	// 					show: !enUso,
+	// 					buttonProps: {
+	// 						onClick: () => {
+	// 							replaceSet(lugaresEjecucionParams.delete, id);
+	// 						},
+	// 					},
+	// 				}}
+	// 			/>
+	// 		);
+	// 	},
+	// }),
 ];
