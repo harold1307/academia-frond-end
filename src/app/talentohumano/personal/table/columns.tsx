@@ -96,7 +96,7 @@ function Actions({ personalId }: { personalId: string }) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button>Acciones</Button>
+			<Button className="hover:bg-slate-300 hover:text-slate-800">Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem

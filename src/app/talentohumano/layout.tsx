@@ -9,7 +9,7 @@ export default function TalentoHumanoLayout({
 		<div>
 			<div>
 				<h1
-					className={`${fontPlay.className} w-100 text-center text-4xl antialiased`}
+					className={`${fontPlay.className} w-100 p-2 text-center text-4xl antialiased`}
 				>
 					Talento Humano
 				</h1>

@@ -44,5 +44,7 @@ export const ROUTES = {
 	},
 	talentoHumano: {
 		path: "/talentohumano",
+		modeloCampos: (modeloDeContratoId: string) =>
+			`/${modeloDeContratoId}/campos`,
 	}
 } as const;

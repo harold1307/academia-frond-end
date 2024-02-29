@@ -18,10 +18,16 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import {
-	modeloDeContratoFields,
-	type ModeloDeContratoSchema,
-} from "../add-modeloDeContrato";
+import { type ModeloDeContratoSchema } from "../add-modeloDeContrato";
+import type { Field } from "@/utils/forms";
+
+export const modeloDeContratoFields = [
+	{
+		name: "nombredescripcion",
+		inputType: "text",
+		label: "Nombre/Descripcion",
+	},
+] satisfies Field<keyof ModeloDeContratoSchema>[];
 
 interface ModeloDeContratoTableProps {
 	data: ModeloDeContratoSchema[];
@@ -115,39 +121,7 @@ function UpdateModeloDeContratoModal({
 			>
 				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
 					{modeloDeContratoFields.map(f =>
-						f.inputType === "checkbox" ? (
-							<FormField
-								control={form.control}
-								name={f.name}
-								key={f.name}
-								defaultValue={selectedModeloDeContrato[f.name]}
-								render={({ field }) => {
-									return (
-										<FormItem
-											className='flex h-16 w-60 items-center justify-between gap-4 space-y-0 rounded-2xl border-2 p-4'
-											style={{
-												boxShadow: "0 0 20px rgba(67, 84, 234, .7)",
-											}}
-										>
-											<FormLabel className='col-span-3 text-start'>
-												{f.label}
-											</FormLabel>
-											<FormControl>
-												<Input
-													{...field}
-													value={
-														typeof field.value === "boolean"
-															? undefined
-															: field.value || undefined
-													}
-													type={f.inputType}
-												/>
-											</FormControl>
-										</FormItem>
-									);
-								}}
-							/>
-						) : (
+						f.inputType ? (
 							<FormField
 								control={form.control}
 								name={f.name}
@@ -174,7 +148,7 @@ function UpdateModeloDeContratoModal({
 									);
 								}}
 							/>
-						),
+						) : null,
 					)}
 				</div>
 			</MutateModal>
@@ -225,8 +199,8 @@ function DeactivateModeloDeContrato({
 
 	return (
 		<DeleteModal
-			description={`Estas seguro que deseas desactivar la variante: ${selectedModeloDeContrato.nombredescripcion}`}
-			title='Desactivar variante'
+			description={`Estas seguro que deseas eliminar la variante: ${selectedModeloDeContrato.nombredescripcion}`}
+			title='Eliminar variante'
 			onDelete={() =>
 				console.log(
 					"falta implementar lógica de delete",
@@ -245,7 +219,7 @@ function DeactivateModeloDeContrato({
 					}
 				},
 			}}
-			deleteButtonLabel={mutation.isPending ? "Desactivando..." : "Desactivar"}
+			deleteButtonLabel={mutation.isPending ? "Desactivando..." : "Eliminar"}
 		/>
 	);
 }

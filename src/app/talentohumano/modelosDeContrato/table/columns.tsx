@@ -7,17 +7,19 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { Button } from "@/app/_components/ui/button";
-import { Lock, FileSignature, PlusCircle } from "lucide-react";
+import { Lock, FileSignature, Download, Equal } from "lucide-react";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { ModeloDeContratoSchema } from "../add-modeloDeContrato";
 import { useState } from "react";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { ROUTES } from "@/core/routes";
 
 export type ModeloDeContratoTableItem = ModeloDeContratoSchema;
 
 const helper = createColumnHelper<ModeloDeContratoTableItem>();
 
 export const ModeloDeContratoColumns = [
-	helper.accessor("id", { header: "ID" }),
+	// helper.accessor("id", { header: "ID" }),
 	helper.accessor("nombredescripcion", {
 		header: "Nombre/Descripcion",
 	}),
@@ -27,9 +29,15 @@ export const ModeloDeContratoColumns = [
 	}),
 	helper.accessor("archivo", {
 		header: "Archivo",
+		cell: ({ getValue }) => (getValue() ? <DownloadButton /> : null),
 	}),
 	helper.accessor("campos", {
 		header: "Campos",
+		cell: ({ row, getValue }) => {
+			const id = row.getValue("id") as string;
+			const value = getValue();
+			return <ButtonCampos modeloDeContratoId={id} value={value} />;
+		},
 	}),
 	helper.accessor("activo", {
 		header: "Activo",
@@ -47,6 +55,44 @@ export const ModeloDeContratoColumns = [
 		},
 	}),
 ];
+
+function DownloadButton() {
+	return (
+		<Button className='m-2 h-8 w-8 border border-current bg-transparent p-2 text-current hover:text-black'>
+			{/* falta agregar el Link para decargar el archivo, cuando haya archivo */}
+			<Download />
+		</Button>
+	);
+}
+
+function ButtonCampos({
+	modeloDeContratoId,
+	value,
+}: {
+	modeloDeContratoId: string;
+	value: string;
+}) {
+	const router = useRouter();
+
+	const pathname = usePathname();
+
+	function redireccion(modeloDeContratoId: string) {
+		router.push(
+			pathname + ROUTES.talentoHumano.modeloCampos(modeloDeContratoId),
+		);
+	}
+
+	return (
+		<Button
+			className='m-2 h-8 w-fit border border-current bg-transparent p-2 text-current hover:text-black'
+			onClick={() => {
+				redireccion(modeloDeContratoId);
+			}}
+		>
+			<Equal /> Campos - {value}
+		</Button>
+	);
+}
 
 function Switcher({ value }: { value: boolean }) {
 	const [valor, setValor] = useState(value);
@@ -72,7 +118,9 @@ function Actions({ modeloDeContratoId }: { modeloDeContratoId: string }) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button>Acciones</Button>
+				<Button className='hover:bg-slate-300 hover:text-slate-800'>
+					Acciones
+				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem

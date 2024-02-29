@@ -53,7 +53,7 @@ function Switcher({ value }: { value: boolean }) {
 
 function Estudiantes({ id }: { id: string }) {
 	return (
-		<Button className='m-2 border border-current p-2 hover:bg-neutral-300'>
+		<Button className='hover:bg-slate-300 hover:text-slate-800'>
 			Estudiantes - 25
 		</Button>
 	);

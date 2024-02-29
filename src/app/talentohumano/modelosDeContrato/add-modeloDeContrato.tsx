@@ -14,7 +14,7 @@ export type ModeloDeContratoSchema = {
 	nombredescripcion: string;
 	id: string;
 	paraprofesores: boolean;
-	archivo: string;
+	archivo: boolean;
 	campos: string;
 	activo: boolean;
 };
