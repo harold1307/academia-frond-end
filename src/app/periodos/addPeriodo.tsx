@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+
 import {
 	Dialog,
 	DialogContent,
@@ -99,7 +100,7 @@ const schema = z.object<
 
 export default function AddPeriodo() {
 	const router = useRouter();
-
+	// const [depend, setDepend] = React.useState(false);
 	const {
 		mutation: { mutate, isPending },
 		form,
@@ -208,6 +209,7 @@ export default function AddPeriodo() {
 		},
 		enabled: false,
 	});
+
 	const formValues = form.watch();
 	// console.log(form.formState.errors);
 	// console.log({
@@ -364,6 +366,37 @@ export default function AddPeriodo() {
 														</FormItem>
 													);
 												}
+												// case "custom-text-area": {
+												// 	return (
+												// 		<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
+												// 			<FormLabel className='col-span-3 text-end'>
+												// 				{f.label}
+												// 			</FormLabel>
+												// 			<FormControl>
+												// 				<Textarea
+												// 					className='col-span-9 resize-none'
+												// 					{...field}
+												// 					value={field.value as string}
+												// 				/>
+												// 			</FormControl>
+												// 		</FormItem>
+												// 	);
+												// }
+												// case "checkbox": {
+												// 	return (
+												// 		<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
+												// 			<FormLabel className='col-span-3 text-end'>
+												// 				{f.label}
+												// 			</FormLabel>
+												// 			<FormControl>
+												// 				<Checkbox
+												// 					checked={field.value as boolean}
+												// 					onCheckedChange={field.onChange}
+												// 				/>
+												// 			</FormControl>
+												// 		</FormItem>
+												// 	);
+												// }
 												case "custom-toggle": {
 													return (
 														<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>

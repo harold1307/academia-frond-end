@@ -4,7 +4,7 @@ import AddCortes from "./addCortes";
 import { APIserver } from "@/core/api-server";
 
 async function CortesPage() {
-	const cortes = await APIserver.cortes.getMany();
+	const cortes = await APIserver.cortes.getMany()
 	return (
 		<>
 			<div className='mt-4'>
@@ -16,13 +16,5 @@ async function CortesPage() {
 		</>
 	);
 }
-
-const MUCortes = [
-	{ id: "1", nombre: "PRUEBA", inscritos: 0, matriculas: 0 },
-	{ id: "2", nombre: "PRUEBA2", inscritos: 0, matriculas: 0 },
-	{ id: "3", nombre: "PRUEBA3", inscritos: 0, matriculas: 0 },
-	{ id: "4", nombre: "PRUEBA4", inscritos: 0, matriculas: 0 },
-	{ id: "5", nombre: "PRUEBA5", inscritos: 0, matriculas: 0 },
-];
 
 export default CortesPage;

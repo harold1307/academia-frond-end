@@ -1,3 +1,4 @@
+"use client";
 import {
 	Dialog,
 	DialogContent,
@@ -45,11 +46,11 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { subperiodoParams } from "../add-subperiodo";
 
-export default function SubperiodosTable({ mallas }) {
+export default function SubperiodosTable({ subperiodos }) {
 	return (
 		<section>
-			<DataTable columns={columns} data={mallas} />
-			<UpdateSubperiodo requisito={mallas} />
+			<DataTable columns={columns} data={subperiodos} />
+			<UpdateSubperiodo subperiodos={subperiodos} />
 		</section>
 	);
 }

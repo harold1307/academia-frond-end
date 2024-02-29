@@ -36,7 +36,7 @@ export type CalculoCostoFromAPI = ReplaceDateToString<
 	}
 >;
 export type UpdateCalculoCosto = Partial<
-	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt">
+	Omit<CalculoCostoFromAPI, "id" | "createdAt" | "updatedAt" | "planCostos">
 >;
 
 type UpdatePeriodoLectivoParams = {
@@ -180,7 +180,6 @@ export class PeriodoLectivoClass {
 		data,
 		id,
 	}: UpdatePeriodoLectivoParams): Promise<APIResponse<PeriodoLectivoFromAPI>> {
-		console.log(data);
 		const res = this.fetcher(
 			z.object({
 				data: periodoLectivoSchema,
@@ -329,6 +328,18 @@ export class PeriodoLectivoClass {
 		return res.json();
 	}
 
+	async getByIdSubPeriodoLectivo({ periodoLectivoId }: string) {
+		const res = await this.fetcher(
+			z.object({
+				data: z.any(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/periodos-lectivos/${periodoLectivoId}/`,
+		);
+
+		return res;
+	}
+
 	// cronogramas de matriculacion
 	async createCronogramaMatriculacion({
 		periodoLectivoId,
@@ -354,6 +365,7 @@ export class PeriodoLectivoClass {
 
 		return res.json();
 	}
+
 	async getByIdWithCronogramasMatriculacion(
 		id: string,
 	): Promise<APIResponse<PeriodoLectivoWithCronogramasMatriculacion | null>> {

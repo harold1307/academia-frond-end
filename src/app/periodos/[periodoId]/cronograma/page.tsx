@@ -1,17 +1,19 @@
-"use client";
 import React from "react";
 import { notFound } from "next/navigation";
 import CronogramaTable from "./table";
 import AddCronograma from "./addCronograma";
+import { APIserver } from "@/core/api-server";
 
 export const dynamic = "force-dynamic";
 
-export default function CronogramaPage({ params }: any) {
-	//const traduccion = await APIserver.periodos.getMany();
-	const malla = MuFieldCrono.filter(res => res.id == params.periodoId);
+export default async function CronogramaPage({ params }: any) {
+	const cronograma =
+		await APIserver.periodos.getByIdWithCronogramasMatriculacion(
+			params.periodoId,
+		);
 
-	if (!malla) {
-		console.log("Malla no existe");
+	if (!cronograma) {
+		console.log("cronograma no existe");
 		return notFound();
 	}
 	return (
@@ -19,7 +21,7 @@ export default function CronogramaPage({ params }: any) {
 			<div className='mt-4'>
 				<React.Suspense fallback={"Cargando tabla..."}>
 					<AddCronograma />
-					<CronogramaTable mallas={MuFieldCrono} />
+					<CronogramaTable cronograma={cronograma.data} />
 				</React.Suspense>
 			</div>
 		</>

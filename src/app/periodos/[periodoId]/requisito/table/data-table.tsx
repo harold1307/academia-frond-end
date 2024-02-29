@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { columns } from "./columns";
+import { type columns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;

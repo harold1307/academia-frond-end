@@ -1,13 +1,7 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TipoDuracion, type MallaCurricular } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
 import {
 	Dialog,
 	DialogContent,
@@ -23,67 +17,37 @@ import {
 	FormItem,
 	FormLabel,
 } from "@/app/_components/ui/form";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
 import { cn } from "@/utils";
-import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
 import { useRouter } from "next/navigation";
 import { Button } from "../../../_components/ui/button";
 import { Calendar } from "../../../_components/ui/calendar";
-import { Checkbox } from "../../../_components/ui/checkbox";
 import { Input } from "../../../_components/ui/input";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "../../../_components/ui/popover";
-import { Textarea } from "../../../_components/ui/textarea";
+import { useMutateModule } from "@/hooks/use-mutate-module";
 
 export const subperiodoParams = {
 	add: "agregarCorte",
 	update: "actualizarCorte",
 } as const;
 
-type CreateReqInput = Omit<
-	MallaCurricular,
-	| "id"
-	| "createdAt"
-	| "registroPracticasDesde"
-	| "registroVinculacionDesde"
-	| "registroProyectosDesde"
-> & {
-	registroPracticasDesde: (typeof NIVELES_PREFIXES)[number];
-	registroVinculacionDesde: (typeof NIVELES_PREFIXES)[number];
-	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
-};
-
-type CreateReqOutput = Omit<
-	MallaCurricular,
-	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	fechaAprobacion: string;
-	fechaLimiteVigencia: string;
-};
-
-const createReqSchema: z.ZodType<
-	CreateReqOutput,
-	z.ZodTypeDef,
-	CreateReqInput
-> = z.object({});
-
-export default function AddSubperiodo() {
+export default function AddSubperiodo({ periodoId }: { periodoId: string }) {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: createReqSchema) => {
-			return API.periodos.create(data);
+	const {
+		form,
+		mutation: { mutate, isPending },
+	} = useMutateModule({
+		mutationFn: async data => {
+			return API.periodos.createSubPeriodoLectivo({
+				periodoLectivoId: periodoId,
+				data,
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -93,12 +57,7 @@ export default function AddSubperiodo() {
 		},
 	});
 
-	const form = useForm({
-		resolver: zodResolver(createReqSchema),
-		defaultValues: {},
-		disabled: isSubmitting,
-		shouldUnregister: true,
-	});
+	console.log(form.watch());
 
 	return (
 		<section className='my-4'>
@@ -115,18 +74,14 @@ export default function AddSubperiodo() {
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data => mutate(data))}
 							className='space-y-8'
 						>
 							{fields.map(f => (
 								<FormField
 									control={form.control}
 									name={f.name}
-									key={
-										f.name.includes("Desde")
-											? f.name + form.watch().niveles
-											: f.name
-									}
+									key={f.name}
 									render={({ field }) => {
 										switch (f.inputType) {
 											case "custom-date": {
@@ -176,90 +131,6 @@ export default function AddSubperiodo() {
 													</FormItem>
 												);
 											}
-											case "custom-select": {
-												const options =
-													f.options === "niveles"
-														? NIVELES_PREFIXES.slice(
-																0,
-																form.getValues().niveles,
-															).map(
-																v =>
-																	({
-																		value: v,
-																		label: `${v} NIVEL`,
-																	}) satisfies {
-																		label: string;
-																		value: string;
-																	},
-															)
-														: f.options;
-
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<Select
-															onValueChange={field.onChange}
-															defaultValue={field.value as string}
-															disabled={field.disabled}
-														>
-															<FormControl>
-																<SelectTrigger className='col-span-9'>
-																	<SelectValue
-																		placeholder={f.placeholder}
-																		className='w-full'
-																	/>
-																</SelectTrigger>
-															</FormControl>
-															<SelectContent>
-																{options?.map(o =>
-																	typeof o === "string" ? (
-																		<SelectItem value={o} key={o}>
-																			{o}
-																		</SelectItem>
-																	) : (
-																		<SelectItem value={o.value} key={o.value}>
-																			{o.label}
-																		</SelectItem>
-																	),
-																)}
-															</SelectContent>
-														</Select>
-													</FormItem>
-												);
-											}
-											case "custom-text-area": {
-												return (
-													<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Textarea
-																className='col-span-9 resize-none'
-																{...field}
-																value={field.value as string}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-											case "checkbox": {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Checkbox
-																checked={field.value as boolean}
-																onCheckedChange={field.onChange}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
 											default: {
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
@@ -292,11 +163,11 @@ export default function AddSubperiodo() {
 								/>
 							))}
 							<DialogFooter>
-								<Button disabled={isSubmitting} type='submit' variant='success'>
+								<Button disabled={isPending} type='submit' variant='success'>
 									Guardar
 								</Button>
 								<Button
-									disabled={isSubmitting}
+									disabled={isPending}
 									variant='destructive'
 									type='button'
 									onClick={() => setOpen(false)}
@@ -320,9 +191,9 @@ const fields = [
 		label: "Nombre",
 	},
 	{
-		name: "inicio",
+		name: "fechaInicio",
 		inputType: "custom-date",
 		label: "Fecha inicio",
 	},
-	{ name: "fin", inputType: "custom-date", label: "Fecha fin" },
+	{ name: "fechaFin", inputType: "custom-date", label: "Fecha fin" },
 ];

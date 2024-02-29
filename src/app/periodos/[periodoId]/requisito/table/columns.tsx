@@ -10,43 +10,44 @@ import {
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { reqParams } from "../addReq";
+import { type RequisitoMatriculacionFromAPI } from "@/core/api/requisitos-matriculacion";
 
-const helper = createColumnHelper<any>();
+const helper = createColumnHelper<RequisitoMatriculacionFromAPI>();
 
 export const columns = [
 	helper.accessor("id", {}),
-	helper.accessor("sede", {
+	helper.accessor("sede.nombre", {
 		header: "Sede",
 	}),
 	helper.accessor("programa", {
 		header: "Programa",
 	}),
-	helper.accessor("modalidad", {
+	helper.accessor("modalidad.nombre", {
 		header: "Modalidad",
 	}),
-	helper.accessor("nivel", {
+	helper.accessor("obligatorio", {
 		header: "Nivel",
 	}),
-	helper.accessor("reqTipo", {
+	helper.accessor("tipoDocumentoId", {
 		header: "Requisito/Tipo",
 	}),
 	helper.accessor("obligatorio", {
 		header: "Obligatorio",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("archivo", {
+	helper.accessor("primeraMatricula", {
 		header: "Archivo",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("transferir", {
+	helper.accessor("transferenciaIES", {
 		header: "Transf. otra IES",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("primeraMatricula", {
+	helper.accessor("repitenMaterias", {
 		header: "Primera Matricula",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("repite", {
+	helper.accessor("obligatorio", {
 		header: "Repite",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),

@@ -1,5 +1,4 @@
 import { createZodFetcher, type ZodFetcher } from "zod-fetch";
-
 import { AlternativaEvaluacionClass } from "./alternativas-evaluacion";
 import { AreaConocimientoClass } from "./areas-conocimiento";
 import { AsignaturaClass } from "./asignaturas";
@@ -29,6 +28,7 @@ import { PerfilPracticaClass } from "./perfiles-practica";
 import { PeriodoLectivoClass } from "./periodos-lectivos";
 import { ProgramaClass } from "./programas";
 import { ProyectoIntegradorClass } from "./proyectos-integradores";
+import { RequisitoMatriculacionClass } from "./requisitos-matriculacion";
 import { SedeClass } from "./sede";
 import { SesionClass } from "./sesiones";
 import { TipoDocumentoClass } from "./tipos-documento";
@@ -37,6 +37,7 @@ import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { UbicacionClass } from "./ubicaciones";
 import { VarianteCursoClass } from "./variantes-curso";
+import { SubPeriodoLectivoClass } from "./sub-periodos-lectivos";
 
 export type APIResponse<D> = {
 	data: D;
@@ -89,14 +90,6 @@ export class APIClass {
 	get periodos() {
 		return new PeriodoLectivoClass(this._apiUrl, this._fetcher);
 	}
-
-	/* get cronograma() {
-		return new CronogramaMatriculas(this._apiUrl ,this._fetcher);
-	}
-
-	get traduccion() {
-		return new TraduccionPeriodosClass(this._apiUrl ,this._fetcher);
-	} */
 
 	get asignaturas() {
 		return new AsignaturaClass(this._apiUrl, this._fetcher);
@@ -231,6 +224,14 @@ export class APIClass {
 
 	get cortes() {
 		return new CorteClass(this._apiUrl, this._fetcher);
+	}
+
+	get requisitos() {
+		return new RequisitoMatriculacionClass(this._apiUrl, this._fetcher);
+	}
+
+	get subperiodos() {
+		return new SubPeriodoLectivoClass(this._apiUrl, this._fetcher);
 	}
 }
 
