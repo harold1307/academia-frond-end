@@ -3,12 +3,12 @@ import { type PersonalSchema } from "../add-personal";
 
 const personal: PersonalSchema[] = [
 	{
-		nombre: "jorge",
+		nombre: "juan fernando quintero",
 		departamento: "fisica",
 		id: "22",
 		emailtelefono: "123123asd",
 		datos: "cosa",
-		etnia: "argentino",
+		etnia: "colombiano",
 		asesor: true,
 		discapacidad: false,
 		admin: false,
@@ -42,7 +42,7 @@ const personal: PersonalSchema[] = [
 		foto: true,
 	},
 	{
-		nombre: "francisco",
+		nombre: "francisco charco",
 		departamento: "biologia",
 		id: "5345",
 		emailtelefono: "franciscobiologia@gmail.com",
