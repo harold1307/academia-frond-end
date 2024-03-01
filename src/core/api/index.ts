@@ -9,6 +9,7 @@ import { AsignaturaEnVarianteCursoClass } from "./asignaturas-variantes-curso";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
+import { CentroInformacionClass } from "./centros-informacion";
 import { CoordinacionClass } from "./coordinaciones";
 import { CorteClass } from "./cortes";
 import { CursoEscuelaClass } from "./curso-escuelas";
@@ -236,6 +237,10 @@ export class APIClass {
 
 	get asignaturasEnVariantesCurso() {
 		return new AsignaturaEnVarianteCursoClass(this._apiUrl, this._fetcher);
+	}
+
+	get centrosInformacion() {
+		return new CentroInformacionClass(this._apiUrl, this._fetcher);
 	}
 }
 
