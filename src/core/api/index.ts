@@ -16,6 +16,7 @@ import { CursoEscuelaClass } from "./curso-escuelas";
 import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
 import { EjeFormativoClass } from "./ejes-formativos";
+import { GrupoClass } from "./grupos";
 import { MallaCurricularClass } from "./mallas-curriculares";
 import { MateriaEnHorarioClass } from "./materias-horario";
 import { MateriaEnNivelAcademicoClass } from "./materias-niveles-academicos";
@@ -241,6 +242,10 @@ export class APIClass {
 
 	get centrosInformacion() {
 		return new CentroInformacionClass(this._apiUrl, this._fetcher);
+	}
+
+	get grupos() {
+		return new GrupoClass(this._apiUrl, this._fetcher);
 	}
 }
 
