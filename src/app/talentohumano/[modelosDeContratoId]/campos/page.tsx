@@ -3,8 +3,8 @@ import CamposModelosDeContratosTableServer from "./table/server";
 
 export default function ModelosDeContratosCampos() {
 	return (
-		<div className='p-2'>
-			<h1 className='px-6 font-medium text-lg'>Detalle modelo de Contrato</h1>
+		<div className='px-2 py-4'>
+			<h1 className='px-6 my-3 text-lg font-medium'>Detalle modelo de Contrato</h1>
 			<React.Suspense fallback={<h1>Cargando tabla...</h1>}>
 				<CamposModelosDeContratosTableServer />
 			</React.Suspense>

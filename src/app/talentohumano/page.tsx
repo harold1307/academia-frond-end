@@ -20,7 +20,9 @@ export default function PersonalPage({ searchParams }: Context) {
 	if (section === "1") {
 		return (
 			<div className='p-2'>
-				<AddAsesores />
+				<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
+					<AddAsesores />
+				</div>
 				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}>
 					<AsesoresTableServer />
 				</React.Suspense>
@@ -37,7 +39,9 @@ export default function PersonalPage({ searchParams }: Context) {
 	if (section === "3") {
 		return (
 			<div className='p-2'>
-				<AddModeloDeContrato />
+				<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
+					<AddModeloDeContrato />
+				</div>
 				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}>
 					<ModeloDeContratoTableServer />
 				</React.Suspense>
