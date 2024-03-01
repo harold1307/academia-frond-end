@@ -9,8 +9,16 @@ import {
 	type CreateCronogramaMatriculacion,
 	type CronogramaMatriculacionFromAPI,
 } from "./cronogramas-matriculacion";
-import type { CreateRequisitoMatriculacion } from "./requisitos-matriculacion";
-import type { CreateSubPeriodoLectivo } from "./sub-periodos-lectivos";
+import {
+	requisitoMatriculacionSchema,
+	type CreateRequisitoMatriculacion,
+	type RequisitoMatriculacionFromAPI,
+} from "./requisitos-matriculacion";
+import {
+	subPerioSubPeriodoLectivoSchema,
+	type CreateSubPeriodoLectivo,
+	type SubPeriodoLectivoFromAPI,
+} from "./sub-periodos-lectivos";
 
 export type PeriodoLectivoFromAPI = ReplaceDateToString<
 	PeriodoLectivo & {
@@ -28,6 +36,15 @@ export type PeriodoLectivoFromAPI = ReplaceDateToString<
 export type PeriodoLectivoWithCronogramasMatriculacion =
 	PeriodoLectivoFromAPI & {
 		cronogramasMatriculacion: CronogramaMatriculacionFromAPI[];
+	};
+
+export type PeriodoLectivoWithSubPeriodos = PeriodoLectivoFromAPI & {
+	subPeriodos: SubPeriodoLectivoFromAPI[];
+};
+
+export type PeriodoLectivoWithRequisitosMatriculacion =
+	PeriodoLectivoFromAPI & {
+		requisitosMatriculacion: RequisitoMatriculacionFromAPI[];
 	};
 
 export type CalculoCostoFromAPI = ReplaceDateToString<
@@ -170,6 +187,21 @@ export const periodoLectivoWithCronogramasMatriculacion =
 		cronogramasMatriculacion: cronogramaMatriculacionSchema.array(),
 	});
 
+export const periodoLectivoWithRequisitosMatriculacionSchema =
+	periodoLectivoSchema.extend<
+		ZodInferSchema<
+			Pick<PeriodoLectivoWithRequisitosMatriculacion, "requisitosMatriculacion">
+		>
+	>({
+		requisitosMatriculacion: requisitoMatriculacionSchema.array(),
+	});
+
+export const periodoLectivoWithSubPeriodos = periodoLectivoSchema.extend<
+	ZodInferSchema<Pick<PeriodoLectivoWithSubPeriodos, "subPeriodos">>
+>({
+	subPeriodos: subPerioSubPeriodoLectivoSchema.array(),
+});
+
 export class PeriodoLectivoClass {
 	constructor(
 		private apiUrl: string,
@@ -303,6 +335,19 @@ export class PeriodoLectivoClass {
 
 		return res.json();
 	}
+	async getByIdWithRequisitosMatriculacion(
+		id: string,
+	): Promise<APIResponse<PeriodoLectivoWithRequisitosMatriculacion | null>> {
+		const res = this.fetcher(
+			z.object({
+				data: periodoLectivoWithRequisitosMatriculacionSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/periodos-lectivos/${id}/requisitos-matriculacion`,
+		);
+
+		return res;
+	}
 
 	// sub periodos lectivos
 	async createSubPeriodoLectivo({
@@ -328,16 +373,28 @@ export class PeriodoLectivoClass {
 
 		return res.json();
 	}
+	async getByIdWithSubPeriodos(
+		id: string,
+	): Promise<APIResponse<PeriodoLectivoWithSubPeriodos | null>> {
+		const res = this.fetcher(
+			z.object({
+				data: periodoLectivoWithSubPeriodos.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/periodos-lectivos/${id}/sub-periodos-lectivos`,
+		);
+
+		return res;
+	}
 
 	// cronogramas de matriculacion
 	async createCronogramaMatriculacion({
 		periodoLectivoId,
-		nivelMallaId,
 		data,
 	}: CreateCronogramaMatriculacionParams): Promise<SimpleAPIResponse> {
 		const res = await fetch(
 			this.apiUrl +
-				`/api/periodos-lectivos/${periodoLectivoId}/niveles-malla/${nivelMallaId}`,
+				`/api/periodos-lectivos/${periodoLectivoId}/cronogramas-matriculacion`,
 			{
 				method: "POST",
 				headers: {
@@ -386,6 +443,5 @@ type CreateSubPeriodoLectivoParams = {
 
 type CreateCronogramaMatriculacionParams = {
 	periodoLectivoId: string;
-	nivelMallaId: string;
 	data: CreateCronogramaMatriculacion;
 };
