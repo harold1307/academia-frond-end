@@ -19,7 +19,7 @@ export type CreateCoordinacion = Omit<
 	"id" | "enUso" | "createdAt" | "updatedAt" | "programas" | "profesores"
 >;
 
-const schema = z
+export const coordinacionSchema = z
 	.object<ZodInferSchema<CoordinacionFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
@@ -57,7 +57,7 @@ export class CoordinacionClass {
 	}): Promise<APIResponse<CoordinacionFromAPI>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema,
+				data: coordinacionSchema,
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/coordinaciones/${params.id}`,
@@ -76,7 +76,7 @@ export class CoordinacionClass {
 	async getMany(_: void): Promise<APIResponse<CoordinacionFromAPI[]>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema.array(),
+				data: coordinacionSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/coordinaciones",
@@ -88,7 +88,7 @@ export class CoordinacionClass {
 	async getById(id: string): Promise<APIResponse<CoordinacionFromAPI | null>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema.nullable(),
+				data: coordinacionSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/coordinaciones/${id}`,
