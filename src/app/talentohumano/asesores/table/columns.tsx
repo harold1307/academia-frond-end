@@ -2,11 +2,16 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { Button } from "@/app/_components/ui/button";
 import { useState } from "react";
+import EstudiantesTableModal from "../../[asesoresId]/estudiantes";
+import { usePathname, useRouter } from "next/navigation";
+import { ROUTES } from "@/core/routes";
+import { Equal } from "lucide-react";
 
 export type AsesoresSchema = {
 	nombre: string;
 	id: string;
 	emailtelefono: string;
+	estudiantes: number;
 	activo: boolean;
 };
 
@@ -22,12 +27,9 @@ export const AsesoresColumns = [
 	helper.accessor("emailtelefono", {
 		header: "Email/Telefono",
 	}),
-	helper.display({
-		id: "estudiantes",
-		cell: ({ row }) => {
-			const id = row.getValue("id") as string;
-			return <Estudiantes id={id} />;
-		},
+	helper.accessor("estudiantes", {
+		header: "",
+		cell: () => <ButtonEstudiantes />,
 	}),
 	helper.accessor("activo", {
 		header: "Activo",
@@ -51,10 +53,6 @@ function Switcher({ value }: { value: boolean }) {
 	);
 }
 
-function Estudiantes({ id }: { id: string }) {
-	return (
-		<Button className='hover:bg-slate-300 hover:text-slate-800'>
-			Estudiantes - 25
-		</Button>
-	);
+function ButtonEstudiantes() {
+	return <EstudiantesTableModal />;
 }

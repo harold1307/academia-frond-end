@@ -15,14 +15,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type {
-	ModeloDeContratoColumns,
-	ModeloDeContratoTableItem,
-} from "./columns";
+import type { FuncionesColumns, FuncionesTableItem } from "./columns";
 
 interface DataTableProps {
-	columns: typeof ModeloDeContratoColumns;
-	data: ModeloDeContratoTableItem[];
+	columns: typeof FuncionesColumns;
+	data: FuncionesTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
@@ -55,8 +52,8 @@ export function DataTable({ columns, data }: DataTableProps) {
 									<TableHead
 										key={header.id}
 										className={`${index === 0 ? "rounded-l-md border-l-2 text-start" : ""}
-										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
-										relative w-2 py-0 font-light`}
+                                    ${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
+                                    relative w-2 py-0 font-light`}
 									>
 										{header.isPlaceholder
 											? null
@@ -79,7 +76,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 								{row.getVisibleCells().map((cell, index) => (
 									<TableCell
 										key={cell.id}
-										className={`${index === 0 ? "mx-4 px-4 text-start" : ""}`}
+										className={`${index === 0 ? "w-full text-start" : ""} `}
 									>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>

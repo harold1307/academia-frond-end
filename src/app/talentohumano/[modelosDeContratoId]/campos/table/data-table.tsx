@@ -83,9 +83,10 @@ export function DataTable({ columns, data }: DataTableProps) {
 								{row.getVisibleCells().map((cell, index) => (
 									<TableCell
 										key={cell.id}
-										className={`${index === 0 ? "mx-4 px-4 text-start" : ""}`}
+										className={`${index === 0 ? "mx-4 px-4  text-start" : ""} h-8`}
 									>
-										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}{" "}
+									
 									</TableCell>
 								))}
 							</TableRow>

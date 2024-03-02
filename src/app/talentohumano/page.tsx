@@ -9,6 +9,7 @@ import SearchBar from "./personal/searchbar";
 import { FiltroTipos } from "./personal/filtros/filtroTipos";
 import { FiltroSedes } from "./personal/filtros/filtroSedes";
 import { FiltroGrupos } from "./personal/filtros/filtroGrupos";
+import EstructuraOrganica from "./estructuraOrganica/estructuraOrganica";
 
 type Context = {
 	searchParams: { [key: string]: string | string[] | undefined };
@@ -22,6 +23,7 @@ export default function PersonalPage({ searchParams }: Context) {
 			<div className='p-2'>
 				<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
 					<AddAsesores />
+					<SearchBar />
 				</div>
 				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}>
 					<AsesoresTableServer />
@@ -32,7 +34,9 @@ export default function PersonalPage({ searchParams }: Context) {
 	if (section === "2") {
 		return (
 			<div className='p-2'>
-				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}></React.Suspense>
+				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}>
+					<EstructuraOrganica />
+				</React.Suspense>
 			</div>
 		);
 	}

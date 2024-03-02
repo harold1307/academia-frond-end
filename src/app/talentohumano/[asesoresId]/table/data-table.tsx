@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	flexRender,
 	getCoreRowModel,
@@ -15,14 +16,14 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type {
-	ModeloDeContratoColumns,
-	ModeloDeContratoTableItem,
+import {
+	type estudiantesColumns,
+	type EstudiantesTableItem,
 } from "./columns";
 
 interface DataTableProps {
-	columns: typeof ModeloDeContratoColumns;
-	data: ModeloDeContratoTableItem[];
+	columns: typeof estudiantesColumns;
+	data: EstudiantesTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
@@ -40,7 +41,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 
 	React.useEffect(() => {
 		table.setColumnVisibility({
-			id: false,
+			id: true,
 		});
 	}, [table]);
 
@@ -54,7 +55,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 								return (
 									<TableHead
 										key={header.id}
-										className={`${index === 0 ? "rounded-l-md border-l-2 text-start" : ""}
+										className={`${index === 0 ? "rounded-l-md border-l-2 text-start" : ""} 
 										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
 										relative w-2 py-0 font-light`}
 									>
@@ -75,11 +76,14 @@ export function DataTable({ columns, data }: DataTableProps) {
 				>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map(row => (
-							<TableRow key={row.id}>
+							<TableRow
+								key={row.id}
+								data-state={row.getIsSelected() && "selected"}
+							>
 								{row.getVisibleCells().map((cell, index) => (
 									<TableCell
 										key={cell.id}
-										className={`${index === 0 ? "mx-4 px-4 text-start" : ""}`}
+										className={`${index === 0 ? "mx-4 px-4 text-start" : ""} h-8`}
 									>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>

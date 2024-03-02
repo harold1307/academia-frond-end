@@ -19,7 +19,7 @@ export type ModeloDeContratoTableItem = ModeloDeContratoSchema;
 const helper = createColumnHelper<ModeloDeContratoTableItem>();
 
 export const ModeloDeContratoColumns = [
-	// helper.accessor("id", { header: "ID" }),
+	helper.accessor("id", { header: "ID" }),
 	helper.accessor("nombredescripcion", {
 		header: "Nombre/Descripcion",
 	}),
