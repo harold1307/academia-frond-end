@@ -39,6 +39,7 @@ import { TipoDocumentoEnProgramaClass } from "./tipos-documento-programas";
 import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { UbicacionClass } from "./ubicaciones";
+import { UsuarioClass } from "./usuarios";
 import { VarianteCursoClass } from "./variantes-curso";
 
 export type APIResponse<D> = {
@@ -246,6 +247,10 @@ export class APIClass {
 
 	get grupos() {
 		return new GrupoClass(this._apiUrl, this._fetcher);
+	}
+
+	get usuarios() {
+		return new UsuarioClass(this._apiUrl, this._fetcher);
 	}
 }
 
