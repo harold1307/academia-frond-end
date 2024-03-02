@@ -1257,10 +1257,10 @@ model Alumno {
   observaciones                 String?
   usuarioId                     String                     @unique
   centroInformacionId           String
-  asesorCrmId                   String
+  asesorCrmId                   String?
   createdAt                     DateTime                   @default(now())
   updatedAt                     DateTime                   @default(now()) @updatedAt
-  asesorCrm                     AsesorCrm                  @relation(fields: [asesorCrmId], references: [id])
+  asesorCrm                     AsesorCrm?                 @relation(fields: [asesorCrmId], references: [id])
   centroInformacion             CentroInformacion          @relation(fields: [centroInformacionId], references: [id])
   usuario                       Usuario                    @relation(fields: [usuarioId], references: [id])
   asesores                      AsesorEstudianteEnAlumno[]
