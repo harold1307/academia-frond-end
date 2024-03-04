@@ -13,7 +13,7 @@ import { type AsesoresSchema } from "./table/columns";
 
 export default function AddAsesores() {
 	const { form, mutation, open, setOpen } = useMutateModule({
-		// schema: ModeloEvaluativoSchema,
+
 		mutationFn: async data => {},
 		onError: console.error,
 		onSuccess: response => {

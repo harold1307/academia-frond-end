@@ -5,7 +5,7 @@ import ShowModal from "@/app/_components/modals/show-modal";
 
 export default function EstudiantesTableModal() {
 	const { form, mutation, open, setOpen } = useMutateModule({
-		// schema: ModeloEvaluativoSchema,
+
 		mutationFn: async data => {},
 		onError: console.error,
 		onSuccess: response => {

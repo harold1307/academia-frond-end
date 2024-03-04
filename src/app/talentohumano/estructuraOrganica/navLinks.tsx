@@ -6,28 +6,22 @@ import { useSearchParams } from "next/navigation";
 
 const SECTIONS = [
 	{
-		label: "Personal",
-		href: ROUTES.talentoHumano.path + "?section=0",
-		section: "0",
+		label: "Departamentos",
+		href: ROUTES.talentoHumano.path + "?section=2?subsection=0",
+		section: "2?subsection=0",
 	},
 	{
-		label: "Asesores",
-		href: ROUTES.talentoHumano.path + "?section=1",
-		section: "1",
+		label: "Cargos",
+		href: ROUTES.talentoHumano.path + "?section=2?subsection=1",
+		section: "2?subsection=1",
 	},
 	{
-		label: "Estructura Orgánica",
-		href: ROUTES.talentoHumano.path + "?section=2",
-		section: "2",
+		label: "Funciones",
+		href: ROUTES.talentoHumano.path + "?section=2?subsection=2",
+		section: "2?subsection=2",
 	},
-	{
-		label: "Modelos de contrato",
-		href: ROUTES.talentoHumano.path + "?section=3",
-		section: "3",
-	},
-	
 ];
-export default function PersonalNavLinks() {
+export default function EstructuraOrganicaNavLinks() {
 	const params = useSearchParams();
 
 	return (

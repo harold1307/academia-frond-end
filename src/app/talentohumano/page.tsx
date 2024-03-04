@@ -10,6 +10,12 @@ import { FiltroTipos } from "./personal/filtros/filtroTipos";
 import { FiltroSedes } from "./personal/filtros/filtroSedes";
 import { FiltroGrupos } from "./personal/filtros/filtroGrupos";
 import EstructuraOrganica from "./estructuraOrganica/estructuraOrganica";
+import FuncionesTableServer from "./estructuraOrganica/funciones/table/server";
+import AddFunciones from "./estructuraOrganica/funciones/add-funciones";
+import CargosTableServer from "./estructuraOrganica/cargos/table/server";
+import AddCargos from "./estructuraOrganica/cargos/add-cargos";
+import DepartamentosTableServer from "./estructuraOrganica/departamentos/table/server";
+import AddDepartamentos from "./estructuraOrganica/departamentos/add-departamentos";
 
 type Context = {
 	searchParams: { [key: string]: string | string[] | undefined };
@@ -31,15 +37,65 @@ export default function PersonalPage({ searchParams }: Context) {
 			</div>
 		);
 	}
-	if (section === "2") {
+
+	if (section === "2?subsection=0" || section === "2") {
 		return (
-			<div className='p-2'>
-				<React.Suspense fallback={<h1>Cargando Tabla....</h1>}>
+			<div className='py-2'>
+				<div>
 					<EstructuraOrganica />
-				</React.Suspense>
+				</div>
+
+				<div className='p-2'>
+					<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
+						<AddDepartamentos />
+					</div>
+					<div className='mx-4 flex flex-row items-baseline justify-between p-2'></div>
+					<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
+						<DepartamentosTableServer />
+					</React.Suspense>
+				</div>
 			</div>
 		);
 	}
+	if (section === "2?subsection=1") {
+		return (
+			<div className='py-2'>
+				<div>
+					<EstructuraOrganica />
+				</div>
+
+				<div className='p-2'>
+					<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
+						<AddCargos />
+					</div>
+					<div className='mx-4 flex flex-row items-baseline justify-between p-2'></div>
+					<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
+						<CargosTableServer />
+					</React.Suspense>
+				</div>
+			</div>
+		);
+	}
+	if (section === "2?subsection=2") {
+		return (
+			<div className='py-2'>
+				<div>
+					<EstructuraOrganica />
+				</div>
+
+				<div className='p-2'>
+					<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
+						<AddFunciones />
+					</div>
+					<div className='mx-4 flex flex-row items-baseline justify-between p-2'></div>
+					<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
+						<FuncionesTableServer />
+					</React.Suspense>
+				</div>
+			</div>
+		);
+	}
+
 	if (section === "3") {
 		return (
 			<div className='p-2'>
