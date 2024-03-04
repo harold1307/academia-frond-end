@@ -49,7 +49,6 @@ export default function PersonalPage({ searchParams }: Context) {
 					<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
 						<AddDepartamentos />
 					</div>
-					<div className='mx-4 flex flex-row items-baseline justify-between p-2'></div>
 					<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
 						<DepartamentosTableServer />
 					</React.Suspense>
@@ -68,7 +67,7 @@ export default function PersonalPage({ searchParams }: Context) {
 					<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
 						<AddCargos />
 					</div>
-					<div className='mx-4 flex flex-row items-baseline justify-between p-2'></div>
+					
 					<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
 						<CargosTableServer />
 					</React.Suspense>
@@ -87,7 +86,6 @@ export default function PersonalPage({ searchParams }: Context) {
 					<div className='mx-4 flex flex-row items-baseline justify-between p-2'>
 						<AddFunciones />
 					</div>
-					<div className='mx-4 flex flex-row items-baseline justify-between p-2'></div>
 					<React.Suspense fallback={<h1>Cargando Tabla...</h1>}>
 						<FuncionesTableServer />
 					</React.Suspense>
