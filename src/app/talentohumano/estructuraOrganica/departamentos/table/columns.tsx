@@ -7,10 +7,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { Button } from "@/app/_components/ui/button";
-import { Lock, FileSignature } from "lucide-react";
+import { Lock, FileSignature, Equal } from "lucide-react";
 import { useState } from "react";
 import { type DepartamentosSchema } from "../add-departamentos";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { usePathname, useRouter } from "next/navigation";
+import { ROUTES } from "@/core/routes";
 
 export type DepartamentosTableItem = DepartamentosSchema;
 
@@ -36,7 +38,14 @@ export const DepartamentosColumns = [
 	helper.accessor("responsable", {
 		header: "Responsable",
 	}),
-
+	helper.accessor("plazas", {
+		header: "Plazas",
+		cell: ({ row, getValue }) => {
+			const id = row.getValue("id") as string;
+			const value = getValue();
+			return <ButtonPlazas departamentosId={id} value={value} />;
+		},
+	}),
 	helper.accessor("activo", {
 		header: "Activo",
 		cell: ({ getValue }) => {
@@ -76,11 +85,37 @@ export const departamentosParams = {
 function Asignados({ nombres }: { nombres: string[] }) {
 	return (
 		<div className='w-full p-2'>
-			
 			{nombres.map(nombre => (
 				<p className='w-full'>{nombre}</p>
 			))}
 		</div>
+	);
+}
+
+function ButtonPlazas({
+	departamentosId,
+	value,
+}: {
+	departamentosId: string;
+	value: string;
+}) {
+	const router = useRouter();
+
+	const pathname = usePathname();
+
+	function redireccion(departamentosId: string) {
+		router.push(pathname + ROUTES.talentoHumano.plazas(departamentosId));
+	}
+
+	return (
+		<Button
+			className='m-2 h-8 w-fit border border-current bg-transparent p-2 text-current hover:text-black'
+			onClick={() => {
+				redireccion(departamentosId);
+			}}
+		>
+			<Equal /> Plazas - {value}
+		</Button>
 	);
 }
 

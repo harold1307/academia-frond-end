@@ -48,5 +48,7 @@ export const ROUTES = {
 			`/${modeloDeContratoId}/campos`,
 		estudiantes: (asesorId: string) =>
 			`/${asesorId}/estudiantes`,
+		plazas: (departamentosId: string) =>
+			`/${departamentosId}/plazas`
 	}
 } as const;

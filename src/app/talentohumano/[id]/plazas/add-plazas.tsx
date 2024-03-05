@@ -8,21 +8,22 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { useMutateModule } from "@/hooks/use-mutate-module";
-import { type Field } from "@/utils/forms";
+import type { Field } from "@/utils/forms";
 
-//Esquema de MockUp hasta tener el esquema de Prisma
-export type DepartamentosSchema = {
+export type PlazasDepartamentosSchema = {
+	cargo: string;
 	id: string;
-	nivel: string;
-	departamento: string;
-	subordinado: Array<string>;
-	responsable: string;
-	plazas: string;
+	persona: string;
+	responsable: boolean;
+	tienecontrato: string | void;
+	plazas: string | void;
+	contrato: string;
 	activo: boolean;
 };
 
-export default function AddDepartamentos() {
+export default function AddPlazasDepartamentos() {
 	const { form, mutation, open, setOpen } = useMutateModule({
+		// schema: ModeloEvaluativoSchema,
 		mutationFn: async data => {},
 		onError: console.error,
 		onSuccess: response => {
@@ -50,12 +51,12 @@ export default function AddDepartamentos() {
 					data => console.log("Falta implementar lógica", data),
 					// mutation.mutate(data)
 				)}
-				title={`Adicionar`}
+				title={`Agregar PlazasDepartamentos`}
 				withTrigger
-				triggerLabel='Adicionar Departamento'
+				triggerLabel='Agregar PlazasDepartamentos'
 			>
 				<div className='flex w-full flex-col items-start justify-start gap-8 px-8'>
-					{departamentosFields.map(f => (
+					{PlazasDepartamentosFields.map(f => (
 						<FormField
 							control={form.control}
 							name={f.name}
@@ -88,20 +89,20 @@ export default function AddDepartamentos() {
 	);
 }
 
-export const departamentosFields = [
+export const PlazasDepartamentosFields = [
 	{
-		name: "departamento",
+		name: "cargo",
 		inputType: "text",
-		label: "Sede",
+		label: "Cargo",
 	},
 	{
-		name: "responsable",
+		name: "contrato",
 		inputType: "text",
-		label: "Nombre",
+		label: "Plazas",
 	},
 	{
-		name: "subordinado",
-		inputType: "search",
-		label: "Se subordina al departamento",
+		name: "plazas",
+		inputType: "text",
+		label: "Cantidad de Plazas",
 	},
-] satisfies Field<keyof DepartamentosSchema>[];
+] satisfies Field<keyof PlazasDepartamentosSchema>[];
