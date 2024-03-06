@@ -1,7 +1,6 @@
 import type {
 	Administrativo,
 	Alumno,
-	AsesorEstudiante,
 	EstadoAlumno,
 	Grupo,
 	Inscripcion,
@@ -24,6 +23,11 @@ import {
 	type AsesorCrmFromAPI,
 	type CreateAsesorCrmEnCentroInformacion,
 } from "./asesores-crm";
+import {
+	baseAsesorEstudianteSchema,
+	type AsesorEstudianteFromAPI,
+	type CreateAsesorEstudiante,
+} from "./asesores-estudiante";
 import { coordinacionSchema, type CoordinacionFromAPI } from "./coordinaciones";
 import {
 	baseMallaSchema,
@@ -238,7 +242,10 @@ export type UsuarioFromAPI = ReplaceDateToString<
 					AsesorCrmFromAPI,
 					"administrativo" | "centrosInformacion"
 				> | null;
-				asesorEstudiante: ReplaceDateToString<AsesorEstudiante> | null;
+				asesorEstudiante: Omit<
+					AsesorEstudianteFromAPI,
+					"administrativo" | "estudiantesCount"
+				> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
 		> | null;
@@ -283,7 +290,10 @@ export type UsuarioWithInscripcionesFromAPI = ReplaceDateToString<
 					AsesorCrmFromAPI,
 					"administrativo" | "centrosInformacion"
 				> | null;
-				asesorEstudiante: ReplaceDateToString<AsesorEstudiante> | null;
+				asesorEstudiante: Omit<
+					AsesorEstudianteFromAPI,
+					"administrativo" | "estudiantesCount"
+				> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
 		> | null;
@@ -355,26 +365,6 @@ const usuarioEnGrupoSchema = z
 	})
 	.strict();
 
-const asesorEstudianteSchema = z
-	.object<
-		ZodInferSchema<
-			Exclude<
-				Exclude<UsuarioFromAPI["administrativo"], null>["asesorEstudiante"],
-				null
-			>
-		>
-	>({
-		id: z.string().uuid(),
-		administrativoId: z.string().uuid(),
-		estado: z.boolean(),
-		seguimientoBienestar: z.boolean(),
-		seguimientoExpediente: z.boolean(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
 export const administrativoSchema = z
 	.object<ZodInferSchema<Exclude<UsuarioFromAPI["administrativo"], null>>>({
 		id: z.string().uuid(),
@@ -392,7 +382,7 @@ export const administrativoSchema = z
 
 		sede: sedeSchema.omit({ enUso: true }),
 		asesorCrm: baseAsesorCrmSchema.nullable(),
-		asesorEstudiante: asesorEstudianteSchema.nullable(),
+		asesorEstudiante: baseAsesorEstudianteSchema.nullable(),
 		responsableCrm: baseResponsableCrmSchema.nullable(),
 
 		createdAt: z.string().datetime(),
@@ -944,6 +934,30 @@ export class UsuarioClass {
 
 		return res.json();
 	}
+
+	/** Create asesor estudiante access from existing user */
+	async createAsesorEstudiante({
+		userId,
+		data,
+	}: CreateAsesorEstudianteParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/asesores-estudiante`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
 
 type GetManyUsuariosParams = {
@@ -1010,4 +1024,8 @@ type CreateAsesorCrmParams = {
 };
 type CreateResponsableCrmParams = {
 	userId: string;
+};
+type CreateAsesorEstudianteParams = {
+	userId: string;
+	data: Omit<CreateAsesorEstudiante, "administrativoId">;
 };
