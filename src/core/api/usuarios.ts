@@ -394,11 +394,12 @@ export const administrativoSchema = z
 		usuarioId: z.string().uuid(),
 
 		sede: sedeSchema.omit({ enUso: true }),
-		asesorCrm: baseAsesorCrmSchema.nullable(),
-		asesorEstudiante: baseAsesorEstudianteSchema.nullable(),
-		responsableCrm: baseResponsableCrmSchema.nullable(),
-		responsableAsesorEstudiante:
-			baseResponsableAsesorEstudianteSchema.nullable(),
+		asesorCrm: z.lazy(() => baseAsesorCrmSchema).nullable(),
+		asesorEstudiante: z.lazy(() => baseAsesorEstudianteSchema).nullable(),
+		responsableCrm: z.lazy(() => baseResponsableCrmSchema).nullable(),
+		responsableAsesorEstudiante: z
+			.lazy(() => baseResponsableAsesorEstudianteSchema)
+			.nullable(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
