@@ -1,7 +1,7 @@
 import type {
-  Administrativo,
-  ResponsableAsesorEstudiante,
-  ResponsableEnAsesorEstudiante,
+	Administrativo,
+	ResponsableAsesorEstudiante,
+	ResponsableEnAsesorEstudiante,
 } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
@@ -9,13 +9,13 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import {
-  asesorEstudianteSchema,
-  type AsesorEstudianteFromAPI,
+	asesorEstudianteSchema,
+	type AsesorEstudianteFromAPI,
 } from "./asesores-estudiante";
 import {
-  administrativoSchema,
-  baseUsuarioSchema,
-  type UsuarioFromAPI,
+	administrativoSchema,
+	baseUsuarioSchema,
+	type UsuarioFromAPI,
 } from "./usuarios";
 
 export type ResponsableEnAsesorEstudianteFromAPI =
