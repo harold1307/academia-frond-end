@@ -6,7 +6,6 @@ import type {
 	Grupo,
 	Inscripcion,
 	Profesor,
-	ResponsableCrm,
 	TipoUsuario,
 	Usuario,
 	UsuarioEnGrupo,
@@ -36,6 +35,10 @@ import {
 	type NivelAcademicoFromAPI,
 } from "./niveles-academicos";
 import { programaSchema, type ProgramaFromAPI } from "./programas";
+import {
+	baseResponsableCrmSchema,
+	type ResponsableCrmFromAPI,
+} from "./responsables-crm";
 import { sedeSchema, type SedeFromAPI } from "./sede";
 
 type UpdateProfesor = Partial<
@@ -230,7 +233,7 @@ export type UsuarioFromAPI = ReplaceDateToString<
 	Usuario & {
 		administrativo: ReplaceDateToString<
 			Administrativo & {
-				responsableCrm: ReplaceDateToString<ResponsableCrm> | null;
+				responsableCrm: Omit<ResponsableCrmFromAPI, "administrativo"> | null;
 				asesorCrm: Omit<
 					AsesorCrmFromAPI,
 					"administrativo" | "centrosInformacion"
@@ -275,7 +278,7 @@ export type UsuarioWithInscripcionesFromAPI = ReplaceDateToString<
 	Usuario & {
 		administrativo: ReplaceDateToString<
 			Administrativo & {
-				responsableCrm: ReplaceDateToString<ResponsableCrm> | null;
+				responsableCrm: Omit<ResponsableCrmFromAPI, "administrativo"> | null;
 				asesorCrm: Omit<
 					AsesorCrmFromAPI,
 					"administrativo" | "centrosInformacion"
@@ -352,24 +355,6 @@ const usuarioEnGrupoSchema = z
 	})
 	.strict();
 
-const responsableCrmSchema = z
-	.object<
-		ZodInferSchema<
-			Exclude<
-				Exclude<UsuarioFromAPI["administrativo"], null>["responsableCrm"],
-				null
-			>
-		>
-	>({
-		id: z.string().uuid(),
-		administrativoId: z.string().uuid(),
-		estado: z.boolean(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
 const asesorEstudianteSchema = z
 	.object<
 		ZodInferSchema<
@@ -408,7 +393,7 @@ export const administrativoSchema = z
 		sede: sedeSchema.omit({ enUso: true }),
 		asesorCrm: baseAsesorCrmSchema.nullable(),
 		asesorEstudiante: asesorEstudianteSchema.nullable(),
-		responsableCrm: responsableCrmSchema.nullable(),
+		responsableCrm: baseResponsableCrmSchema.nullable(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -937,6 +922,28 @@ export class UsuarioClass {
 
 		return res.json();
 	}
+
+	/** Create responsable crm access from existing user */
+	async createResponsableCrm({
+		userId,
+	}: CreateResponsableCrmParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/responsables-crm`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
 
 type GetManyUsuariosParams = {
@@ -1000,4 +1007,7 @@ type UpdateProfesorParams = {
 type CreateAsesorCrmParams = {
 	userId: string;
 	data: Omit<CreateAsesorCrmEnCentroInformacion, "asesorCrmId">;
+};
+type CreateResponsableCrmParams = {
+	userId: string;
 };
