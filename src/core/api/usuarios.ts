@@ -1,7 +1,6 @@
 import type {
 	Administrativo,
 	Alumno,
-	AsesorCrm,
 	AsesorEstudiante,
 	EstadoAlumno,
 	Grupo,
@@ -21,6 +20,11 @@ import type {
 	ZodInferSchema,
 } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import {
+	baseAsesorCrmSchema,
+	type AsesorCrmFromAPI,
+	type CreateAsesorCrmEnCentroInformacion,
+} from "./asesores-crm";
 import { coordinacionSchema, type CoordinacionFromAPI } from "./coordinaciones";
 import {
 	baseMallaSchema,
@@ -227,7 +231,10 @@ export type UsuarioFromAPI = ReplaceDateToString<
 		administrativo: ReplaceDateToString<
 			Administrativo & {
 				responsableCrm: ReplaceDateToString<ResponsableCrm> | null;
-				asesorCrm: ReplaceDateToString<AsesorCrm> | null;
+				asesorCrm: Omit<
+					AsesorCrmFromAPI,
+					"administrativo" | "centrosInformacion"
+				> | null;
 				asesorEstudiante: ReplaceDateToString<AsesorEstudiante> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
@@ -269,7 +276,10 @@ export type UsuarioWithInscripcionesFromAPI = ReplaceDateToString<
 		administrativo: ReplaceDateToString<
 			Administrativo & {
 				responsableCrm: ReplaceDateToString<ResponsableCrm> | null;
-				asesorCrm: ReplaceDateToString<AsesorCrm> | null;
+				asesorCrm: Omit<
+					AsesorCrmFromAPI,
+					"administrativo" | "centrosInformacion"
+				> | null;
 				asesorEstudiante: ReplaceDateToString<AsesorEstudiante> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
@@ -342,23 +352,6 @@ const usuarioEnGrupoSchema = z
 	})
 	.strict();
 
-const asesorCrmSchema = z
-	.object<
-		ZodInferSchema<
-			Exclude<
-				Exclude<UsuarioFromAPI["administrativo"], null>["asesorCrm"],
-				null
-			>
-		>
-	>({
-		id: z.string().uuid(),
-		administrativoId: z.string().uuid(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
 const responsableCrmSchema = z
 	.object<
 		ZodInferSchema<
@@ -397,7 +390,7 @@ const asesorEstudianteSchema = z
 	})
 	.strict();
 
-const administrativoSchema = z
+export const administrativoSchema = z
 	.object<ZodInferSchema<Exclude<UsuarioFromAPI["administrativo"], null>>>({
 		id: z.string().uuid(),
 		estado: z.boolean(),
@@ -413,7 +406,7 @@ const administrativoSchema = z
 		usuarioId: z.string().uuid(),
 
 		sede: sedeSchema.omit({ enUso: true }),
-		asesorCrm: asesorCrmSchema.nullable(),
+		asesorCrm: baseAsesorCrmSchema.nullable(),
 		asesorEstudiante: asesorEstudianteSchema.nullable(),
 		responsableCrm: responsableCrmSchema.nullable(),
 
@@ -920,6 +913,30 @@ export class UsuarioClass {
 
 		return res;
 	}
+
+	/** Create asesor crm access from existing user */
+	async createAsesorCrm({
+		userId,
+		data,
+	}: CreateAsesorCrmParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/asesores-crm`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
 
 type GetManyUsuariosParams = {
@@ -979,4 +996,8 @@ type UpdateAdministrativoParams = {
 type UpdateProfesorParams = {
 	userId: string;
 	data: UpdateProfesor;
+};
+type CreateAsesorCrmParams = {
+	userId: string;
+	data: Omit<CreateAsesorCrmEnCentroInformacion, "asesorCrmId">;
 };
