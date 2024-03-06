@@ -1,13 +1,10 @@
 import type {
 	Administrativo,
 	Alumno,
-	AsesorCrm,
-	AsesorEstudiante,
 	EstadoAlumno,
 	Grupo,
 	Inscripcion,
 	Profesor,
-	ResponsableCrm,
 	TipoUsuario,
 	Usuario,
 	UsuarioEnGrupo,
@@ -21,6 +18,16 @@ import type {
 	ZodInferSchema,
 } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import {
+	baseAsesorCrmSchema,
+	type AsesorCrmFromAPI,
+	type CreateAsesorCrmEnCentroInformacion,
+} from "./asesores-crm";
+import {
+	baseAsesorEstudianteSchema,
+	type AsesorEstudianteFromAPI,
+	type CreateAsesorEstudiante,
+} from "./asesores-estudiante";
 import { coordinacionSchema, type CoordinacionFromAPI } from "./coordinaciones";
 import {
 	baseMallaSchema,
@@ -32,6 +39,15 @@ import {
 	type NivelAcademicoFromAPI,
 } from "./niveles-academicos";
 import { programaSchema, type ProgramaFromAPI } from "./programas";
+import {
+	baseResponsableAsesorEstudianteSchema,
+	type CreateResponsableAsesorEstudiante,
+	type ResponsableAsesorEstudianteFromAPI,
+} from "./responsables-asesores-estudiante";
+import {
+	baseResponsableCrmSchema,
+	type ResponsableCrmFromAPI,
+} from "./responsables-crm";
 import { sedeSchema, type SedeFromAPI } from "./sede";
 
 type UpdateProfesor = Partial<
@@ -226,9 +242,19 @@ export type UsuarioFromAPI = ReplaceDateToString<
 	Usuario & {
 		administrativo: ReplaceDateToString<
 			Administrativo & {
-				responsableCrm: ReplaceDateToString<ResponsableCrm> | null;
-				asesorCrm: ReplaceDateToString<AsesorCrm> | null;
-				asesorEstudiante: ReplaceDateToString<AsesorEstudiante> | null;
+				responsableCrm: Omit<ResponsableCrmFromAPI, "administrativo"> | null;
+				asesorCrm: Omit<
+					AsesorCrmFromAPI,
+					"administrativo" | "centrosInformacion"
+				> | null;
+				asesorEstudiante: Omit<
+					AsesorEstudianteFromAPI,
+					"administrativo" | "estudiantesCount"
+				> | null;
+				responsableAsesorEstudiante: Omit<
+					ResponsableAsesorEstudianteFromAPI,
+					"administrativo" | "asesoresCount"
+				> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
 		> | null;
@@ -268,9 +294,19 @@ export type UsuarioWithInscripcionesFromAPI = ReplaceDateToString<
 	Usuario & {
 		administrativo: ReplaceDateToString<
 			Administrativo & {
-				responsableCrm: ReplaceDateToString<ResponsableCrm> | null;
-				asesorCrm: ReplaceDateToString<AsesorCrm> | null;
-				asesorEstudiante: ReplaceDateToString<AsesorEstudiante> | null;
+				responsableCrm: Omit<ResponsableCrmFromAPI, "administrativo"> | null;
+				asesorCrm: Omit<
+					AsesorCrmFromAPI,
+					"administrativo" | "centrosInformacion"
+				> | null;
+				asesorEstudiante: Omit<
+					AsesorEstudianteFromAPI,
+					"administrativo" | "estudiantesCount"
+				> | null;
+				responsableAsesorEstudiante: Omit<
+					ResponsableAsesorEstudianteFromAPI,
+					"administrativo" | "asesoresCount"
+				> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
 		> | null;
@@ -342,62 +378,7 @@ const usuarioEnGrupoSchema = z
 	})
 	.strict();
 
-const asesorCrmSchema = z
-	.object<
-		ZodInferSchema<
-			Exclude<
-				Exclude<UsuarioFromAPI["administrativo"], null>["asesorCrm"],
-				null
-			>
-		>
-	>({
-		id: z.string().uuid(),
-		administrativoId: z.string().uuid(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
-const responsableCrmSchema = z
-	.object<
-		ZodInferSchema<
-			Exclude<
-				Exclude<UsuarioFromAPI["administrativo"], null>["responsableCrm"],
-				null
-			>
-		>
-	>({
-		id: z.string().uuid(),
-		administrativoId: z.string().uuid(),
-		estado: z.boolean(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
-const asesorEstudianteSchema = z
-	.object<
-		ZodInferSchema<
-			Exclude<
-				Exclude<UsuarioFromAPI["administrativo"], null>["asesorEstudiante"],
-				null
-			>
-		>
-	>({
-		id: z.string().uuid(),
-		administrativoId: z.string().uuid(),
-		estado: z.boolean(),
-		seguimientoBienestar: z.boolean(),
-		seguimientoExpediente: z.boolean(),
-
-		createdAt: z.string().datetime(),
-		updatedAt: z.string().datetime(),
-	})
-	.strict();
-
-const administrativoSchema = z
+export const administrativoSchema = z
 	.object<ZodInferSchema<Exclude<UsuarioFromAPI["administrativo"], null>>>({
 		id: z.string().uuid(),
 		estado: z.boolean(),
@@ -413,9 +394,11 @@ const administrativoSchema = z
 		usuarioId: z.string().uuid(),
 
 		sede: sedeSchema.omit({ enUso: true }),
-		asesorCrm: asesorCrmSchema.nullable(),
-		asesorEstudiante: asesorEstudianteSchema.nullable(),
-		responsableCrm: responsableCrmSchema.nullable(),
+		asesorCrm: baseAsesorCrmSchema.nullable(),
+		asesorEstudiante: baseAsesorEstudianteSchema.nullable(),
+		responsableCrm: baseResponsableCrmSchema.nullable(),
+		responsableAsesorEstudiante:
+			baseResponsableAsesorEstudianteSchema.nullable(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -920,6 +903,100 @@ export class UsuarioClass {
 
 		return res;
 	}
+
+	/** Create asesor crm access from existing user */
+	async createAsesorCrm({
+		userId,
+		data,
+	}: CreateAsesorCrmParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/asesores-crm`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
+
+	/** Create responsable crm access from existing user */
+	async createResponsableCrm({
+		userId,
+	}: CreateResponsableCrmParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/responsables-crm`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
+
+	/** Create asesor estudiante access from existing user */
+	async createAsesorEstudiante({
+		userId,
+		data,
+	}: CreateAsesorEstudianteParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/asesores-estudiante`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
+
+	/** Create responsable asesor estudiante access from existing user */
+	async createResponsableAsesorEstudiante({
+		userId,
+		data,
+	}: CreateResponsableAsesorEstudianteParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/responsables-asesores-estudiante`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
 
 type GetManyUsuariosParams = {
@@ -979,4 +1056,19 @@ type UpdateAdministrativoParams = {
 type UpdateProfesorParams = {
 	userId: string;
 	data: UpdateProfesor;
+};
+type CreateAsesorCrmParams = {
+	userId: string;
+	data: Omit<CreateAsesorCrmEnCentroInformacion, "asesorCrmId">;
+};
+type CreateResponsableCrmParams = {
+	userId: string;
+};
+type CreateAsesorEstudianteParams = {
+	userId: string;
+	data: Omit<CreateAsesorEstudiante, "administrativoId">;
+};
+type CreateResponsableAsesorEstudianteParams = {
+	userId: string;
+	data: Omit<CreateResponsableAsesorEstudiante, "administrativoId">;
 };
