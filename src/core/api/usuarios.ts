@@ -40,6 +40,11 @@ import {
 } from "./niveles-academicos";
 import { programaSchema, type ProgramaFromAPI } from "./programas";
 import {
+	baseResponsableAsesorEstudianteSchema,
+	type CreateResponsableAsesorEstudiante,
+	type ResponsableAsesorEstudianteFromAPI,
+} from "./responsables-asesores-estudiante";
+import {
 	baseResponsableCrmSchema,
 	type ResponsableCrmFromAPI,
 } from "./responsables-crm";
@@ -246,6 +251,10 @@ export type UsuarioFromAPI = ReplaceDateToString<
 					AsesorEstudianteFromAPI,
 					"administrativo" | "estudiantesCount"
 				> | null;
+				responsableAsesorEstudiante: Omit<
+					ResponsableAsesorEstudianteFromAPI,
+					"administrativo" | "asesoresCount"
+				> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
 		> | null;
@@ -293,6 +302,10 @@ export type UsuarioWithInscripcionesFromAPI = ReplaceDateToString<
 				asesorEstudiante: Omit<
 					AsesorEstudianteFromAPI,
 					"administrativo" | "estudiantesCount"
+				> | null;
+				responsableAsesorEstudiante: Omit<
+					ResponsableAsesorEstudianteFromAPI,
+					"administrativo" | "asesoresCount"
 				> | null;
 				sede: Omit<SedeFromAPI, "enUso">;
 			}
@@ -384,6 +397,8 @@ export const administrativoSchema = z
 		asesorCrm: baseAsesorCrmSchema.nullable(),
 		asesorEstudiante: baseAsesorEstudianteSchema.nullable(),
 		responsableCrm: baseResponsableCrmSchema.nullable(),
+		responsableAsesorEstudiante:
+			baseResponsableAsesorEstudianteSchema.nullable(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -958,6 +973,30 @@ export class UsuarioClass {
 
 		return res.json();
 	}
+
+	/** Create responsable asesor estudiante access from existing user */
+	async createResponsableAsesorEstudiante({
+		userId,
+		data,
+	}: CreateResponsableAsesorEstudianteParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/usuarios/${userId}/responsables-asesores-estudiante`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<unknown>;
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
 
 type GetManyUsuariosParams = {
@@ -1028,4 +1067,8 @@ type CreateResponsableCrmParams = {
 type CreateAsesorEstudianteParams = {
 	userId: string;
 	data: Omit<CreateAsesorEstudiante, "administrativoId">;
+};
+type CreateResponsableAsesorEstudianteParams = {
+	userId: string;
+	data: Omit<CreateResponsableAsesorEstudiante, "administrativoId">;
 };
