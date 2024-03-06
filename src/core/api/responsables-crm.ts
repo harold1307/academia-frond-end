@@ -51,16 +51,18 @@ export const baseResponsableCrmSchema = z
 
 export const responsableCrmSchema = baseResponsableCrmSchema
 	.extend<ZodInferSchema<Pick<ResponsableCrmFromAPI, ExtraFields>>>({
-		administrativo: administrativoSchema
-			.omit({
-				sede: true,
-				asesorCrm: true,
-				asesorEstudiante: true,
-				responsableCrm: true,
-			})
-			.extend({
-				usuario: baseUsuarioSchema,
-			}),
+		administrativo: z.lazy(() =>
+			administrativoSchema
+				.omit({
+					sede: true,
+					asesorCrm: true,
+					asesorEstudiante: true,
+					responsableCrm: true,
+				})
+				.extend({
+					usuario: baseUsuarioSchema,
+				}),
+		),
 	})
 	.strict();
 

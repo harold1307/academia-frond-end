@@ -65,12 +65,7 @@ export class CentroInformacionClass {
 		return res;
 	}
 
-	async create(
-		data: Omit<
-			CentroInformacionFromAPI,
-			"enUso" | "createdAt" | "updatedAt" | "id"
-		>,
-	): Promise<SimpleAPIResponse> {
+	async create(data: CreateCentroInformacion): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/centros-informacion`, {
 			method: "POST",
 			headers: {

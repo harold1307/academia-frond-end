@@ -92,16 +92,18 @@ export const responsableAsesorEstudianteSchema =
 		>
 	>({
 		asesoresCount: z.number(),
-		administrativo: administrativoSchema
-			.omit({
-				sede: true,
-				asesorCrm: true,
-				asesorEstudiante: true,
-				responsableCrm: true,
-			})
-			.extend({
-				usuario: baseUsuarioSchema,
-			}),
+		administrativo: z.lazy(() =>
+			administrativoSchema
+				.omit({
+					sede: true,
+					asesorCrm: true,
+					asesorEstudiante: true,
+					responsableCrm: true,
+				})
+				.extend({
+					usuario: baseUsuarioSchema,
+				}),
+		),
 	});
 
 export const responsableAsesorEstudianteWithAsesoresSchema =
@@ -112,16 +114,18 @@ export const responsableAsesorEstudianteWithAsesoresSchema =
 			>
 		>({
 			asesoresCount: z.number(),
-			administrativo: administrativoSchema
-				.omit({
-					sede: true,
-					asesorCrm: true,
-					asesorEstudiante: true,
-					responsableCrm: true,
-				})
-				.extend({
-					usuario: baseUsuarioSchema,
-				}),
+			administrativo: z.lazy(() =>
+				administrativoSchema
+					.omit({
+						sede: true,
+						asesorCrm: true,
+						asesorEstudiante: true,
+						responsableCrm: true,
+					})
+					.extend({
+						usuario: baseUsuarioSchema,
+					}),
+			),
 			asesores: baseResponsableEnAsesorEstudianteSchema
 				.extend({
 					asesorEstudiante: asesorEstudianteSchema,
