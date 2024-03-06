@@ -3,6 +3,8 @@ import React from "react";
 import { InstitucionTabs } from "../tabs";
 import AddCentroInformacion from "./centros-informacion/add-centro-informacion";
 import CentroInformacionTableServer from "./centros-informacion/table/server";
+import AddResponsableCrm from "./responsables-crm/add-responsable-crm";
+import ResponsableCrmTableServer from "./responsables-crm/table/server";
 import CrmAsesoresTabs, { subSeccionParams } from "./tabs";
 
 export default async function CrmAsesores({
@@ -21,10 +23,10 @@ export default async function CrmAsesores({
 				<InstitucionTabs seccion='crm-asesores' className={"mb-5"} />
 				<CrmAsesoresTabs seccion={subSeccion} className='mb-5' />
 				<div className='mt-4'>
-					{/* <AddModalidad />
+					<AddResponsableCrm />
 					<React.Suspense fallback={"Cargando tabla..."}>
-						<ModalidadTableServer />
-					</React.Suspense> */}
+						<ResponsableCrmTableServer />
+					</React.Suspense>
 				</div>
 			</>
 		);
