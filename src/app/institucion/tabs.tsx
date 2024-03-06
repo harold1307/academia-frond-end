@@ -6,6 +6,7 @@ export const seccionParams = {
 	sedes: "sedes",
 	coordinaciones: "coordinaciones",
 	datosAcademicos: "datos-academicos",
+	crmAsesores: "crm-asesores",
 } as const;
 
 const tabs = [
@@ -20,6 +21,10 @@ const tabs = [
 	{
 		href: `${ROUTES.institucion}?seccion=${seccionParams.datosAcademicos}`,
 		label: "Datos Academicos",
+	},
+	{
+		href: `${ROUTES.institucion}?seccion=${seccionParams.crmAsesores}`,
+		label: "Crm y Asesores",
 	},
 ];
 
