@@ -99,6 +99,7 @@ export const responsableAsesorEstudianteSchema =
 					asesorCrm: true,
 					asesorEstudiante: true,
 					responsableCrm: true,
+					responsableAsesorEstudiante: true,
 				})
 				.extend({
 					usuario: baseUsuarioSchema,
@@ -121,6 +122,7 @@ export const responsableAsesorEstudianteWithAsesoresSchema =
 						asesorCrm: true,
 						asesorEstudiante: true,
 						responsableCrm: true,
+						responsableAsesorEstudiante: true,
 					})
 					.extend({
 						usuario: baseUsuarioSchema,
