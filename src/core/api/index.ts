@@ -2,6 +2,8 @@ import { createZodFetcher, type ZodFetcher } from "zod-fetch";
 
 import { AlternativaEvaluacionClass } from "./alternativas-evaluacion";
 import { AreaConocimientoClass } from "./areas-conocimiento";
+import { AsesorCrmClass } from "./asesores-crm";
+import { AsesorEstudianteClass } from "./asesores-estudiante";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
 import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
@@ -31,7 +33,11 @@ import { ParaleloClass } from "./paralelos";
 import { PerfilPracticaClass } from "./perfiles-practica";
 import { PeriodoLectivoClass } from "./periodos-lectivos";
 import { ProgramaClass } from "./programas";
+import { ProgramaEnCursoEscuelaClass } from "./programas-cursos-escuela";
+import { ProgramaEnVarianteCursoClass } from "./programas-variantes-curso";
 import { ProyectoIntegradorClass } from "./proyectos-integradores";
+import { ResponsableAsesorEstudianteClass } from "./responsables-asesores-estudiante";
+import { ResponsableCrmClass } from "./responsables-crm";
 import { SedeClass } from "./sede";
 import { SesionClass } from "./sesiones";
 import { TipoDocumentoClass } from "./tipos-documento";
@@ -251,6 +257,30 @@ export class APIClass {
 
 	get usuarios() {
 		return new UsuarioClass(this._apiUrl, this._fetcher);
+	}
+
+	get asesoresCrm() {
+		return new AsesorCrmClass(this._apiUrl, this._fetcher);
+	}
+
+	get responsablesCrm() {
+		return new ResponsableCrmClass(this._apiUrl, this._fetcher);
+	}
+
+	get asesoresEstudiante() {
+		return new AsesorEstudianteClass(this._apiUrl, this._fetcher);
+	}
+
+	get responsablesAsesoresEstudiante() {
+		return new ResponsableAsesorEstudianteClass(this._apiUrl, this._fetcher);
+	}
+
+	get programasVariantesCurso() {
+		return new ProgramaEnVarianteCursoClass(this._apiUrl, this._fetcher);
+	}
+
+	get programasCursosEscuela() {
+		return new ProgramaEnCursoEscuelaClass(this._apiUrl, this._fetcher);
 	}
 }
 
