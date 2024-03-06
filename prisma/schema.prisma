@@ -1331,7 +1331,9 @@ model ResponsableAsesorEstudiante {
   seguimientoExpediente Boolean
   createdAt             DateTime                        @default(now())
   updatedAt             DateTime                        @default(now()) @updatedAt
+  administrativoId      String                          @unique
   asesores              ResponsableEnAsesorEstudiante[]
+  administrativo        Administrativo                  @relation(fields: [administrativoId], references: [id])
 
   @@map("responsables_asesores_estudiantes")
 }
@@ -1352,7 +1354,7 @@ model AsesorCrmEnCentroInformacion {
   id                  String            @id @default(uuid())
   asesorId            String
   centroInformacionId String
-  asesor              AsesorCrm         @relation(fields: [asesorId], references: [id])
+  asesor              AsesorCrm         @relation(fields: [asesorId], references: [id], onDelete: Cascade)
   centroInformacion   CentroInformacion @relation(fields: [centroInformacionId], references: [id])
 
   @@unique([asesorId, centroInformacionId])
@@ -1361,26 +1363,27 @@ model AsesorCrmEnCentroInformacion {
 }
 
 model Administrativo {
-  id                     String                         @id @default(uuid())
-  estado                 Boolean                        @default(true)
-  parametrosInstitucion  Boolean                        @default(false)
-  talentoHumano          Boolean                        @default(false)
-  personalAdministrativo Boolean                        @default(false)
-  profesores             Boolean                        @default(false)
-  periodosLectivos       Boolean                        @default(false)
-  asignaturas            Boolean                        @default(false)
-  modelosEvaluativos     Boolean                        @default(false)
-  crmPreinscritos        Boolean                        @default(false)
-  sedeId                 String
-  usuarioId              String                         @unique
-  createdAt              DateTime                       @default(now())
-  updatedAt              DateTime                       @default(now()) @updatedAt
-  sede                   Sede                           @relation(fields: [sedeId], references: [id])
-  usuario                Usuario                        @relation(fields: [usuarioId], references: [id])
-  cursosResponsable      AdministrativoEnCursoEscuela[]
-  asesorCrm              AsesorCrm?
-  asesorEstudiante       AsesorEstudiante?
-  responsableCrm         ResponsableCrm?
+  id                          String                         @id @default(uuid())
+  estado                      Boolean                        @default(true)
+  parametrosInstitucion       Boolean                        @default(false)
+  talentoHumano               Boolean                        @default(false)
+  personalAdministrativo      Boolean                        @default(false)
+  profesores                  Boolean                        @default(false)
+  periodosLectivos            Boolean                        @default(false)
+  asignaturas                 Boolean                        @default(false)
+  modelosEvaluativos          Boolean                        @default(false)
+  crmPreinscritos             Boolean                        @default(false)
+  sedeId                      String
+  usuarioId                   String                         @unique
+  createdAt                   DateTime                       @default(now())
+  updatedAt                   DateTime                       @default(now()) @updatedAt
+  sede                        Sede                           @relation(fields: [sedeId], references: [id])
+  usuario                     Usuario                        @relation(fields: [usuarioId], references: [id])
+  cursosResponsable           AdministrativoEnCursoEscuela[]
+  asesorCrm                   AsesorCrm?
+  asesorEstudiante            AsesorEstudiante?
+  responsableAsesorEstudiante ResponsableAsesorEstudiante?
+  responsableCrm              ResponsableCrm?
 
   @@index([sedeId], map: "administrativos_sedeId_fkey")
   @@map("administrativos")
