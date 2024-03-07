@@ -1,5 +1,8 @@
+import { notFound } from "next/navigation";
 import React from "react";
 
+import { APIserver } from "@/core/api-server";
+import { formatFullName } from "@/utils";
 import { InstitucionTabs } from "../tabs";
 import AddAsesorCrm from "./asesores-crm/add-asesor-crm";
 import AsesorCrmTableServer from "./asesores-crm/table/server";
@@ -8,6 +11,8 @@ import AsesorEstudianteTableServer from "./asesores-estudiante/table/server";
 import AddCentroInformacion from "./centros-informacion/add-centro-informacion";
 import CentroInformacionTableServer from "./centros-informacion/table/server";
 import AddResponsableAsesorEstudiante from "./responsables-asesores-estudiante/add-responsable-asesor-estudiante";
+import AddAsesorAsignado from "./responsables-asesores-estudiante/asesores-asignados/add-asesor-asignado";
+import AsesorAsignadoTableServer from "./responsables-asesores-estudiante/asesores-asignados/table/server";
 import ResponsableAsesorEstudianteTableServer from "./responsables-asesores-estudiante/table/server";
 import AddResponsableCrm from "./responsables-crm/add-responsable-crm";
 import ResponsableCrmTableServer from "./responsables-crm/table/server";
@@ -57,6 +62,37 @@ export default async function CrmAsesores({
 	}
 
 	if (subSeccion === subSeccionParams.responsablesAsesoresEstudiante) {
+		const responsableId = searchParams.rId;
+
+		if (responsableId) {
+			const responsable =
+				await APIserver.responsablesAsesoresEstudiante.getByIdWithAsesores(
+					responsableId,
+				);
+
+			if (!responsable.data) return notFound();
+
+			return (
+				<>
+					<h1 className='text-xl font-semibold'>Asesores asignados</h1>
+					<h2 className='text-lg font-medium'>
+						Responsable:{" "}
+						{formatFullName(
+							responsable.data.administrativo.usuario.nombres,
+							responsable.data.administrativo.usuario.primerApellido,
+							responsable.data.administrativo.usuario.segundoApellido,
+						)}
+					</h2>
+					<div className='mt-4'>
+						<AddAsesorAsignado responsableId={responsableId} />
+						<React.Suspense fallback={"Cargando tabla..."}>
+							<AsesorAsignadoTableServer responsableId={responsableId} />
+						</React.Suspense>
+					</div>
+				</>
+			);
+		}
+
 		return (
 			<>
 				<h1 className='mb-4 text-xl font-semibold'>
