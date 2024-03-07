@@ -68,7 +68,7 @@ type UpdateResponsableAsesorEstudianteParams = {
 
 export type CreateResponsableAsesorEstudiante = Omit<
 	ResponsableAsesorEstudianteFromAPI,
-	"enUso" | "createdAt" | "updatedAt" | "id"
+	"administrativo" | "id" | "createdAt" | "updatedAt" | "asesoresCount"
 >;
 
 export const baseResponsableAsesorEstudianteSchema = z
@@ -99,6 +99,7 @@ export const responsableAsesorEstudianteSchema =
 					asesorCrm: true,
 					asesorEstudiante: true,
 					responsableCrm: true,
+					responsableAsesorEstudiante: true,
 				})
 				.extend({
 					usuario: baseUsuarioSchema,
@@ -121,6 +122,7 @@ export const responsableAsesorEstudianteWithAsesoresSchema =
 						asesorCrm: true,
 						asesorEstudiante: true,
 						responsableCrm: true,
+						responsableAsesorEstudiante: true,
 					})
 					.extend({
 						usuario: baseUsuarioSchema,
@@ -295,10 +297,10 @@ export class ResponsableAsesorEstudianteClass {
 	}
 }
 
-type CreateAsesorRelationParams = {
+export type CreateAsesorRelationParams = {
 	responsableAsesorEstudianteId: string;
 	asesorEstudianteId: string;
 };
-type DeleteAsesorRelationParams = {
+export type DeleteAsesorRelationParams = {
 	responsableEnAsesorEstudianteId: string;
 };

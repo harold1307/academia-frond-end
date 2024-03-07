@@ -61,6 +61,7 @@ export const asesorEstudianteSchema = baseAsesorEstudianteSchema
 					asesorCrm: true,
 					asesorEstudiante: true,
 					responsableCrm: true,
+					responsableAsesorEstudiante: true,
 				})
 				.extend({
 					usuario: baseUsuarioSchema,

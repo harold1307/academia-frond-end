@@ -3,6 +3,7 @@ import React from "react";
 import AddSede from "./add-sede";
 import AddCoordinacion from "./coordinaciones/add-coordinacion";
 import CoordinacionTableServer from "./coordinaciones/table/server";
+import CrmAsesores from "./crm-asesores";
 import DatosAcademicos from "./datos-academicos";
 import SedeTableServer from "./table/server";
 import { InstitucionTabs, seccionParams } from "./tabs";
@@ -35,6 +36,10 @@ export default function InstitucionPage({ searchParams }: Context) {
 
 	if (seccion === seccionParams.datosAcademicos) {
 		return <DatosAcademicos searchParams={searchParams} />;
+	}
+
+	if (seccion === seccionParams.crmAsesores) {
+		return <CrmAsesores searchParams={searchParams} />;
 	}
 
 	return (
