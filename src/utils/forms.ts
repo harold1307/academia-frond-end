@@ -19,6 +19,7 @@ export type Field<K> =
 	| FieldDummy<K>
 	| FieldReference<K>
 	| FieldToggle<K>
+	| FieldMultiSelect<K>
 	| FieldCombobox<K>;
 
 type FieldDefault<K> = {
@@ -40,6 +41,15 @@ type FieldDate<K> = {
 type FieldSelect<K> = {
 	name: K;
 	inputType: "custom-select";
+	options: string[] | { label: string; value: string }[] | K | "custom";
+	placeholder?: string;
+	dependsOn?: K | `reference-${string}` | `dummy-${string}`;
+	label: string;
+};
+
+type FieldMultiSelect<K> = {
+	name: K;
+	inputType: "custom-multi-select";
 	options: string[] | { label: string; value: string }[] | K | "custom";
 	placeholder?: string;
 	dependsOn?: K | `reference-${string}` | `dummy-${string}`;
