@@ -1,7 +1,7 @@
 import { APIserver } from "@/core/api-server";
 import CentroInformacionTable, {
-  DeleteCentroInformacion,
-  UpdateCentroInformacion,
+	DeleteCentroInformacion,
+	UpdateCentroInformacion,
 } from ".";
 
 export default async function CentroInformacionTableServer() {

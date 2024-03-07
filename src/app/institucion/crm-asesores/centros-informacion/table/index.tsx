@@ -6,23 +6,23 @@ import DeleteModal from "@/app/_components/modals/delete-modal";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import MutateModal from "@/app/_components/modals/mutate-modal";
 import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import { API } from "@/core/api-client";
 import type {
-  CentroInformacionClass,
-  CentroInformacionFromAPI,
+	CentroInformacionClass,
+	CentroInformacionFromAPI,
 } from "@/core/api/centros-informacion";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import type { ZodInferSchema } from "@/utils/types";
 import {
-  centroInformacionFields,
-  centrosInformacionParams,
+	centroInformacionFields,
+	centrosInformacionParams,
 } from "../add-centro-informacion";
 import { CENTROS_INFORMACION_KEYS } from "../query-keys";
 import { columns, type CentroInformacionTableItem } from "./columns";
