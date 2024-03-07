@@ -107,7 +107,7 @@ export function ComboboxForm({
 						variant='outline'
 						role='combobox'
 						className={cn(
-							"w-[200px] justify-between",
+							"w-[300px] justify-between",
 							!value && "text-muted-foreground",
 						)}
 					>
@@ -118,7 +118,7 @@ export function ComboboxForm({
 					</Button>
 				</FormControl>
 			</PopoverTrigger>
-			<PopoverContent className='w-[200px] p-0'>
+			<PopoverContent className='w-[300px] p-0'>
 				<Command>
 					<CommandInput
 						placeholder={placeholder}

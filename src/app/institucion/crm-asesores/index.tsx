@@ -3,6 +3,8 @@ import React from "react";
 import { InstitucionTabs } from "../tabs";
 import AddAsesorCrm from "./asesores-crm/add-asesor-crm";
 import AsesorCrmTableServer from "./asesores-crm/table/server";
+import AddAsesorEstudiante from "./asesores-estudiante/add-asesor-estudiante";
+import AsesorEstudianteTableServer from "./asesores-estudiante/table/server";
 import AddCentroInformacion from "./centros-informacion/add-centro-informacion";
 import CentroInformacionTableServer from "./centros-informacion/table/server";
 import AddResponsableAsesorEstudiante from "./responsables-asesores-estudiante/add-responsable-asesor-estudiante";
@@ -73,14 +75,6 @@ export default async function CrmAsesores({
 	}
 
 	if (subSeccion === subSeccionParams.asesoresEstudiante) {
-		// const sesionId = searchParams.sesionId;
-
-		// const sesiones = await APIserver.sesiones.getMany();
-
-		// const sesion = sesionId
-		// 	? sesiones.data.find(s => s.id === sesionId)
-		// 	: sesiones.data.at(0);
-
 		return (
 			<>
 				<h1 className='mb-4 text-xl font-semibold'>
@@ -89,14 +83,10 @@ export default async function CrmAsesores({
 				<InstitucionTabs seccion='crm-asesores' className={"mb-5"} />
 				<CrmAsesoresTabs seccion={subSeccion} className='mb-5' />
 				<div className='mt-4'>
-					{/* <AddTurno sesionId={sesion?.id} />
-					<SelectSesion
-						sesiones={sesiones.data.map(p => ({ id: p.id, nombre: p.nombre }))}
-						sesionId={sesion?.id}
-					/>
+					<AddAsesorEstudiante />
 					<React.Suspense fallback={"Cargando tabla..."}>
-						<TurnoTableServer turnos={sesion?.turnos || []} />
-					</React.Suspense> */}
+						<AsesorEstudianteTableServer />
+					</React.Suspense>
 				</div>
 			</>
 		);
