@@ -5,6 +5,8 @@ import AddAsesorCrm from "./asesores-crm/add-asesor-crm";
 import AsesorCrmTableServer from "./asesores-crm/table/server";
 import AddCentroInformacion from "./centros-informacion/add-centro-informacion";
 import CentroInformacionTableServer from "./centros-informacion/table/server";
+import AddResponsableAsesorEstudiante from "./responsables-asesores-estudiante/add-responsable-asesor-estudiante";
+import ResponsableAsesorEstudianteTableServer from "./responsables-asesores-estudiante/table/server";
 import AddResponsableCrm from "./responsables-crm/add-responsable-crm";
 import ResponsableCrmTableServer from "./responsables-crm/table/server";
 import CrmAsesoresTabs, { subSeccionParams } from "./tabs";
@@ -61,10 +63,10 @@ export default async function CrmAsesores({
 				<InstitucionTabs seccion='crm-asesores' className={"mb-5"} />
 				<CrmAsesoresTabs seccion={subSeccion} className='mb-5' />
 				<div className='mt-4'>
-					{/* <AddSesion />
+					<AddResponsableAsesorEstudiante />
 					<React.Suspense fallback={"Cargando tabla..."}>
-						<SesionTableServer />
-					</React.Suspense> */}
+						<ResponsableAsesorEstudianteTableServer />
+					</React.Suspense>
 				</div>
 			</>
 		);
