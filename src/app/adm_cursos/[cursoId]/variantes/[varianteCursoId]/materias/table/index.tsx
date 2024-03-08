@@ -6,6 +6,7 @@ import type { z } from "zod";
 import DeleteModal from "@/app/_components/modals/delete-modal";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
 import MutateModal from "@/app/_components/modals/mutate-modal";
+import { DataTable } from "@/app/_components/table";
 import {
 	FormControl,
 	FormField,
@@ -38,24 +39,27 @@ import {
 	materiasParams,
 	type MateriaTableItem,
 } from "./columns";
-import { DataTable } from "./data-table";
 
 interface MateriasTableProps {
 	tableData: MateriaTableItem[];
-	data: AsignaturaEnVarianteCursoFromAPI[];
 }
 
-export default function MateriasTable({ data, tableData }: MateriasTableProps) {
+export default function MateriasTable({ tableData }: MateriasTableProps) {
 	return (
-		<section className=''>
-			<DataTable columns={materiasColumns} data={tableData} />
-			<UpdateMateriaModal materias={data} />
-			<DeactivateMateriasModal materias={data} />
+		<section>
+			<DataTable<typeof materiasColumns, MateriaTableItem[]>
+				columns={materiasColumns}
+				data={tableData}
+				hideColumns={{
+					id: false,
+					varianteEstado: false,
+				}}
+			/>
 		</section>
 	);
 }
 
-function UpdateMateriaModal({
+export function UpdateMateriaModal({
 	materias,
 }: {
 	materias: AsignaturaEnVarianteCursoFromAPI[];
@@ -327,7 +331,7 @@ function UpdateMateriaModal({
 	);
 }
 
-function DeactivateMateriasModal({
+export function DeactivateMateriasModal({
 	materias,
 }: {
 	materias: AsignaturaEnVarianteCursoFromAPI[];
