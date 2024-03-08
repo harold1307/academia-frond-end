@@ -2,7 +2,11 @@ import type { NivelAcademico } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateMateriaEnHorario } from "./materias-horario";
 import type { CreateMateriaEnNivelAcademico } from "./materias-niveles-academicos";
@@ -23,6 +27,18 @@ type UpdateNivelAcademicoParams = {
 			"id" | "nivel" | "mallaId" | "createdAt" | "updatedAt" | "enUso" | "malla"
 		>
 	>;
+};
+
+type NivelAcademicoFilters = Partial<
+	NonNullableObject<
+		Omit<NivelAcademicoFromAPI, "sesion" | "id" | "createdAt" | "updatedAt"> & {
+			mallaId: string;
+		}
+	>
+>;
+
+type GetManyParams = {
+	filters?: NivelAcademicoFilters;
 };
 
 export type CreateNivelAcademico = Omit<
@@ -115,13 +131,23 @@ export class NivelAcademicoClass {
 		return res;
 	}
 
-	async getMany(_: void): Promise<APIResponse<NivelAcademicoFromAPI[]>> {
+	async getMany(
+		params?: GetManyParams,
+	): Promise<APIResponse<NivelAcademicoFromAPI[]>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(params?.filters || {}).forEach(([k, v]) => {
+			if (v !== undefined) {
+				searchParams.set(k, `${v}`);
+			}
+		});
+
 		const res = this.fetcher(
 			z.object({
 				data: nivelAcademicoSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/niveles-academicos",
+			this.apiUrl + `/api/niveles-academicos?${searchParams.toString()}`,
 		);
 
 		return res;

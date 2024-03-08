@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,11 +15,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, VarianteCursoTableItem } from "./columns";
+import type { AsesorEstudianteTableItem, columns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: VarianteCursoTableItem[];
+	data: AsesorEstudianteTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {

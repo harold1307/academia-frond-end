@@ -17,7 +17,7 @@ type UpdateSubPeriodoLectivoParams = {
 	data: Partial<Omit<CreateSubPeriodoLectivo, "periodoId">>;
 };
 
-const subPerioSubPeriodoLectivoSchema = z
+export const subPerioSubPeriodoLectivoSchema = z
 	.object<ZodInferSchema<SubPeriodoLectivoFromAPI>>({
 		id: z.string(),
 		nombre: z.string(),

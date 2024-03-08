@@ -5,7 +5,6 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
-import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
 import { programaSchema, type ProgramaFromAPI } from "./programas";
 import { sedeSchema, type SedeFromAPI } from "./sede";
 
@@ -16,35 +15,37 @@ export type CronogramaMatriculacionFromAPI = ReplaceDateToString<
 			ProgramaFromAPI,
 			"enUso" | "nivelTitulacion" | "detalleNivelTitulacion"
 		>;
-		modalidad: Omit<ModalidadFromAPI, "enUso">;
-		nivel: Omit<NivelMallaFromAPI, "enUso" | "malla">;
+		modalidad: Omit<ModalidadFromAPI, "enUso"> | null;
 	}
 >;
 
 export type CreateCronogramaMatriculacion = Omit<
 	CronogramaMatriculacionFromAPI,
-	"id" | "enUso" | "createdAt" | "updatedAt"
+	"id" | "createdAt" | "updatedAt" | "sede" | "programa" | "modalidad"
 >;
 
 type UpdateCronogramaMatriculacionParams = {
 	id: string;
-	data: Omit<CreateCronogramaMatriculacion, "periodoId" | "nivelId">;
+	data: Omit<
+		CreateCronogramaMatriculacion,
+		"periodoId" | "modalidadId" | "programaId" | "sedeId" | "nivel"
+	>;
 };
 
 export const baseCronogramaMatriculacionSchema = z
 	.object<
 		ZodInferSchema<
-			Omit<
-				CronogramaMatriculacionFromAPI,
-				"sede" | "programa" | "modalidad" | "nivel"
-			>
+			Omit<CronogramaMatriculacionFromAPI, "sede" | "programa" | "modalidad">
 		>
 	>({
 		id: z.string(),
 		fechaFin: z.string().datetime(),
 		fechaInicio: z.string().datetime(),
-		nivelId: z.string().uuid(),
 		periodoId: z.string().uuid(),
+		modalidadId: z.string().uuid().nullable(),
+		programaId: z.string().uuid(),
+		sedeId: z.string().uuid(),
+		nivel: z.number().nullable(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -54,10 +55,7 @@ export const baseCronogramaMatriculacionSchema = z
 export const cronogramaMatriculacionSchema = baseCronogramaMatriculacionSchema
 	.extend<
 		ZodInferSchema<
-			Pick<
-				CronogramaMatriculacionFromAPI,
-				"sede" | "programa" | "modalidad" | "nivel"
-			>
+			Pick<CronogramaMatriculacionFromAPI, "sede" | "programa" | "modalidad">
 		>
 	>({
 		sede: sedeSchema.omit({ enUso: true }),
@@ -66,8 +64,7 @@ export const cronogramaMatriculacionSchema = baseCronogramaMatriculacionSchema
 			nivelTitulacion: true,
 			detalleNivelTitulacion: true,
 		}),
-		modalidad: modalidadSchema.omit({ enUso: true }),
-		nivel: baseNivelMallaSchema,
+		modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
 	})
 	.strict();
 

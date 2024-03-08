@@ -5,9 +5,12 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
-import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
 import { programaSchema, type ProgramaFromAPI } from "./programas";
 import { sedeSchema, type SedeFromAPI } from "./sede";
+import {
+	tipoDocumentoSchema,
+	type TipoDocumentoFromAPI,
+} from "./tipos-documento";
 
 export type RequisitoMatriculacionFromAPI = ReplaceDateToString<
 	RequisitoMatriculacion & {
@@ -15,15 +18,21 @@ export type RequisitoMatriculacionFromAPI = ReplaceDateToString<
 		programa: Omit<
 			ProgramaFromAPI,
 			"enUso" | "nivelTitulacion" | "detalleNivelTitulacion"
-		>;
-		modalidad: Omit<ModalidadFromAPI, "enUso">;
-		nivel: Omit<NivelMallaFromAPI, "enUso" | "malla">;
+		> | null;
+		modalidad: Omit<ModalidadFromAPI, "enUso"> | null;
+		tipoDocumento: Omit<TipoDocumentoFromAPI, "enUso">;
 	}
 >;
 
 export type CreateRequisitoMatriculacion = Omit<
 	RequisitoMatriculacionFromAPI,
-	"id" | "createdAt" | "updatedAt" | "sede" | "programa" | "modalidad" | "nivel"
+	| "id"
+	| "createdAt"
+	| "updatedAt"
+	| "sede"
+	| "programa"
+	| "modalidad"
+	| "tipoDocumento"
 >;
 
 type UpdateRequisitoMatriculacionParams = {
@@ -31,12 +40,12 @@ type UpdateRequisitoMatriculacionParams = {
 	data: Partial<Omit<CreateRequisitoMatriculacion, "periodoId">>;
 };
 
-const baseRequisitoMatriculacionSchema = z
+export const baseRequisitoMatriculacionSchema = z
 	.object<
 		ZodInferSchema<
 			Omit<
 				RequisitoMatriculacionFromAPI,
-				"sede" | "programa" | "modalidad" | "nivel"
+				"sede" | "programa" | "modalidad" | "tipoDocumento"
 			>
 		>
 	>({
@@ -46,9 +55,13 @@ const baseRequisitoMatriculacionSchema = z
 		primeraMatricula: z.boolean(),
 		repitenMaterias: z.boolean(),
 		descripcion: z.string().nullable(),
+		nivel: z.number().nullable(),
+		nombre: z.string(),
 
-		nivelId: z.string().uuid(),
+		modalidadId: z.string().uuid().nullable(),
 		periodoId: z.string().uuid(),
+		programaId: z.string().uuid().nullable(),
+		sedeId: z.string().uuid(),
 		tipoDocumentoId: z.string().uuid(),
 
 		createdAt: z.string().datetime(),
@@ -56,23 +69,27 @@ const baseRequisitoMatriculacionSchema = z
 	})
 	.strict();
 
-const requisitoMatriculacionSchema = baseRequisitoMatriculacionSchema.extend<
-	ZodInferSchema<
-		Pick<
-			RequisitoMatriculacionFromAPI,
-			"sede" | "programa" | "modalidad" | "nivel"
+export const requisitoMatriculacionSchema = baseRequisitoMatriculacionSchema
+	.extend<
+		ZodInferSchema<
+			Pick<
+				RequisitoMatriculacionFromAPI,
+				"sede" | "programa" | "modalidad" | "tipoDocumento"
+			>
 		>
-	>
->({
-	sede: sedeSchema.omit({ enUso: true }),
-	programa: programaSchema.omit({
-		enUso: true,
-		nivelTitulacion: true,
-		detalleNivelTitulacion: true,
-	}),
-	modalidad: modalidadSchema.omit({ enUso: true }),
-	nivel: baseNivelMallaSchema,
-});
+	>({
+		sede: sedeSchema.omit({ enUso: true }),
+		programa: programaSchema
+			.omit({
+				enUso: true,
+				nivelTitulacion: true,
+				detalleNivelTitulacion: true,
+			})
+			.nullable(),
+		modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
+		tipoDocumento: tipoDocumentoSchema.omit({ enUso: true }),
+	})
+	.strict();
 
 export class RequisitoMatriculacionClass {
 	constructor(

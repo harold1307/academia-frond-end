@@ -1,6 +1,6 @@
 "use client";
+import { DataTable } from "@/app/_components/table";
 import { columns, type VarianteCursoTableItem } from "./columns";
-import { DataTable } from "./data-table";
 
 type VarianteCursoTableProps = {
 	data: VarianteCursoTableItem[];
@@ -8,9 +8,15 @@ type VarianteCursoTableProps = {
 
 export default function VarianteCursoTable({ data }: VarianteCursoTableProps) {
 	return (
-		<section className=''>
+		<section>
 			{/* <h1 className='text-2xl font-semibold'>Tabla</h1> */}
-			<DataTable columns={columns} data={data} />
+			<DataTable<typeof columns, VarianteCursoTableItem[]>
+				columns={columns}
+				data={data}
+				hideColumns={{
+					id: false,
+				}}
+			/>
 		</section>
 	);
 }

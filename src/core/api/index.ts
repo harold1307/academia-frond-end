@@ -2,6 +2,8 @@ import { createZodFetcher, type ZodFetcher } from "zod-fetch";
 
 import { AlternativaEvaluacionClass } from "./alternativas-evaluacion";
 import { AreaConocimientoClass } from "./areas-conocimiento";
+import { AsesorCrmClass } from "./asesores-crm";
+import { AsesorEstudianteClass } from "./asesores-estudiante";
 import { AsignaturaClass } from "./asignaturas";
 import { AsignaturaEnCursoEscuelaClass } from "./asignaturas-curso-escuelas";
 import { AsignaturaEnNivelMallaClass } from "./asignaturas-niveles-malla";
@@ -9,12 +11,14 @@ import { AsignaturaEnVarianteCursoClass } from "./asignaturas-variantes-curso";
 import { CampoFormacionClass } from "./campos-formacion";
 import { CampoModeloEvaluativoClass } from "./campos-modelos-evaluativos";
 import { CampoProyectoIntegradorClass } from "./campos-proyectos-integradores";
+import { CentroInformacionClass } from "./centros-informacion";
 import { CoordinacionClass } from "./coordinaciones";
 import { CorteClass } from "./cortes";
 import { CursoEscuelaClass } from "./curso-escuelas";
 import { CursoClass } from "./cursos";
 import { DetalleNivelTitulacionClass } from "./detalles-nivel-titulacion";
 import { EjeFormativoClass } from "./ejes-formativos";
+import { GrupoClass } from "./grupos";
 import { MallaCurricularClass } from "./mallas-curriculares";
 import { MateriaEnHorarioClass } from "./materias-horario";
 import { MateriaEnNivelAcademicoClass } from "./materias-niveles-academicos";
@@ -29,7 +33,11 @@ import { ParaleloClass } from "./paralelos";
 import { PerfilPracticaClass } from "./perfiles-practica";
 import { PeriodoLectivoClass } from "./periodos-lectivos";
 import { ProgramaClass } from "./programas";
+import { ProgramaEnCursoEscuelaClass } from "./programas-cursos-escuela";
+import { ProgramaEnVarianteCursoClass } from "./programas-variantes-curso";
 import { ProyectoIntegradorClass } from "./proyectos-integradores";
+import { ResponsableAsesorEstudianteClass } from "./responsables-asesores-estudiante";
+import { ResponsableCrmClass } from "./responsables-crm";
 import { SedeClass } from "./sede";
 import { SesionClass } from "./sesiones";
 import { TipoDocumentoClass } from "./tipos-documento";
@@ -37,6 +45,7 @@ import { TipoDocumentoEnProgramaClass } from "./tipos-documento-programas";
 import { TituloObtenidoClass } from "./titulos-obtenidos";
 import { TurnoClass } from "./turnos";
 import { UbicacionClass } from "./ubicaciones";
+import { UsuarioClass } from "./usuarios";
 import { VarianteCursoClass } from "./variantes-curso";
 
 export type APIResponse<D> = {
@@ -236,6 +245,42 @@ export class APIClass {
 
 	get asignaturasEnVariantesCurso() {
 		return new AsignaturaEnVarianteCursoClass(this._apiUrl, this._fetcher);
+	}
+
+	get centrosInformacion() {
+		return new CentroInformacionClass(this._apiUrl, this._fetcher);
+	}
+
+	get grupos() {
+		return new GrupoClass(this._apiUrl, this._fetcher);
+	}
+
+	get usuarios() {
+		return new UsuarioClass(this._apiUrl, this._fetcher);
+	}
+
+	get asesoresCrm() {
+		return new AsesorCrmClass(this._apiUrl, this._fetcher);
+	}
+
+	get responsablesCrm() {
+		return new ResponsableCrmClass(this._apiUrl, this._fetcher);
+	}
+
+	get asesoresEstudiante() {
+		return new AsesorEstudianteClass(this._apiUrl, this._fetcher);
+	}
+
+	get responsablesAsesoresEstudiante() {
+		return new ResponsableAsesorEstudianteClass(this._apiUrl, this._fetcher);
+	}
+
+	get programasVariantesCurso() {
+		return new ProgramaEnVarianteCursoClass(this._apiUrl, this._fetcher);
+	}
+
+	get programasCursosEscuela() {
+		return new ProgramaEnCursoEscuelaClass(this._apiUrl, this._fetcher);
 	}
 }
 

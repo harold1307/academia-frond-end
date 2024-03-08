@@ -26,3 +26,10 @@ export function formatDate(
 
 	return new Intl.DateTimeFormat(undefined, options).format(date);
 }
+
+export function formatFullName(...args: (string | null)[]) {
+	return args
+		.filter((a): a is string => !!a)
+		.map(a => a.trim())
+		.join(" ");
+}

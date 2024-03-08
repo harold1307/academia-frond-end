@@ -268,6 +268,13 @@ function Actions({
 						</>
 					)}
 				</DropdownMenuItem>
+				{/* <DropdownMenuSeparator /> */}
+				{/* <DropdownMenuItem
+					onClick={() => replaceSet(mallaParams.delete, props.mallaId)}
+				>
+					<X className='mr-2 h-4 w-4' />
+					<span>Eliminar</span>
+				</DropdownMenuItem> */}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);
