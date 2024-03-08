@@ -20,7 +20,8 @@ export default async function CursosVariantesPage({ params }: Context) {
 		params.cursoId,
 	);
 
-	if (!curso) return notFound();
+	if (!curso.data) return notFound();
+
 	return (
 		<div className='align-center flex flex-col justify-center gap-4'>
 			<div className='flex items-center justify-between pl-6 pr-6'>

@@ -12,6 +12,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { ROUTES } from "@/core/routes";
@@ -93,6 +94,7 @@ function Actions(props: {
 						</>
 					)}
 				</DropdownMenuItem>
+				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					onClick={() => replaceSet(cursosParams.delete, props.cursoId)}
 				>

@@ -144,7 +144,13 @@ const varianteCursoWithProgramasSchema = varianteCursoSchema.extend<
 				enUso: true,
 			}),
 			modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
-			malla: baseMallaSchema.nullable(),
+			malla: baseMallaSchema
+				.omit({
+					practicaComunitaria: true,
+					practicaPreProfesional: true,
+					enUso: true,
+				})
+				.nullable(),
 		})
 		.array(),
 });

@@ -53,14 +53,13 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema: createVarianteCursoSchema,
-		mutationFn: async ({ verificarEdad, ...data }) => {
+		mutationFn: ({ verificarEdad, ...data }) => {
 			return API.cursos.createVarianteCurso(cursoId, {
 				...data,
-				edadMinima: verificarEdad ? data.edadMaxima ?? null : null,
+				edadMinima: verificarEdad ? data.edadMinima ?? null : null,
 				edadMaxima: verificarEdad ? data.edadMaxima ?? null : null,
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -77,6 +76,9 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				costoPorCantidadMateria: false,
 
 				verificarEdad: false,
+
+				edadMinima: 0,
+				edadMaxima: 0,
 			},
 		},
 	});
@@ -100,7 +102,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 				)}
 				title='Adicionar variante de curso'
 				withTrigger
-				triggerLabel='Adicionar variante de curso'
+				triggerLabel='Agregar'
 			>
 				<div className='mb-10 flex flex-col items-center justify-center gap-6 px-8'>
 					{varianteCursoFields.map(f =>
