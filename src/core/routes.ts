@@ -64,4 +64,8 @@ export const ROUTES = {
 		documentos: (crmId: string) => ROUTES.crm.path + `/${crmId}/documentos`,
 		depositos: (crmId: string) => ROUTES.crm.path + `/${crmId}/depositos`,
 	},
+	graduados: {
+		path: "/graduados",
+		graduados: "/graduados?seccion=graduados",
+	},
 } as const;

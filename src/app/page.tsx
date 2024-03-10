@@ -52,6 +52,10 @@ const modulos = [
 		label: "CRM",
 		href: ROUTES.crm.path,
 	},
+	{
+		label: "Graduados",
+		href: ROUTES.graduados.path,
+	},
 	// {
 	// 	label: "Mis Horarios",
 	// 	href: ROUTES.horarios.path
