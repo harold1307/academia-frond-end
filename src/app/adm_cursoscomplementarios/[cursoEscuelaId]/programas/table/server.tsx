@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 
 import { APIserver } from "@/core/api-server";
 import ProgramasEnCursoEscuelaTable, {
-  DeactivateProgramaModal,
-  UpdateProgramaModal,
+	DeactivateProgramaModal,
+	UpdateProgramaModal,
 } from ".";
 import type { ProgramaEnCursoEscuelaTableItem } from "./columns";
 

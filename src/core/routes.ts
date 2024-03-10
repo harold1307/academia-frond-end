@@ -19,7 +19,8 @@ export const ROUTES = {
 	},
 	cursoEscuelas: {
 		path: "/adm_cursoscomplementarios",
-		programas: (cursoId: string) => ROUTES.cursoEscuelas.path + `/${cursoId}/programas`,
+		programas: (cursoId: string) =>
+			ROUTES.cursoEscuelas.path + `/${cursoId}/programas`,
 	},
 	modelosEvaluativos: {
 		path: "/modelosevaluativos",

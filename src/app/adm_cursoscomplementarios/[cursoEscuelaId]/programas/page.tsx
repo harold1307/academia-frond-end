@@ -25,7 +25,7 @@ export default async function CursosEscuelasPage({ params }: Context) {
 				Programas que se pueden registrar en el curso
 			</h1>
 			<CursoEscuelaName cursoEscuela={curso.data} />
-			<div className="mt-4">
+			<div className='mt-4'>
 				<AddProgramaEnCursoEscuela
 					cursoEscuelaId={params.cursoEscuelaId}
 					cursoEscuelaEstado={curso.data.estado}
