@@ -18,7 +18,8 @@ export const ROUTES = {
 		costos: (varianteId: string) => `/${varianteId}/costos`,
 	},
 	cursoEscuelas: {
-		path: "adm_cursoscomplementarios",
+		path: "/adm_cursoscomplementarios",
+		programas: (cursoId: string) => ROUTES.cursoEscuelas.path + `/${cursoId}/programas`,
 	},
 	modelosEvaluativos: {
 		path: "/modelosevaluativos",

@@ -104,7 +104,13 @@ const cursoEscuelaWithProgramasSchema = cursoEscuelaSchema.extend<
 				enUso: true,
 			}),
 			modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
-			malla: baseMallaSchema.nullable(),
+			malla: baseMallaSchema
+				.omit({
+					practicaPreProfesional: true,
+					practicaComunitaria: true,
+					enUso: true,
+				})
+				.nullable(),
 		})
 		.array(),
 });

@@ -1,4 +1,7 @@
 "use client";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
@@ -21,9 +24,6 @@ import { useMutateModule } from "@/hooks/use-mutate-module";
 import { cn } from "@/utils";
 import type { Field } from "@/utils/forms";
 import type { ReplaceNullableToOptional, ZodInferSchema } from "@/utils/types";
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import MutateModal from "../_components/modals/mutate-modal";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
@@ -162,8 +162,6 @@ export default function AddCursoEscuela() {
 
 	const formValues = form.watch();
 
-	console.log(form.formState.errors);
-
 	return (
 		<section>
 			<MutateModal
@@ -176,7 +174,7 @@ export default function AddCursoEscuela() {
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar curso'
 				withTrigger
-				triggerLabel='Adicionar curso'
+				triggerLabel='Agregar'
 			>
 				{fields.map(f => {
 					if (f.dependsOn) {
