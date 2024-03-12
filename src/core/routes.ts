@@ -37,4 +37,9 @@ export const ROUTES = {
 		detalleHorario: (horarioId: string) =>
 			ROUTES.admHorarios.path + `/${horarioId}`,
 	},
+	niveles: {
+		path: "/niveles",
+		detalleHorario: (horarioId: string) =>
+			ROUTES.niveles.path + `/${horarioId}`,
+	},
 } as const;

@@ -53,8 +53,8 @@ export function DataTable({ columns, data }: DataTableProps) {
 									<TableHead
 										key={header.id}
 										className={`${index === 0 ? "rounded-l-md border-l-2" : ""} 
-										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
-										relative h-40 w-2 px-0 py-0 font-light`}
+										${index === headerGroup.headers.length - 1 ? "rounded-r-md border-r-2" : ""} 
+										relative w-2 px-4 py-0 `}
 									>
 										{header.isPlaceholder
 											? null
@@ -78,7 +78,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map((cell, index) => (
-									<TableCell key={cell.id} className={`p-0`}>
+									<TableCell key={cell.id} className={`p-0 `}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}

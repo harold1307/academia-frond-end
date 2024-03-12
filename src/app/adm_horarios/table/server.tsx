@@ -38,6 +38,5 @@ export default async function HorariosAdminTableServer() {
 	//Fetch programas
 
 	// if (!programas.data) return notFound();
-
 	return <HorariosAdminTable data={data.horarios} />;
 }
