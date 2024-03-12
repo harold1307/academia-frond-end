@@ -2,7 +2,7 @@
 import React from "react";
 import { DataTable } from "./data-table";
 import {
-	NivelacionTableItem,
+	type NivelacionTableItem,
 	nivelacionColumns,
 	nivelacionParams,
 } from "./columns";
@@ -18,7 +18,7 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import DeleteModal from "@/app/_components/modals/delete-modal";
-import { NivelacionSchema, nivelacionFields } from "../add-nivelacion";
+import { type NivelacionSchema, nivelacionFields } from "../add-nivelacion";
 
 interface NivelacionTableProps {
 	data: NivelacionSchema[];

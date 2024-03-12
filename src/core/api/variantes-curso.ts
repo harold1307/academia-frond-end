@@ -5,8 +5,40 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import { asignaturaSchema, type AsignaturaFromAPI } from "./asignaturas";
+import type { CreateCursoEscuela } from "./curso-escuelas";
+import {
+	baseMallaSchema,
+	type MallaCurricularFromAPI,
+} from "./mallas-curriculares";
+import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
+import { programaSchema, type ProgramaFromAPI } from "./programas";
+import {
+	programaEnVarianteCursoSchema,
+	type CreateProgramaEnVarianteCurso,
+	type ProgramaEnVarianteCursoFromAPI,
+} from "./programas-variantes-curso";
 
 export type VarianteCursoFromAPI = ReplaceDateToString<VarianteCurso>;
+
+export type VarianteCursoWithProgramasFromAPI = VarianteCursoFromAPI & {
+	programas: (ProgramaEnVarianteCursoFromAPI & {
+		programa: Omit<
+			ProgramaFromAPI,
+			"enUso" | "nivelTitulacion" | "detalleNivelTitulacion"
+		>;
+		modalidad: Omit<ModalidadFromAPI, "enUso"> | null;
+		malla: Omit<
+			MallaCurricularFromAPI,
+			| "enUso"
+			| "modalidad"
+			| "practicaPreProfesional"
+			| "practicaComunitaria"
+			| "tituloObtenido"
+			| "niveles"
+			| "modulos"
+		> | null;
+	})[];
+};
 
 export type AsignaturaEnVarianteCursoFromAPI = ReplaceDateToString<
 	AsignaturaEnVarianteCurso & {
@@ -101,6 +133,28 @@ const varianteCursoWithAsignaturasSchema = varianteCursoSchema
 	})
 	.strict();
 
+const varianteCursoWithProgramasSchema = varianteCursoSchema.extend<
+	ZodInferSchema<Pick<VarianteCursoWithProgramasFromAPI, "programas">>
+>({
+	programas: programaEnVarianteCursoSchema
+		.extend({
+			programa: programaSchema.omit({
+				nivelTitulacion: true,
+				detalleNivelTitulacion: true,
+				enUso: true,
+			}),
+			modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
+			malla: baseMallaSchema
+				.omit({
+					practicaComunitaria: true,
+					practicaPreProfesional: true,
+					enUso: true,
+				})
+				.nullable(),
+		})
+		.array(),
+});
+
 export class VarianteCursoClass {
 	constructor(
 		private apiUrl: string,
@@ -180,4 +234,87 @@ export class VarianteCursoClass {
 
 		return res.json();
 	}
+
+	async createCursoEscuela({
+		data,
+		varianteCursoId,
+	}: CreateCursoEscuelaParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/variantes-curso/${varianteCursoId}/curso-escuelas`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
+
+	async getByIdWithProgramas(
+		id: string,
+	): Promise<APIResponse<VarianteCursoWithProgramasFromAPI | null>> {
+		const res = this.fetcher(
+			z.object({
+				data: varianteCursoWithProgramasSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/variantes-curso/${id}/programas`,
+		);
+
+		return res;
+	}
+	async createProgramaEnVariante({
+		data,
+		varianteCursoId,
+	}: CreateProgramaEnVarianteParams): Promise<SimpleAPIResponse> {
+		const res = await fetch(
+			this.apiUrl + `/api/variantes-curso/${varianteCursoId}/programas`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
 }
+
+type CreateCursoEscuelaParams = {
+	varianteCursoId: string;
+	data: Omit<
+		CreateCursoEscuela,
+		| "plantillaId"
+		| "registroExterno"
+		| "registroInterno"
+		| "verificarSesion"
+		| "registroDesdeOtraSede"
+		| "edadMinima"
+		| "edadMaxima"
+		| "costoPorMateria"
+		| "cumpleRequisitosMalla"
+		| "pasarRecord"
+		| "aprobarCursoPrevio"
+	>;
+};
+type CreateProgramaEnVarianteParams = {
+	varianteCursoId: string;
+	data: Omit<CreateProgramaEnVarianteCurso, "varianteCursoId">;
+};

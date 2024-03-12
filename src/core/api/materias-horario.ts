@@ -49,6 +49,8 @@ export const baseMateriaEnHorarioSchema = z
 		nivelAcademicoId: z.string().uuid(),
 		turnoId: z.string().uuid(),
 		ubicacionId: z.string().uuid(),
+		fechaInicio: z.string().datetime(),
+		fechaFin: z.string().datetime(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),

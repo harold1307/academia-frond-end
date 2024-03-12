@@ -4,29 +4,32 @@ import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import { sedeSchema } from "./sede";
+import { baseSesionSchema, type SesionFromAPI } from "./sesiones";
 
 export type TurnoFromAPI = ReplaceDateToString<
 	Turno & {
 		enUso: boolean;
+		sesion: Omit<SesionFromAPI, "turnos">;
 	}
 >;
 
 export type CreateTurno = Omit<
 	TurnoFromAPI,
-	"id" | "enUso" | "createdAt" | "updatedAt" | "estado"
+	"id" | "enUso" | "createdAt" | "updatedAt" | "estado" | "sesion"
 >;
 
 type UpdateTurnoParams = {
 	id: string;
 	data: Partial<
-		Omit<CreateTurno, "sesionId"> & {
+		Omit<CreateTurno, "sesionId" | "sesion"> & {
 			estado: boolean;
 		}
 	>;
 };
 
-export const turnoSchema = z
-	.object<ZodInferSchema<TurnoFromAPI>>({
+export const baseTurnoSchema = z
+	.object<ZodInferSchema<Omit<TurnoFromAPI, "sesion">>>({
 		id: z.string().uuid(),
 		horas: z.number().int(),
 		comienza: z.string().datetime(),
@@ -39,6 +42,16 @@ export const turnoSchema = z
 		updatedAt: z.string().datetime(),
 	})
 	.strict();
+
+export const turnoSchema = baseTurnoSchema.extend<
+	ZodInferSchema<Pick<TurnoFromAPI, "sesion">>
+>({
+	sesion: z.lazy(() =>
+		baseSesionSchema.extend({
+			sede: sedeSchema,
+		}),
+	),
+});
 
 export class TurnoClass {
 	constructor(

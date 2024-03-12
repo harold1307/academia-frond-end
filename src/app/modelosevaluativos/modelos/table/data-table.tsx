@@ -17,8 +17,8 @@ import {
 	TableRow,
 } from "@/app/_components/ui/table";
 import {
-	modelosEvaluativosColumns,
-	ModelosEvaluativosTableItem,
+	type modelosEvaluativosColumns,
+	type ModelosEvaluativosTableItem,
 } from "./columns";
 
 interface DataTableProps {

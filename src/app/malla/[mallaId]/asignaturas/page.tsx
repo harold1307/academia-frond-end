@@ -3,6 +3,7 @@ import React from "react";
 
 import { APIserver } from "@/core/api-server";
 import AddAsignaturaEnMalla from "./add-asignatura-en-malla";
+import MallaName from "./malla-name";
 import AsignaturaEnMallaTableServer from "./table/server";
 
 type Context = {
@@ -24,6 +25,8 @@ export default async function AsignaturasEnMallaPage({ params }: Context) {
 
 	return (
 		<>
+			<h1 className='text-xl font-semibold'>Contenido de malla curricular</h1>
+			<MallaName malla={malla.data} />
 			<div className='mt-4'>
 				<AddAsignaturaEnMalla
 					mallaNiveles={malla.data.niveles.map(n => ({

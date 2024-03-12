@@ -1,6 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { FileSignature, GripHorizontal } from "lucide-react";
+import { FileSignature, GripHorizontal, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
@@ -9,9 +8,13 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { ROUTES } from "@/core/routes";
+import { formatDate } from "@/utils";
+import { mallaParams } from "../add-malla";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
 export type MallaCurricularTableItem = {
 	id: string;
@@ -91,8 +94,20 @@ export const columns = [
 			const { fechaAprobacion, fechaLimiteVigencia } = cell.getValue();
 			return (
 				<>
-					<div>{format(fechaAprobacion, "dd/LL/yyyy")}</div>
-					<div>{format(fechaLimiteVigencia, "dd/LL/yyyy")}</div>
+					<div>
+						{formatDate(fechaAprobacion, {
+							day: "2-digit",
+							month: "2-digit",
+							year: "numeric",
+						})}
+					</div>
+					<div>
+						{formatDate(fechaLimiteVigencia, {
+							day: "2-digit",
+							month: "2-digit",
+							year: "numeric",
+						})}
+					</div>
 				</>
 			);
 		},
@@ -167,14 +182,15 @@ export const columns = [
 		id: "actions",
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
+			const enUso = row.getValue("enUso") as boolean;
 
-			return <Actions mallaId={id} />;
+			return <Actions mallaId={id} showDelete={!enUso} />;
 		},
 	}),
 ];
 
-function Actions(props: { mallaId: string }) {
-	const router = useRouter();
+function Actions(props: { mallaId: string; showDelete: boolean }) {
+	const { replaceSet, router } = useMutateSearchParams();
 
 	return (
 		<DropdownMenu>
@@ -183,7 +199,7 @@ function Actions(props: { mallaId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-				// onClick={() => onClick(cursosParams.update, props.cursoId)}
+				// onClick={() => replaceSet(mallaParams.update, props.mallaId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
@@ -210,6 +226,15 @@ function Actions(props: { mallaId: string }) {
 					<GripHorizontal className='mr-2 h-4 w-4' />
 					<span>Modulos</span>
 				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				{props.showDelete && (
+					<DropdownMenuItem
+						onClick={() => replaceSet(mallaParams.delete, props.mallaId)}
+					>
+						<X className='mr-2 h-4 w-4' />
+						<span>Eliminar</span>
+					</DropdownMenuItem>
+				)}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

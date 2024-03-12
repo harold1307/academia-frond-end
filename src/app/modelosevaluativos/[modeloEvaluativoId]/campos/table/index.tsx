@@ -2,7 +2,7 @@
 import React from "react";
 import { DataTable } from "./data-table";
 import {
-	CamposModelosEvaluativosTableItem,
+	type CamposModelosEvaluativosTableItem,
 	camposModelosEvaluativosColumns,
 } from "./columns";
 

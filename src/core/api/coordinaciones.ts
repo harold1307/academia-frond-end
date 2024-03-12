@@ -4,25 +4,30 @@ import type { ZodFetcher } from "zod-fetch";
 
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
+import { programaSchema, type ProgramaFromAPI } from "./programas";
 
 export type CoordinacionFromAPI = ReplaceDateToString<
 	Coordinacion & {
 		enUso: boolean;
+		programas: ProgramaFromAPI[];
+		profesores: number;
 	}
 >;
 
 export type CreateCoordinacion = Omit<
 	CoordinacionFromAPI,
-	"id" | "enUso" | "createdAt" | "updatedAt"
+	"id" | "enUso" | "createdAt" | "updatedAt" | "programas" | "profesores"
 >;
 
-const schema = z
+export const coordinacionSchema = z
 	.object<ZodInferSchema<CoordinacionFromAPI>>({
 		id: z.string().uuid(),
 		nombre: z.string(),
 		enUso: z.boolean(),
 		alias: z.string(),
 		sedeId: z.string().uuid(),
+		programas: programaSchema.array(),
+		profesores: z.number(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -38,12 +43,21 @@ export class CoordinacionClass {
 	async update(params: {
 		id: string;
 		data: Partial<
-			Omit<CoordinacionFromAPI, "id" | "enUso" | "createdAt" | "updatedAt">
+			Omit<
+				CoordinacionFromAPI,
+				| "id"
+				| "enUso"
+				| "createdAt"
+				| "updatedAt"
+				| "programas"
+				| "sedeId"
+				| "profesores"
+			>
 		>;
 	}): Promise<APIResponse<CoordinacionFromAPI>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema,
+				data: coordinacionSchema,
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/coordinaciones/${params.id}`,
@@ -62,7 +76,7 @@ export class CoordinacionClass {
 	async getMany(_: void): Promise<APIResponse<CoordinacionFromAPI[]>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema.array(),
+				data: coordinacionSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/coordinaciones",
@@ -74,7 +88,7 @@ export class CoordinacionClass {
 	async getById(id: string): Promise<APIResponse<CoordinacionFromAPI | null>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema.nullable(),
+				data: coordinacionSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/coordinaciones/${id}`,

@@ -17,8 +17,8 @@ import {
 	TableRow,
 } from "@/app/_components/ui/table";
 import {
-	proyectoIntegradorColumns,
-	ProyectoIntegradorTableItem,
+	type proyectoIntegradorColumns,
+	type ProyectoIntegradorTableItem,
 } from "./columns";
 
 interface DataTableProps {

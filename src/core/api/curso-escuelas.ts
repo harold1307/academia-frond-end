@@ -5,6 +5,17 @@ import type { ZodFetcher } from "zod-fetch";
 import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { AsignaturaEnCursoEscuelaFromAPI } from "./asignaturas-curso-escuelas";
+import {
+	baseMallaSchema,
+	type MallaCurricularFromAPI,
+} from "./mallas-curriculares";
+import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
+import { programaSchema, type ProgramaFromAPI } from "./programas";
+import {
+	programaEnCursoEscuelaSchema,
+	type CreateProgramaEnCursoEscuela,
+	type ProgramaEnCursoEscuelaFromAPI,
+} from "./programas-cursos-escuela";
 
 export type CursoEscuelaFromAPI = ReplaceDateToString<
 	CursoEscuela & {
@@ -12,9 +23,42 @@ export type CursoEscuelaFromAPI = ReplaceDateToString<
 	}
 >;
 
-const schema = z
+export type CursoEscuelaWithProgramasFromAPI = CursoEscuelaFromAPI & {
+	programas: (ProgramaEnCursoEscuelaFromAPI & {
+		programa: Omit<
+			ProgramaFromAPI,
+			"enUso" | "nivelTitulacion" | "detalleNivelTitulacion"
+		>;
+		modalidad: Omit<ModalidadFromAPI, "enUso"> | null;
+		malla: Omit<
+			MallaCurricularFromAPI,
+			| "enUso"
+			| "modalidad"
+			| "practicaPreProfesional"
+			| "practicaComunitaria"
+			| "tituloObtenido"
+			| "niveles"
+			| "modulos"
+		> | null;
+	})[];
+};
+
+export type CreateCursoEscuela = Omit<
+	CursoEscuelaFromAPI,
+	"id" | "createdAt" | "updatedAt" | "enUso" | "estado"
+>;
+
+export type UpdateCursoEscuela = Partial<
+	Omit<
+		CursoEscuelaFromAPI,
+		"plantillaId" | "id" | "createdAt" | "updatedAt" | "enUso" | "periodoId"
+	>
+>;
+
+export const cursoEscuelaSchema = z
 	.object<ZodInferSchema<CursoEscuelaFromAPI>>({
 		id: z.string().uuid(),
+		estado: z.boolean(),
 		nombre: z.string(),
 		enUso: z.boolean(),
 		codigo: z.string().nullable(),
@@ -27,7 +71,6 @@ const schema = z
 		fechaFin: z.string().datetime(),
 		fechaLimiteRegistro: z.string().datetime(),
 		diasLimitePago: z.number(),
-		nivel: z.number(),
 		cupos: z.number().nullable(),
 		evaluaProfesor: z.boolean(),
 		matriculaConDeuda: z.boolean(),
@@ -43,11 +86,34 @@ const schema = z
 		pasarRecord: z.boolean(),
 
 		plantillaId: z.string().uuid().nullable(),
+		periodoId: z.string().uuid(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
 	})
 	.strict();
+
+const cursoEscuelaWithProgramasSchema = cursoEscuelaSchema.extend<
+	ZodInferSchema<Pick<CursoEscuelaWithProgramasFromAPI, "programas">>
+>({
+	programas: programaEnCursoEscuelaSchema
+		.extend({
+			programa: programaSchema.omit({
+				nivelTitulacion: true,
+				detalleNivelTitulacion: true,
+				enUso: true,
+			}),
+			modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
+			malla: baseMallaSchema
+				.omit({
+					practicaPreProfesional: true,
+					practicaComunitaria: true,
+					enUso: true,
+				})
+				.nullable(),
+		})
+		.array(),
+});
 
 export class CursoEscuelaClass {
 	constructor(
@@ -80,17 +146,7 @@ export class CursoEscuelaClass {
 	// }
 
 	async create(
-		data: Omit<
-			CursoEscuelaFromAPI,
-			| "id"
-			| "enUso"
-			| "createdAt"
-			| "updatedAt"
-			| "plantillaId"
-			| "fechaInicio"
-			| "fechaFin"
-			| "fechaLimiteRegistro"
-		> & { fechaInicio: string; fechaFin: string; fechaLimiteRegistro: string },
+		data: Omit<CreateCursoEscuela, "plantillaId">,
 	): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/curso-escuelas`, {
 			method: "POST",
@@ -112,7 +168,7 @@ export class CursoEscuelaClass {
 	async getMany(_: void): Promise<APIResponse<CursoEscuelaFromAPI[]>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema.array(),
+				data: cursoEscuelaSchema.array(),
 				message: z.string(),
 			}),
 			this.apiUrl + "/api/curso-escuelas",
@@ -124,7 +180,7 @@ export class CursoEscuelaClass {
 	async getById(id: string): Promise<APIResponse<CursoEscuelaFromAPI | null>> {
 		const res = this.fetcher(
 			z.object({
-				data: schema.nullable(),
+				data: cursoEscuelaSchema.nullable(),
 				message: z.string(),
 			}),
 			this.apiUrl + `/api/curso-escuelas/${id}`,
@@ -175,4 +231,47 @@ export class CursoEscuelaClass {
 
 		return res.json();
 	}
+
+	async createProgramaEnCursoEscuela({
+		cursoEscuelaId,
+		data,
+	}: CreateProgramaEnCursoEscuelaParams) {
+		const res = await fetch(
+			this.apiUrl + `/api/curso-escuelas/${cursoEscuelaId}/programas`,
+			{
+				method: "POST",
+				headers: {
+					"Context-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			},
+		);
+
+		if (!res.ok) {
+			const json = (await res.json()) as APIResponse<undefined>;
+
+			throw new APIError(json.message);
+		}
+
+		return res.json();
+	}
+
+	async getByIdWithProgramas(
+		id: string,
+	): Promise<APIResponse<CursoEscuelaWithProgramasFromAPI | null>> {
+		const res = this.fetcher(
+			z.object({
+				data: cursoEscuelaWithProgramasSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/curso-escuelas/${id}/programas`,
+		);
+
+		return res;
+	}
 }
+
+type CreateProgramaEnCursoEscuelaParams = {
+	cursoEscuelaId: string;
+	data: Omit<CreateProgramaEnCursoEscuela, "cursoEscuelaId">;
+};

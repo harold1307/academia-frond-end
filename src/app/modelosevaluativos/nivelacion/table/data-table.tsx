@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { nivelacionColumns, NivelacionTableItem } from "./columns";
+import { type nivelacionColumns, type NivelacionTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof nivelacionColumns;

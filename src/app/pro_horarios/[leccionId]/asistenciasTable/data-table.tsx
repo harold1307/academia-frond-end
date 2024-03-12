@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { asistenciasColumns, Asistencias } from "./columns";
+import { type asistenciasColumns, type Asistencias } from "./columns";
 
 interface DataTableProps {
 	columns: typeof asistenciasColumns;

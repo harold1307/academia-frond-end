@@ -1,7 +1,7 @@
 import { APIserver } from "@/core/api-server";
 import VarianteCursoTable from ".";
 import ModeloEvaluativoTable from ".";
-import { CamposModelosEvaluativosTableItem } from "./columns";
+import { type CamposModelosEvaluativosTableItem } from "./columns";
 import CamposModelosEvaluativosTable from ".";
 
 //MockUp data

@@ -2,8 +2,8 @@
 import React from "react";
 import { DataTable } from "./data-table";
 import {
-	Asistencias,
-	AsistenciasTableItem,
+	type Asistencias,
+	type AsistenciasTableItem,
 	asistenciasColumns,
 } from "./columns";
 

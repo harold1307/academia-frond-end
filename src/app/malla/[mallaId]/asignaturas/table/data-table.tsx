@@ -29,7 +29,9 @@ export function DataTable<TData, TValue>({
 	data,
 }: DataTableProps<TData, TValue>) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({});
+		React.useState<VisibilityState>({
+			id: false,
+		});
 
 	const table = useReactTable({
 		data,
@@ -40,12 +42,6 @@ export function DataTable<TData, TValue>({
 			columnVisibility,
 		},
 	});
-
-	React.useEffect(() => {
-		table.setColumnVisibility({
-			id: false,
-		});
-	}, [table]);
 
 	return (
 		<div className='rounded-md border'>
@@ -98,7 +94,7 @@ export function DataTable<TData, TValue>({
 								credits: 0,
 							};
 							const niveles = columns
-								.filter(c => c.id?.includes("NIVEL"))
+								.filter(c => (c.header as string)?.includes("NIVEL"))
 								.map(c => c.id as `${(typeof NIVELES_PREFIXES)[number]} NIVEL`)
 								.map(nivel => {
 									const config = {

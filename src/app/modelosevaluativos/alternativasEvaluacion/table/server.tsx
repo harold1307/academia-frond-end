@@ -1,5 +1,5 @@
 import AlternativaEvaluacionTable from ".";
-import { AlternativasEvaluacionSchema } from "../add-alternativas-evaluacion";
+import { type AlternativasEvaluacionSchema } from "../add-alternativas-evaluacion";
 
 //MockUp data
 const alternativasSoluciones: AlternativasEvaluacionSchema[] = [

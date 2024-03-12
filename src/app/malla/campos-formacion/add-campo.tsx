@@ -33,7 +33,6 @@ export default function AddCampo() {
 		mutationFn: async data => {
 			return API.camposFormacion.create(data);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -42,7 +41,6 @@ export default function AddCampo() {
 
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar campo de formacion</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -53,7 +51,7 @@ export default function AddCampo() {
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar campo de formacion'
 				withTrigger
-				triggerLabel='Adicionar'
+				triggerLabel='Agregar'
 			>
 				<FormField
 					control={form.control}

@@ -10,7 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { ProyectoIntegradorSchema } from "../add-proyecto-integrador";
+import { type ProyectoIntegradorSchema } from "../add-proyecto-integrador";
 
 export type ProyectoIntegradorTableItem = ProyectoIntegradorSchema;
 

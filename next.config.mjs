@@ -15,7 +15,8 @@ const nextConfig = {
         hostname: 'www.shutterstock.com'
       }
     ]
-  }
+  },
+  output: process.env.NODE_ENV !== 'development' ? "standalone" : undefined,
 }
 
 export default nextConfig;

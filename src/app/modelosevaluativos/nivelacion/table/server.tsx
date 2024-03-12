@@ -1,7 +1,7 @@
 import { APIserver } from "@/core/api-server";
 import VarianteCursoTable from ".";
 import ModeloEvaluativoTable from ".";
-import { NivelacionSchema } from "../add-nivelacion";
+import { type NivelacionSchema } from "../add-nivelacion";
 import NivelacionTable from ".";
 
 //MockUp data

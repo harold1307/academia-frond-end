@@ -9,6 +9,7 @@ import {
 	baseMallaSchema,
 	type MallaCurricularFromAPI,
 } from "./mallas-curriculares";
+import { modalidadSchema } from "./modalidades";
 import type { CreateNivelAcademico } from "./niveles-academicos";
 
 export type NivelMallaFromAPI = ReplaceDateToString<
@@ -65,10 +66,14 @@ export const nivelMallaSchema = baseNivelMallaSchema
 		>
 	>({
 		malla: z.lazy(() =>
-			baseMallaSchema.omit({
-				practicaPreProfesional: true,
-				practicaComunitaria: true,
-			}),
+			baseMallaSchema
+				.omit({
+					practicaPreProfesional: true,
+					practicaComunitaria: true,
+				})
+				.extend({
+					modalidad: modalidadSchema,
+				}),
 		),
 	})
 	.strict();

@@ -2,13 +2,21 @@ import type { Ubicacion } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 
 export type UbicacionFromAPI = ReplaceDateToString<
 	Ubicacion & {
 		enUso: boolean;
 	}
+>;
+
+export type UbicacionQueryFilter = Partial<
+	NonNullableObject<Omit<Ubicacion, "createdAt" | "updatedAt" | "id">>
 >;
 
 export type CreateUbicacion = Omit<
@@ -69,13 +77,23 @@ export class UbicacionClass {
 		return res;
 	}
 
-	async getMany(_: void): Promise<APIResponse<UbicacionFromAPI[]>> {
+	async getMany(
+		filters?: UbicacionQueryFilter,
+	): Promise<APIResponse<UbicacionFromAPI[]>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(filters ?? {}).forEach(([key, value]) => {
+			if (value === undefined) return;
+
+			searchParams.append(key, `${value}`);
+		});
+
 		const res = this.fetcher(
 			z.object({
 				data: ubicacionSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/ubicaciones",
+			this.apiUrl + "/api/ubicaciones?" + searchParams.toString(),
 		);
 
 		return res;

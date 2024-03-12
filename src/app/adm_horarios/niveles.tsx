@@ -1,3 +1,7 @@
+import { APIResponse } from "@/core/api";
+import { APIserver } from "@/core/api-server";
+import { MallaCurricular } from "@prisma/client";
+import { Button } from "../_components/ui/button";
 const niveles = [
 	{
 		label: "1er Nivel",
@@ -13,11 +17,25 @@ const niveles = [
 	},
 ];
 
-export default function Niveles() {
+interface MallaData {
+	data: MallaCurricular[];
+}
+
+export default async function Niveles({
+	programaId,
+}: {
+	programaId: string | undefined;
+}) {
+	//const mallas = await APIserver.mallasCurriculares.getMany( { programaId } )
+
 	return (
 		<ul className='flex w-full items-center justify-start'>
 			{niveles.map(el => {
-				return <li className='mx-4'>{el.label}</li>;
+				return (
+					<Button key={el.label} className='mx-4'>
+						{el.label}
+					</Button>
+				);
 			})}
 		</ul>
 	);

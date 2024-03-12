@@ -1,5 +1,5 @@
 import HorariosTable from ".";
-import { Week } from "./columns";
+import { type Week } from "./columns";
 
 //MockUp data
 const horarios: Week[] = [

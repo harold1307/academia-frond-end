@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { MallaCurricularTableItem, columns } from "./columns";
+import type { columns, MallaCurricularTableItem } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
@@ -25,7 +25,9 @@ interface DataTableProps {
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({});
+		React.useState<VisibilityState>({
+			id: false,
+		});
 	const table = useReactTable({
 		data,
 		columns,
@@ -35,12 +37,6 @@ export function DataTable({ columns, data }: DataTableProps) {
 			columnVisibility,
 		},
 	});
-
-	React.useEffect(() => {
-		table.setColumnVisibility({
-			id: false,
-		});
-	}, [table]);
 
 	return (
 		<div className='rounded-md border'>

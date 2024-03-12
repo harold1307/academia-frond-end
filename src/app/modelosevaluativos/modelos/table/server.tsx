@@ -1,7 +1,7 @@
 import { APIserver } from "@/core/api-server";
 import VarianteCursoTable from ".";
 import ModeloEvaluativoTable from ".";
-import { ModelosEvaluativoSchema } from "../add-modelo";
+import { type ModelosEvaluativoSchema } from "../add-modelo";
 
 //MockUp data
 const modelosEvaluativos: ModelosEvaluativoSchema[] = [

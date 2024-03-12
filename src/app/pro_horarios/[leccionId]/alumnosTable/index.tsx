@@ -2,9 +2,9 @@
 import React from "react";
 import { DataTable } from "./data-table";
 import {
-	AlumnosEnClase,
+	type AlumnosEnClase,
 	AlumnosEnClaseColumns,
-	AlumnosEnClaseTableItem,
+	type AlumnosEnClaseTableItem,
 } from "./columns";
 
 interface AlumnosEnClaseTableProps {

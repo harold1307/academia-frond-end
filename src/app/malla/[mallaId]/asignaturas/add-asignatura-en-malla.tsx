@@ -1,6 +1,7 @@
 "use client";
 import { $Enums } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 
 import MutateModal from "@/app/_components/modals/mutate-modal";
@@ -40,6 +41,12 @@ const schema = z.object<
 			| "competenciaGenerica"
 			| "esAnexo"
 			| "objetivosEspecificos"
+			| "cantidadMatriculasAutorizadas"
+			| "minimoCreditosRequeridos"
+			| "objetivoGeneral"
+			| "aporteAsignaturaAlPerfil"
+			| "observaciones"
+			| "campoFormacionId"
 		> & {
 			asignaturaId: string;
 			descripcion?: string | null;
@@ -47,6 +54,13 @@ const schema = z.object<
 			competenciaGenerica?: string | null;
 			objetivosEspecificos?: string | null;
 			nivelMallaId: string;
+
+			cantidadMatriculasAutorizadas?: number | null;
+			minimoCreditosRequeridos?: number | null;
+			objetivoGeneral?: string | null;
+			aporteAsignaturaAlPerfil?: string | null;
+			observaciones?: string | null;
+			campoFormacionId?: string | null;
 		}
 	>
 >({
@@ -59,8 +73,8 @@ const schema = z.object<
 	costoEnMatricula: z.boolean(),
 	requeridaParaEgresar: z.boolean(),
 	cantidadMatriculas: z.number(),
-	cantidadMatriculasAutorizadas: z.number().nullable(),
-	minimoCreditosRequeridos: z.number().nullable(),
+	cantidadMatriculasAutorizadas: z.number().nullable().optional(),
+	minimoCreditosRequeridos: z.number().nullable().optional(),
 	maximaCantidadHorasSemanalas: z.number(),
 	horasColaborativas: z.number(),
 	horasAsistidasDocente: z.number(),
@@ -74,18 +88,18 @@ const schema = z.object<
 	guiaPracticaMetodologiaObligatoria: z.boolean(),
 	aprobarGuiaPracticaMetodologica: z.boolean(),
 	descripcion: z.string().nullable().optional(),
-	objetivoGeneral: z.string().nullable(),
+	objetivoGeneral: z.string().nullable().optional(),
 	resultadosAprendizaje: z.string().nullable().optional(),
-	aporteAsignaturaAlPerfil: z.string().nullable(),
+	aporteAsignaturaAlPerfil: z.string().nullable().optional(),
 	competenciaGenerica: z.string().nullable().optional(),
 	objetivosEspecificos: z.string().nullable().optional(),
-	observaciones: z.string().nullable(),
+	observaciones: z.string().nullable().optional(),
 	nivelMallaId: z.string(),
 
 	ejeFormativoId: z.string(),
 	asignaturaId: z.string(),
 	areaConocimientoId: z.string(),
-	campoFormacionId: z.string().nullable(),
+	campoFormacionId: z.string().nullable().optional(),
 });
 
 export default function AddAsignaturaEnMalla({
@@ -99,6 +113,7 @@ export default function AddAsignaturaEnMalla({
 	}[];
 	mallaNiveles: { id: string; nivel: number }[];
 }) {
+	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
 		invalidateQueryKey: ASIGNATURA_EN_MALLA_KEYS.lists(),
@@ -121,22 +136,38 @@ export default function AddAsignaturaEnMalla({
 				horasPracticas: 0,
 			},
 		},
-		mutationFn: async ({ asignaturaId, nivelMallaId, ...data }) => {
+		mutationFn: ({
+			asignaturaId,
+			nivelMallaId,
+			cantidadMatriculasAutorizadas,
+			minimoCreditosRequeridos,
+			objetivoGeneral,
+			aporteAsignaturaAlPerfil,
+			observaciones,
+			campoFormacionId,
+			...data
+		}) => {
 			return API.nivelesMalla.createAsignatura({
 				nivelMallaId,
 				asignaturaId,
 				data: {
 					...data,
-					descripcion: data.descripcion || null,
-					resultadosAprendizaje: data.resultadosAprendizaje || null,
-					competenciaGenerica: data.competenciaGenerica || null,
-					objetivosEspecificos: data.objetivosEspecificos || null,
+					descripcion: data.descripcion ?? null,
+					resultadosAprendizaje: data.resultadosAprendizaje ?? null,
+					competenciaGenerica: data.competenciaGenerica ?? null,
+					objetivosEspecificos: data.objetivosEspecificos ?? null,
+					cantidadMatriculasAutorizadas: cantidadMatriculasAutorizadas ?? null,
+					minimoCreditosRequeridos: minimoCreditosRequeridos ?? null,
+					objetivoGeneral: objetivoGeneral ?? null,
+					aporteAsignaturaAlPerfil: aporteAsignaturaAlPerfil ?? null,
+					observaciones: observaciones ?? null,
+					campoFormacionId: campoFormacionId ?? null,
 				},
 			});
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
+			router.refresh();
 		},
 	});
 	const {
@@ -145,7 +176,7 @@ export default function AddAsignaturaEnMalla({
 		refetch: fetchCampos,
 	} = useQuery({
 		queryKey: ["camposEnAsignaturaEnMalla"],
-		queryFn: async () => {
+		queryFn: () => {
 			return API.camposFormacion.getMany();
 		},
 		enabled: false,
@@ -156,7 +187,7 @@ export default function AddAsignaturaEnMalla({
 		refetch: fetchEjes,
 	} = useQuery({
 		queryKey: ["ejesEnAsignaturaEnMalla"],
-		queryFn: async () => {
+		queryFn: () => {
 			return API.ejesFormativos.getMany();
 		},
 		enabled: false,
@@ -167,7 +198,7 @@ export default function AddAsignaturaEnMalla({
 		refetch: fetchAreas,
 	} = useQuery({
 		queryKey: ["areasEnAsignaturaEnMalla"],
-		queryFn: async () => {
+		queryFn: () => {
 			return API.areasConocimiento.getMany();
 		},
 		enabled: false,
@@ -180,9 +211,10 @@ export default function AddAsignaturaEnMalla({
 		horasPracticas,
 	} = form.watch();
 
+	console.log(form.formState.errors);
+
 	return (
 		<section>
-			<h1 className='text-2xl font-semibold'>Adicionar asignatura en malla</h1>
 			<MutateModal
 				dialogProps={{
 					open,
@@ -193,7 +225,7 @@ export default function AddAsignaturaEnMalla({
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar asignatura en malla curricular'
 				withTrigger
-				triggerLabel='Adicionar'
+				triggerLabel='Agregar'
 			>
 				{fields.map(f =>
 					assertReferenceInput(f.name) ? (
@@ -251,7 +283,9 @@ export default function AddAsignaturaEnMalla({
 													).map(
 														(v, idx) =>
 															({
-																value: mallaNiveles[idx]?.id || "",
+																value:
+																	mallaNiveles.find(n => n.nivel === idx + 1)
+																		?.id || "",
 																label: `${v} NIVEL`,
 															}) satisfies { label: string; value: string },
 													);
@@ -470,6 +504,11 @@ const fields = [
 	{
 		name: "permiteMatriculacion",
 		label: "Permite matriculacion",
+		inputType: "checkbox",
+	},
+	{
+		name: "calculoNivel",
+		label: "Calculo del nivel",
 		inputType: "checkbox",
 	},
 	{

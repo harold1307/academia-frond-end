@@ -74,3 +74,27 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+.border-default {
+	border: 1px solid #888;
+	border-radius: 30px;
+	box-shadow: rgba(67, 84, 234, 0.3) 0 5px 10px 7px;
+}
+
+.shadow-default {
+	box-shadow: rgba(67, 84, 234, 0.3) 0 5px 10px 7px;
+}
+
+.button-login {
+	box-shadow:
+		-48px 48px 48px 0px rgba(255, 255, 255, 0.17) inset,
+		48px -48px 48px 0px rgba(11, 12, 124, 0.17) inset;
+}
+
+.inset-shadow-blur {
+	background-color: rgba(255, 255, 255, 0.03);
+	box-shadow:
+		-34.333px 34.333px 34.333px 0px rgba(255, 255, 255, 0.03) inset,
+		34.333px -34.333px 34.333px 0px rgba(194, 194, 194, 0.03) inset;
+	backdrop-filter: blur(30.55666732788086px);
+}

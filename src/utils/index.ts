@@ -1,4 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -12,4 +12,24 @@ type GetParamNameParams = {
 
 export function getParamName({ action, module }: GetParamNameParams) {
 	return action + module;
+}
+
+export function formatDate(
+	d: string | Date,
+	options: Intl.DateTimeFormatOptions,
+) {
+	let date = d;
+
+	if (typeof date === "string") {
+		date = new Date(date);
+	}
+
+	return new Intl.DateTimeFormat(undefined, options).format(date);
+}
+
+export function formatFullName(...args: (string | null)[]) {
+	return args
+		.filter((a): a is string => !!a)
+		.map(a => a.trim())
+		.join(" ");
 }

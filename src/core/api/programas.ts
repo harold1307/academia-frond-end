@@ -2,7 +2,11 @@ import type { Programa } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import {
 	detalleNivelTitulacionSchema,
@@ -34,7 +38,27 @@ type UpdateProgramaParams = {
 	data: Partial<Omit<CreatePrograma, "nombre">>;
 };
 
-const programaSchema = z
+type ProgramaFilters = Partial<
+	NonNullableObject<
+		Omit<
+			ProgramaFromAPI,
+			| "enUso"
+			| "nivelTitulacion"
+			| "detalleNivelTitulacion"
+			| "id"
+			| "createdAt"
+			| "updatedAt"
+		> & {
+			coordinacion_sedeId: string;
+		}
+	>
+>;
+
+type GetManyParams = {
+	filters?: ProgramaFilters;
+};
+
+export const programaSchema = z
 	.object<ZodInferSchema<ProgramaFromAPI>>({
 		nombre: z.string(),
 		enUso: z.boolean(),
@@ -52,7 +76,6 @@ const programaSchema = z
 	})
 	.strict();
 
-// el ID de los programas son el nombre mismo
 export class ProgramaClass {
 	constructor(
 		private apiUrl: string,
@@ -98,13 +121,23 @@ export class ProgramaClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<ProgramaFromAPI[]>> {
+	async getMany(
+		params?: GetManyParams,
+	): Promise<APIResponse<ProgramaFromAPI[]>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(params?.filters || {}).forEach(([k, v]) => {
+			if (v !== undefined) {
+				searchParams.set(k, `${v}`);
+			}
+		});
+
 		const res = this.fetcher(
 			z.object({
 				data: programaSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + `/api/programas`,
+			this.apiUrl + `/api/programas?${searchParams.toString()}`,
 		);
 
 		return res;
@@ -185,7 +218,7 @@ export class ProgramaClass {
 
 	async createMalla({ programaId, data }: CreateMallaParams) {
 		const res = await fetch(
-			this.apiUrl + `/api/programas/${programaId}/titulos-obtenidos`,
+			this.apiUrl + `/api/programas/${programaId}/mallas-curriculares`,
 			{
 				method: "POST",
 				headers: {

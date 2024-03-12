@@ -16,7 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import { AlumnosEnClase, AlumnosEnClaseColumns } from "./columns";
+import { type AlumnosEnClase, type AlumnosEnClaseColumns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof AlumnosEnClaseColumns;

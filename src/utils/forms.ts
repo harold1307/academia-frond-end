@@ -17,7 +17,10 @@ export type Field<K> =
 	| FieldDate<K>
 	| FieldTextArea<K>
 	| FieldDummy<K>
-	| FieldReference<K>;
+	| FieldReference<K>
+	| FieldToggle<K>
+	| FieldMultiSelect<K>
+	| FieldCombobox<K>;
 
 type FieldDefault<K> = {
 	name: K;
@@ -44,6 +47,32 @@ type FieldSelect<K> = {
 	label: string;
 };
 
+type FieldMultiSelect<K> = {
+	name: K;
+	inputType: "custom-multi-select";
+	options: string[] | { label: string; value: string }[] | K | "custom";
+	placeholder?: string;
+	dependsOn?: K | `reference-${string}` | `dummy-${string}`;
+	label: string;
+};
+
+type FieldCombobox<K> = {
+	name: K;
+	inputType: "custom-combobox";
+	options: string[] | { label: string; value: string }[] | K | "custom";
+	placeholder?: string;
+	dependsOn?: K | `reference-${string}` | `dummy-${string}`;
+	label: string;
+};
+
+type FieldToggle<K> = {
+	name: K;
+	inputType: "custom-toggle";
+	placeholder?: string;
+	dependsOn?: K | `reference-${string}` | `dummy-${string}`;
+	label: string;
+};
+
 // campo que se usa como computed values
 type FieldReference<K> = {
 	name: `reference-${string}`;
@@ -56,7 +85,7 @@ type FieldReference<K> = {
 // campo que es usado para la activacion de otros
 type FieldDummy<K> = {
 	name: `dummy-${string}`;
-	inputType: "checkbox";
+	inputType: "checkbox" | "custom-toggle";
 	label: string;
 	dependsOn?: K | `dummy-${string}` | `reference-${string}`;
 	placeholder?: undefined;

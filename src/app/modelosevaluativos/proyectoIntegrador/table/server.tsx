@@ -1,4 +1,4 @@
-import { ProyectoIntegradorSchema } from "../add-proyecto-integrador";
+import { type ProyectoIntegradorSchema } from "../add-proyecto-integrador";
 import ProyectoIntegradorTable from ".";
 
 //MockUp data
