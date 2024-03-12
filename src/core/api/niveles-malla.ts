@@ -37,11 +37,12 @@ type UpdateNivelMallaParams = {
 	>;
 };
 
+type ExtraFields = "malla" | "enUso";
+
 export const baseNivelMallaSchema = z.object<
-	ZodInferSchema<Omit<NivelMallaFromAPI, "malla">>
+	ZodInferSchema<Omit<NivelMallaFromAPI, ExtraFields>>
 >({
 	id: z.string().uuid(),
-	enUso: z.boolean(),
 	mallaId: z.string().uuid(),
 	nivel: z.number(),
 	tituloObtenidoId: z.string().uuid().nullable(),
@@ -51,20 +52,7 @@ export const baseNivelMallaSchema = z.object<
 });
 
 export const nivelMallaSchema = baseNivelMallaSchema
-	.extend<
-		ZodInferSchema<
-			Omit<
-				NivelMallaFromAPI,
-				| "id"
-				| "enUso"
-				| "mallaId"
-				| "nivel"
-				| "tituloObtenidoId"
-				| "createdAt"
-				| "updatedAt"
-			>
-		>
-	>({
+	.extend<ZodInferSchema<Pick<NivelMallaFromAPI, ExtraFields>>>({
 		malla: z.lazy(() =>
 			baseMallaSchema
 				.omit({
@@ -75,6 +63,7 @@ export const nivelMallaSchema = baseNivelMallaSchema
 					modalidad: modalidadSchema,
 				}),
 		),
+		enUso: z.boolean(),
 	})
 	.strict();
 
