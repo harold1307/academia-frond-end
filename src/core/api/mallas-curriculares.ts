@@ -17,6 +17,7 @@ import {
 	asignaturaEnNivelMallaSchema,
 	type AsignaturaEnNivelMallaFromAPI,
 } from "./asignaturas-niveles-malla";
+import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
 import {
 	asignaturaModuloEnMallaSchema,
 	type AsignaturaModuloEnMallaFromAPI,
@@ -28,7 +29,6 @@ import {
 	tituloObtenidoSchema,
 	type TituloObtenidoFromAPI,
 } from "./titulos-obtenidos";
-import { modalidadSchema, type ModalidadFromAPI } from "./modalidades";
 
 export type LugarEjecucionFromAPI = ReplaceDateToString<
 	LugarEjecucion & {
@@ -223,6 +223,7 @@ export const mallaSchema = baseMallaSchema
 		niveles: baseNivelMallaSchema
 			.extend({
 				asignaturas: asignaturaEnNivelMallaSchema.array(),
+				enUso: z.boolean(),
 			})
 			.array(),
 		// niveles: nivelMallaSchema.omit({}),

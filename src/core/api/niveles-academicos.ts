@@ -10,12 +10,14 @@ import type {
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateMateriaEnHorario } from "./materias-horario";
 import type { CreateMateriaEnNivelAcademico } from "./materias-niveles-academicos";
+import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
 import { sesionSchema, type SesionFromAPI } from "./sesiones";
 // import type { CreateAsignaturaEnNivelAcademico } from "./asignaturas-niveles-academicos";
 
 export type NivelAcademicoFromAPI = ReplaceDateToString<
 	NivelAcademico & {
 		sesion: SesionFromAPI;
+		nivelMalla: Omit<NivelMallaFromAPI, "enUso" | "malla">;
 	}
 >;
 
@@ -24,14 +26,24 @@ type UpdateNivelAcademicoParams = {
 	data: Partial<
 		Omit<
 			NivelAcademicoFromAPI,
-			"id" | "nivel" | "mallaId" | "createdAt" | "updatedAt" | "enUso" | "malla"
+			| "id"
+			| "nivel"
+			| "mallaId"
+			| "createdAt"
+			| "updatedAt"
+			| "enUso"
+			| "malla"
+			| ExtraFields
 		>
 	>;
 };
 
 type NivelAcademicoFilters = Partial<
 	NonNullableObject<
-		Omit<NivelAcademicoFromAPI, "sesion" | "id" | "createdAt" | "updatedAt"> & {
+		Omit<
+			NivelAcademicoFromAPI,
+			"sesion" | "id" | "createdAt" | "updatedAt" | ExtraFields
+		> & {
 			mallaId: string;
 			programaId: string;
 		}
@@ -54,10 +66,13 @@ export type CreateNivelAcademico = Omit<
 	| "updatedAt"
 	| "id"
 	| "sesion"
+	| ExtraFields
 >;
 
+type ExtraFields = "sesion" | "nivelMalla";
+
 export const baseNivelAcademicoSchema = z.object<
-	ZodInferSchema<Omit<NivelAcademicoFromAPI, "sesion">>
+	ZodInferSchema<Omit<NivelAcademicoFromAPI, ExtraFields>>
 >({
 	id: z.string().uuid(),
 	nombre: z.string().nullable(),
@@ -100,8 +115,9 @@ export const baseNivelAcademicoSchema = z.object<
 });
 
 export const nivelAcademicoSchema = baseNivelAcademicoSchema
-	.extend<ZodInferSchema<Pick<NivelAcademicoFromAPI, "sesion">>>({
+	.extend<ZodInferSchema<Pick<NivelAcademicoFromAPI, ExtraFields>>>({
 		sesion: sesionSchema,
+		nivelMalla: baseNivelMallaSchema,
 	})
 	.strict();
 

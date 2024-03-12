@@ -183,6 +183,18 @@ export class VarianteCursoClass {
 		return res;
 	}
 
+	async getMany(_: void): Promise<APIResponse<VarianteCursoFromAPI[]>> {
+		const res = this.fetcher(
+			z.object({
+				data: varianteCursoSchema.array(),
+				message: z.string(),
+			}),
+			this.apiUrl + "/api/variantes-curso",
+		);
+
+		return res;
+	}
+
 	async createAsignaturaEnVarianteCurso({
 		asignaturaId,
 		data,
