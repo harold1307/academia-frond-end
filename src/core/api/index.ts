@@ -39,6 +39,7 @@ import { TurnoClass } from "./turnos";
 import { UbicacionClass } from "./ubicaciones";
 import { VarianteCursoClass } from "./variantes-curso";
 import { SubPeriodoLectivoClass } from "./sub-periodos-lectivos";
+import { admCostosClass } from "./costos";
 
 export type APIResponse<D> = {
 	data: D;
@@ -227,18 +228,14 @@ export class APIClass {
 		return new CorteClass(this._apiUrl, this._fetcher);
 	}
 
-<<<<<<< HEAD
-	get requisitos() {
-		return new RequisitoMatriculacionClass(this._apiUrl, this._fetcher);
-	}
-
-	get subperiodos() {
-		return new SubPeriodoLectivoClass(this._apiUrl, this._fetcher);
-=======
 	get asignaturasEnVariantesCurso() {
 		return new AsignaturaEnVarianteCursoClass(this._apiUrl, this._fetcher);
->>>>>>> 141acad7653eea714b3def88cf98e017bc0e9bb4
 	}
+
+	get admCostos() {
+		return new admCostosClass(this._apiUrl, this._fetcher);
+	}
+
 }
 
 export class APIError extends Error {
