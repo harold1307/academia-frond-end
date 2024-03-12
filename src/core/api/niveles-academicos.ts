@@ -33,6 +33,7 @@ type NivelAcademicoFilters = Partial<
 	NonNullableObject<
 		Omit<NivelAcademicoFromAPI, "sesion" | "id" | "createdAt" | "updatedAt"> & {
 			mallaId: string;
+			programaId: string;
 		}
 	>
 >;
