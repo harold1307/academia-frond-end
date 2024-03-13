@@ -1,7 +1,5 @@
-import React from "react";
-
-import AddCursoEscuela from "./add-curso-escuela";
-import CursoEscuelaTableServer from "./table/server";
+import { AddCursoEscuela } from "./add-curso-escuela";
+import { CursoEscuelaTable } from "./table";
 
 export const dynamic = "force-dynamic";
 
@@ -13,9 +11,7 @@ export default function CursoEscuelasComplementariasPage() {
 			</h1>
 			<div className='mt-4'>
 				<AddCursoEscuela />
-				<React.Suspense fallback={"Cargando tabla..."}>
-					<CursoEscuelaTableServer />
-				</React.Suspense>
+				<CursoEscuelaTable />
 			</div>
 		</>
 	);

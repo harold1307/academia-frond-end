@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "../_components/ui/button";
 import { Input } from "../_components/ui/input";
 import { SEDE_KEYS } from "./query-keys";
+import { PlusCircle } from "lucide-react";
 
 const createSedeSchema = z.object<ZodInferSchema<CreateSede>>({
 	nombre: z.string(),
@@ -50,10 +51,9 @@ export default function AddSede() {
 	} = useMutateModule({
 		schema: createSedeSchema,
 		invalidateQueryKey: SEDE_KEYS.all,
-		mutationFn: async data => {
+		mutationFn: data => {
 			return API.sedes.create(data);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -66,8 +66,11 @@ export default function AddSede() {
 	return (
 		<section className='mb-2'>
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogTrigger asChild>
-					<Button variant='success'>Adicionar</Button>
+				<DialogTrigger>
+					<Button variant='outline' className='mb-2'>
+						<PlusCircle className='mr-2' />
+						Agregar
+					</Button>
 				</DialogTrigger>
 				<DialogContent className='max-h-[80%] max-w-xs overflow-y-scroll sm:max-w-[425px] md:max-w-2xl'>
 					<DialogHeader>

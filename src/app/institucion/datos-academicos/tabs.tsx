@@ -1,6 +1,6 @@
 import { ActiveTab } from "@/app/_components/ui/active-tab";
 import { ROUTES } from "@/core/routes";
-import { seccionParams } from "../tabs";
+import { institucionSeccionParams } from "../tabs";
 import { Separator } from "@/app/_components/ui/separator";
 
 export const subSeccionParams = {
@@ -13,23 +13,23 @@ export const subSeccionParams = {
 
 const tabs = [
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.datosAcademicos}&subSeccion=${subSeccionParams.ubicaciones}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.datosAcademicos}&subSeccion=${subSeccionParams.ubicaciones}`,
 		label: "Ubicaciones",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.datosAcademicos}&subSeccion=${subSeccionParams.modalidades}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.datosAcademicos}&subSeccion=${subSeccionParams.modalidades}`,
 		label: "Modalidades",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.datosAcademicos}&subSeccion=${subSeccionParams.sesiones}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.datosAcademicos}&subSeccion=${subSeccionParams.sesiones}`,
 		label: "Sesiones",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.datosAcademicos}&subSeccion=${subSeccionParams.turnos}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.datosAcademicos}&subSeccion=${subSeccionParams.turnos}`,
 		label: "Turnos",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.datosAcademicos}&subSeccion=${subSeccionParams.paralelos}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.datosAcademicos}&subSeccion=${subSeccionParams.paralelos}`,
 		label: "Paralelos",
 	},
 ];
@@ -50,7 +50,7 @@ export default function DatosAcademicosTabs({
 							href={t.href}
 							isActive={
 								t.href.includes(seccion) &&
-								t.href.includes(seccionParams.datosAcademicos)
+								t.href.includes(institucionSeccionParams.datosAcademicos)
 							}
 						>
 							{t.label}

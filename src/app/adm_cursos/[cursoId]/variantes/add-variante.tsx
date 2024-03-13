@@ -16,6 +16,7 @@ import type { CreateVarianteCurso } from "@/core/api/cursos";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import type { Field } from "@/utils/forms";
 import type { ZodInferSchema } from "@/utils/types";
+import { VARIANTES_KEYS } from "./query-keys";
 
 type AddVarianteProps = {
 	cursoId: string;
@@ -53,6 +54,7 @@ export default function AddVariante({ cursoId }: AddVarianteProps) {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema: createVarianteCursoSchema,
+		invalidateQueryKey: VARIANTES_KEYS.all,
 		mutationFn: ({ verificarEdad, ...data }) => {
 			return API.cursos.createVarianteCurso(cursoId, {
 				...data,
