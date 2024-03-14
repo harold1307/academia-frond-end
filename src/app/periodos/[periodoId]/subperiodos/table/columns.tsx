@@ -1,3 +1,4 @@
+"use client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, XCircle } from "lucide-react";
 
@@ -18,10 +19,10 @@ export const columns = [
 	helper.accessor("nombre", {
 		header: "Nombre",
 	}),
-	helper.accessor("inicio", {
+	helper.accessor("fechaInicio", {
 		header: "Fecha inicio",
 	}),
-	helper.accessor("fin", {
+	helper.accessor("fechaFin", {
 		header: "Fecha fin",
 	}),
 	helper.display({

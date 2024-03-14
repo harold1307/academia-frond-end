@@ -63,6 +63,7 @@ export class CorteClass {
 	async create(
 		data: Omit<CorteFromAPI, "enUso" | "createdAt" | "updatedAt" | "id">,
 	): Promise<SimpleAPIResponse> {
+		console.log(data)
 		const res = await fetch(this.apiUrl + `/api/cortes`, {
 			method: "POST",
 			headers: {

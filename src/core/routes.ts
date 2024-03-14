@@ -39,6 +39,13 @@ export const ROUTES = {
 		detalleHorario: (horarioId: string) =>
 			ROUTES.admHorarios.path + `/${horarioId}`,
 	},
+	admCostos: {
+		path: "/adm_costos",
+		costos: () => ROUTES.admCostos.path + "?seccion=grupoCostos",
+		especies: () => ROUTES.admCostos.path + "?seccion=especiesValoradas",
+		solicitudes: () => ROUTES.admCostos.path + "?seccion=solicitudes",
+		programa: () => ROUTES.admCostos.path + "?seccion=programa",
+	},
 	periodoEvaluacion: {
 		path: "/periodosevaluacion",
 		materias: (sectionId: string) =>
