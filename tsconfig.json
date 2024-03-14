@@ -36,5 +36,5 @@
 		"tailwind.config.js",
 		"src/app/periodosevaluacion/materias-cursos/add-materia"
 	],
-	"exclude": ["node_modules", ".next", "src/app/periodos", "src/app/crm"]
+	"exclude": ["node_modules", ".next", "src/app/crm"]
 }
