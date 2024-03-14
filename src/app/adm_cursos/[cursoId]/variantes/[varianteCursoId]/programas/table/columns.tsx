@@ -1,23 +1,23 @@
-import { Button } from "@/app/_components/ui/button";
-import { ROUTES } from "@/core/routes";
-import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu";
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, Lock, StretchHorizontal } from "lucide-react";
-import { VarianteCurso } from "@prisma/client";
-import { type ProgramaSchema } from "../add-programa";
 
-export type ProgramaTableItem = ProgramaSchema;
+import BaseTableActions from "@/app/_components/table-actions";
+import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
-const helper = createColumnHelper<ProgramaTableItem>();
+export type ProgramaEnVarianteTableItem = {
+	id: string;
+	programa: string;
+	modalidad: string | null;
+	malla: boolean;
+	registro: boolean;
+	varianteEstado: boolean;
+};
+
+const helper = createColumnHelper<ProgramaEnVarianteTableItem>();
 
 export const programasColumns = [
 	helper.accessor("id", {}),
+	helper.accessor("varianteEstado", {}),
 	helper.accessor("programa", {
 		header: "Programa",
 	}),
@@ -26,53 +26,51 @@ export const programasColumns = [
 	}),
 	helper.accessor("malla", {
 		header: "Malla",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
-	helper.accessor("todosLosProgramas", {
-		header: "Todos Los Programas",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+	helper.accessor("registro", {
+		header: "Registro",
+		cell: ({ getValue, column }) => (
+			<StatusButtonTooltip
+				status={getValue()}
+				hoverTitle={column.columnDef.header as string}
+			/>
+		),
 	}),
-	helper.accessor("registroExterno", {
-		header: "Registro Externo",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
-	}),
-
 	helper.display({
 		id: "actions",
-		cell: ({ row }) => {
-			const programaId = row.getValue("id") as string;
-			return <Actions programaId={programaId} showDelete={true} />;
+		cell: function Actions({ row }) {
+			const { replaceSet } = useMutateSearchParams();
+
+			const id = row.getValue("id") as string;
+			const varianteEstado = row.getValue("varianteEstado") as boolean;
+
+			return (
+				<BaseTableActions
+					updateOptions={{
+						buttonProps: {
+							onClick: () => replaceSet(programasEnVarianteParams.update, id),
+						},
+						show: !varianteEstado,
+					}}
+					deleteOptions={{
+						buttonProps: {
+							onClick: () => replaceSet(programasEnVarianteParams.delete, id),
+						},
+						show: !varianteEstado,
+					}}
+				/>
+			);
 		},
 	}),
 ];
 
-export const programasParams = {
-	update: "actualizarprograma",
-	deactivate: "desactivarprograma",
+export const programasEnVarianteParams = {
+	update: "actualizarPrograma",
+	delete: "eliminarPrograma",
 };
-function Actions(props: { programaId: string; showDelete: boolean }) {
-	const { replaceSet } = useMutateSearchParams();
-
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button>Acciones</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent className='w-56'>
-				<DropdownMenuItem
-					onClick={() => replaceSet(programasParams.update, props.programaId)}
-				>
-					<FileSignature className='mr-2 h-4 w-4' />
-					<span>Editar</span>
-				</DropdownMenuItem>
-				<DropdownMenuItem
-					onClick={() =>
-						replaceSet(programasParams.deactivate, props.programaId)
-					}
-				>
-					<Lock className='mr-2 h-4 w-4' />
-					<span>Desactivar</span>
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-}

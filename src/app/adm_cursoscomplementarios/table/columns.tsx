@@ -1,7 +1,26 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import {
+	FileSignature,
+	Folder,
+	FolderOpen,
+	Repeat2,
+	StretchHorizontal,
+	X,
+} from "lucide-react";
 
 import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
+import { Button } from "@/app/_components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/app/_components/ui/dropdown-menu";
+import { ROUTES } from "@/core/routes";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { formatDate } from "@/utils";
+import { cursosEscuelaParams } from "../add-curso-escuela";
 
 export type CursoEscuelaTableItem = {
 	id: string;
@@ -41,12 +60,15 @@ export type CursoEscuelaTableItem = {
 	legalizar: boolean;
 	evaluacion: boolean;
 	autoregistro: boolean;
+
+	estado: boolean;
 };
 
 const helper = createColumnHelper<CursoEscuelaTableItem>();
 
 export const columns = [
 	helper.accessor("id", {}),
+	helper.accessor("estado", {}),
 	helper.accessor("cursoCodigoSesion", {
 		header: "Curso / Codigo / Sesion",
 		cell: ({ getValue }) => {
@@ -61,8 +83,8 @@ export const columns = [
 
 			return (
 				<div>
-					{Object.values(obj).map(v => (
-						<div key={v}>
+					{Object.values(obj).map((v, idx) => (
+						<div key={idx}>
 							{formatDate(v, {
 								day: "2-digit",
 								month: "2-digit",
@@ -222,5 +244,73 @@ export const columns = [
 	}),
 	helper.display({
 		id: "actions",
+		cell: ({ row }) => {
+			const id = row.getValue("id") as string;
+			const estado = row.getValue("estado") as boolean;
+
+			return <Actions cursoId={id} showDelete={true} isActive={estado} />;
+		},
 	}),
 ];
+
+function Actions({
+	isActive,
+	cursoId,
+	showDelete,
+}: {
+	cursoId: string;
+	showDelete: boolean;
+	isActive: boolean;
+}) {
+	const { replaceSet, router } = useMutateSearchParams();
+
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button>Acciones</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent className='w-56'>
+				<DropdownMenuItem
+					onClick={() => replaceSet(cursosEscuelaParams.clone, cursoId)}
+				>
+					<Repeat2 className='mr-2 h-4 w-4' />
+					<span>Clonar curso</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(cursosEscuelaParams.update, cursoId)}
+				>
+					<FileSignature className='mr-2 h-4 w-4' />
+					<span>Editar</span>
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(cursosEscuelaParams.deactivate, cursoId)}
+				>
+					{isActive ? (
+						<>
+							<Folder className='mr-2 h-4 w-4' />
+							<span>Cerrar</span>
+						</>
+					) : (
+						<>
+							<FolderOpen className='mr-2 h-4 w-4' />
+							<span>Abrir</span>
+						</>
+					)}
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => router.push(ROUTES.cursoEscuelas.programas(cursoId))}
+				>
+					<StretchHorizontal className='mr-2 h-4 w-4' />
+					<span>Programas</span>
+				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem
+					onClick={() => replaceSet(cursosEscuelaParams.delete, cursoId)}
+				>
+					<X className='mr-2 h-4 w-4' />
+					<span>Eliminar</span>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}

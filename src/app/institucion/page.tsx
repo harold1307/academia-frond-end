@@ -3,9 +3,11 @@ import React from "react";
 import AddSede from "./add-sede";
 import AddCoordinacion from "./coordinaciones/add-coordinacion";
 import CoordinacionTableServer from "./coordinaciones/table/server";
+import CrmAsesores from "./crm-asesores";
 import DatosAcademicos from "./datos-academicos";
+import { GruposModulosReportes } from "./grupos";
 import SedeTableServer from "./table/server";
-import { InstitucionTabs, seccionParams } from "./tabs";
+import { InstitucionTabs, institucionSeccionParams } from "./tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +18,7 @@ type Context = {
 export default function InstitucionPage({ searchParams }: Context) {
 	const seccion = searchParams.seccion;
 
-	if (seccion === seccionParams.coordinaciones) {
+	if (seccion === institucionSeccionParams.coordinaciones) {
 		return (
 			<>
 				<h1 className='mb-4 text-xl font-semibold'>
@@ -33,8 +35,16 @@ export default function InstitucionPage({ searchParams }: Context) {
 		);
 	}
 
-	if (seccion === seccionParams.datosAcademicos) {
+	if (seccion === institucionSeccionParams.datosAcademicos) {
 		return <DatosAcademicos searchParams={searchParams} />;
+	}
+
+	if (seccion === institucionSeccionParams.crmAsesores) {
+		return <CrmAsesores searchParams={searchParams} />;
+	}
+
+	if (seccion === institucionSeccionParams.gruposModulosReportes) {
+		return <GruposModulosReportes searchParams={searchParams} />;
 	}
 
 	return (

@@ -47,6 +47,7 @@ import { columns } from "./columns";
 import { reqParams } from "../addReq";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
 import { type RequisitoMatriculacionFromAPI } from "@/core/api/requisitos-matriculacion";
+import { NIVELES_PREFIXES } from "@/utils/forms";
 
 export default function RequisitoTable({
 	requisitos,
@@ -72,9 +73,8 @@ function UpdateRequisito(props) {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async ({ data, id }) => {
-			return API.requisitos.update({ data, id });
+			return API.requisitosMatriculacion.update({ data, id });
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.replace(ROUTES.periodo.cronograma(props.id));

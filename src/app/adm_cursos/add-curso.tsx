@@ -30,10 +30,9 @@ export default function AddCurso() {
 	const router = useRouter();
 	const { form, mutation, open, setOpen } = useMutateModule({
 		schema,
-		mutationFn: async data => {
+		mutationFn: data => {
 			return API.cursos.create(data);
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.refresh();
@@ -53,7 +52,7 @@ export default function AddCurso() {
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar curso'
 				withTrigger
-				triggerLabel='Adicionar curso'
+				triggerLabel='Agregar'
 			>
 				{fields.map(f => (
 					<FormField

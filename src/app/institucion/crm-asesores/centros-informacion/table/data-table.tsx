@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,11 +15,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, MallaCurricularTableItem } from "./columns";
+import type { CentroInformacionTableItem, columns } from "./columns";
 
 interface DataTableProps {
 	columns: typeof columns;
-	data: MallaCurricularTableItem[];
+	data: CentroInformacionTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {

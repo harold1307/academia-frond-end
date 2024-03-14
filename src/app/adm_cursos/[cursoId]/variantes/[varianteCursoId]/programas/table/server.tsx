@@ -1,24 +1,11 @@
 import { notFound } from "next/navigation";
-import { APIserver } from "@/core/api-server";
-import CursoTable from ".";
-import { type ProgramaSchema } from "../add-programa";
-import ProgramasTable from ".";
 
-interface MockUpDataI {
-	programas: ProgramaSchema[];
-}
-const data: MockUpDataI = {
-	programas: [
-		{
-			id: "1",
-			todosLosProgramas: false,
-			programa: "programaA",
-			modalidad: "PRESENCIAL",
-			malla: "MallaB",
-			registroExterno: true,
-		},
-	],
-};
+import { APIserver } from "@/core/api-server";
+import ProgramasEnVarianteTable, {
+	DeactivateProgramaModal,
+	UpdateProgramaModal,
+} from ".";
+import type { ProgramaEnVarianteTableItem } from "./columns";
 
 interface ProgramasTableServerProps {
 	varianteId: string;
@@ -26,9 +13,28 @@ interface ProgramasTableServerProps {
 export default async function ProgramasTableServer({
 	varianteId,
 }: ProgramasTableServerProps) {
-	//Fetch programas
+	const variante =
+		await APIserver.variantesCurso.getByIdWithProgramas(varianteId);
 
-	// if (!programas.data) return notFound();
+	if (!variante.data) return notFound();
 
-	return <ProgramasTable data={data.programas} />;
+	const parsed = variante.data.programas.map(
+		p =>
+			({
+				id: p.id,
+				programa: p.programa.nombre,
+				modalidad: p.modalidad?.nombre ?? null,
+				malla: !!p.malla,
+				registro: p.registroExterno,
+				varianteEstado: !!variante.data?.estado,
+			}) satisfies ProgramaEnVarianteTableItem,
+	);
+
+	return (
+		<>
+			<ProgramasEnVarianteTable data={parsed} />
+			<UpdateProgramaModal programasEnVariante={variante.data.programas} />
+			<DeactivateProgramaModal programas={parsed} />
+		</>
+	);
 }

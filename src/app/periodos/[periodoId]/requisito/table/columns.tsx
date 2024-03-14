@@ -8,9 +8,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
+import { type RequisitoMatriculacionFromAPI } from "@/core/api/requisitos-matriculacion";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { reqParams } from "../addReq";
-import { type RequisitoMatriculacionFromAPI } from "@/core/api/requisitos-matriculacion";
 
 const helper = createColumnHelper<RequisitoMatriculacionFromAPI>();
 

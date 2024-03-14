@@ -2,16 +2,22 @@ import type { NivelAcademico } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateMateriaEnHorario } from "./materias-horario";
 import type { CreateMateriaEnNivelAcademico } from "./materias-niveles-academicos";
+import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
 import { sesionSchema, type SesionFromAPI } from "./sesiones";
 // import type { CreateAsignaturaEnNivelAcademico } from "./asignaturas-niveles-academicos";
 
 export type NivelAcademicoFromAPI = ReplaceDateToString<
 	NivelAcademico & {
 		sesion: SesionFromAPI;
+		nivelMalla: Omit<NivelMallaFromAPI, "enUso" | "malla">;
 	}
 >;
 
@@ -20,9 +26,32 @@ type UpdateNivelAcademicoParams = {
 	data: Partial<
 		Omit<
 			NivelAcademicoFromAPI,
-			"id" | "nivel" | "mallaId" | "createdAt" | "updatedAt" | "enUso" | "malla"
+			| "id"
+			| "nivel"
+			| "mallaId"
+			| "createdAt"
+			| "updatedAt"
+			| "enUso"
+			| "malla"
+			| ExtraFields
 		>
 	>;
+};
+
+type NivelAcademicoFilters = Partial<
+	NonNullableObject<
+		Omit<
+			NivelAcademicoFromAPI,
+			"sesion" | "id" | "createdAt" | "updatedAt" | ExtraFields
+		> & {
+			mallaId: string;
+			programaId: string;
+		}
+	>
+>;
+
+type GetManyParams = {
+	filters?: NivelAcademicoFilters;
 };
 
 export type CreateNivelAcademico = Omit<
@@ -37,10 +66,13 @@ export type CreateNivelAcademico = Omit<
 	| "updatedAt"
 	| "id"
 	| "sesion"
+	| ExtraFields
 >;
 
+type ExtraFields = "sesion" | "nivelMalla";
+
 export const baseNivelAcademicoSchema = z.object<
-	ZodInferSchema<Omit<NivelAcademicoFromAPI, "sesion">>
+	ZodInferSchema<Omit<NivelAcademicoFromAPI, ExtraFields>>
 >({
 	id: z.string().uuid(),
 	nombre: z.string().nullable(),
@@ -83,8 +115,9 @@ export const baseNivelAcademicoSchema = z.object<
 });
 
 export const nivelAcademicoSchema = baseNivelAcademicoSchema
-	.extend<ZodInferSchema<Pick<NivelAcademicoFromAPI, "sesion">>>({
+	.extend<ZodInferSchema<Pick<NivelAcademicoFromAPI, ExtraFields>>>({
 		sesion: sesionSchema,
+		nivelMalla: baseNivelMallaSchema,
 	})
 	.strict();
 
@@ -115,13 +148,23 @@ export class NivelAcademicoClass {
 		return res;
 	}
 
-	async getMany(_: void): Promise<APIResponse<NivelAcademicoFromAPI[]>> {
+	async getMany(
+		params?: GetManyParams,
+	): Promise<APIResponse<NivelAcademicoFromAPI[]>> {
+		const searchParams = new URLSearchParams();
+
+		Object.entries(params?.filters || {}).forEach(([k, v]) => {
+			if (v !== undefined) {
+				searchParams.set(k, `${v}`);
+			}
+		});
+
 		const res = this.fetcher(
 			z.object({
 				data: nivelAcademicoSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/niveles-academicos",
+			this.apiUrl + `/api/niveles-academicos?${searchParams.toString()}`,
 		);
 
 		return res;

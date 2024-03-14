@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ROUTES } from "@/core/routes";
 import { getServerAuthSession } from "@/server/auth";
+import Image from "next/image";
 import FileUpload from "./_components/ui/icons/file-up";
 import LupaIcon from "./_components/ui/icons/lupa";
 import PdfIcon from "./_components/ui/icons/pdf";
@@ -35,10 +36,6 @@ const modulos = [
 	{
 		label: "Mis Horarios (profesor)",
 		href: ROUTES.proHorarios.path,
-	},
-	{
-		label: "Mis Horarios (admin)",
-		href: ROUTES.admHorarios.path,
 	},
 	{
 		label: "Mis Horarios (admin)",
@@ -83,10 +80,12 @@ export default async function Home() {
 				<main className='flex w-full flex-row gap-10'>
 					<article className='border-default h-max w-3/12 translate-y-36'>
 						<div className='flex -translate-y-32 flex-col items-center'>
-							<img
+							<Image
 								src='/assets/avatar.jpg'
-								alt=''
-								className='m-auto h-[280px] w-64 rounded-full object-cover'
+								alt='Foto de perfil'
+								className='m-auto rounded-full object-cover'
+								width={256}
+								height={280}
 							/>
 							<section className='my-6 flex flex-row items-center gap-4'>
 								<div className='flex flex-col items-center gap-4'>

@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,18 +15,17 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { materiasColumns, MateriaTableItem } from "./columns";
+import type { ResponsableAsesorEstudianteTableItem, columns } from "./columns";
 
 interface DataTableProps {
-	columns: typeof materiasColumns;
-	data: MateriaTableItem[];
+	columns: typeof columns;
+	data: ResponsableAsesorEstudianteTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({
 			id: false,
-			varianteEstado: false,
 		});
 	const table = useReactTable({
 		data,
@@ -40,19 +38,14 @@ export function DataTable({ columns, data }: DataTableProps) {
 	});
 
 	return (
-		<div>
+		<div className='rounded-md border'>
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map((header, index) => {
+							{headerGroup.headers.map(header => {
 								return (
-									<TableHead
-										key={header.id}
-										className={`${index === 0 ? "rounded-l-md border-l-2" : ""} 
-										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
-										relative h-40 w-2 px-0 py-0 font-light`}
-									>
+									<TableHead key={header.id}>
 										{header.isPlaceholder
 											? null
 											: flexRender(
@@ -65,9 +58,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 						</TableRow>
 					))}
 				</TableHeader>
-				<TableBody
-				// className="before:content-['space'] before:leading-8 before:text-transparent"
-				>
+				<TableBody>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map(row => (
 							<TableRow
@@ -75,7 +66,7 @@ export function DataTable({ columns, data }: DataTableProps) {
 								data-state={row.getIsSelected() && "selected"}
 							>
 								{row.getVisibleCells().map(cell => (
-									<TableCell key={cell.id} className={`p-0`}>
+									<TableCell key={cell.id}>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
