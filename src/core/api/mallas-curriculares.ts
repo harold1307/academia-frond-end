@@ -1,9 +1,4 @@
-import type {
-	LugarEjecucion,
-	MallaCurricular,
-	PracticaComunitariaEnMalla,
-	PracticaPreProfesionalEnMalla,
-} from "@prisma/client";
+import type { LugarEjecucion, MallaCurricular } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
@@ -36,17 +31,10 @@ export type LugarEjecucionFromAPI = ReplaceDateToString<
 	}
 >;
 
-export type PracticaPreProfesionalEnMallaFromAPI =
-	ReplaceDateToString<PracticaPreProfesionalEnMalla>;
-export type PracticaComunitariaEnMallaFromAPI =
-	ReplaceDateToString<PracticaComunitariaEnMalla>;
-
 export type MallaCurricularFromAPI = ReplaceDateToString<
 	MallaCurricular & {
 		enUso: boolean;
 		modalidad: ModalidadFromAPI;
-		practicaPreProfesional: PracticaPreProfesionalEnMallaFromAPI | null;
-		practicaComunitaria: PracticaComunitariaEnMallaFromAPI | null;
 		tituloObtenido: TituloObtenidoFromAPI | null;
 		niveles: (Omit<NivelMallaFromAPI, "malla"> & {
 			asignaturas: AsignaturaEnNivelMallaFromAPI[];
@@ -58,32 +46,12 @@ export type MallaCurricularFromAPI = ReplaceDateToString<
 	}
 >;
 
+type ExtraFields = "modalidad" | "tituloObtenido" | "niveles" | "modulos";
+
 export type MallaCurricularWithLugaresEjecucionFromAPI =
 	MallaCurricularFromAPI & {
 		lugaresEjecucion: LugarEjecucionFromAPI[];
 	};
-
-export type CreatePracticaPreProfesionalEnMalla = Omit<
-	PracticaPreProfesionalEnMallaFromAPI,
-	| "id"
-	| "createdAt"
-	| "updatedAt"
-	| "registroDesdeNivelId"
-	| "mallaCurricularId"
-> & {
-	registroDesdeNivel: number | null;
-};
-
-export type CreatePracticaComunitariaEnMalla = Omit<
-	PracticaComunitariaEnMallaFromAPI,
-	| "id"
-	| "createdAt"
-	| "updatedAt"
-	| "registroDesdeNivelId"
-	| "mallaCurricularId"
-> & {
-	registroDesdeNivel: number | null;
-};
 
 export type CreateMallaCurricular = Omit<
 	MallaCurricularFromAPI,
@@ -92,16 +60,13 @@ export type CreateMallaCurricular = Omit<
 	| "updatedAt"
 	| "enUso"
 	| "estado"
-	| "practicaPreProfesional"
-	| "practicaComunitaria"
 	| "tituloObtenido"
 	| "niveles"
 	| "modulos"
 	| "modalidad"
+	| ExtraFields
 > & {
 	niveles: number;
-	practicasPreProfesionales: CreatePracticaPreProfesionalEnMalla | null;
-	practicasComunitarias: CreatePracticaComunitariaEnMalla | null;
 };
 
 export type UpdateMallaData = Partial<
@@ -114,13 +79,12 @@ export type UpdateMallaData = Partial<
 		| "programaId"
 		| "modalidadId"
 		| "niveles"
-		| "practicaPreProfesional"
-		| "practicaComunitaria"
 		| "tituloObtenido"
 		| "niveles"
 		| "modulos"
 		| "fechaAprobacion"
 		| "fechaLimiteVigencia"
+		| ExtraFields
 	> & {
 		fechaAprobacion?: string;
 		fechaLimiteVigencia?: string;
@@ -173,35 +137,18 @@ export const baseMallaSchema = z
 		enUso: z.boolean(),
 		estado: z.boolean(),
 
-		practicaComunitaria: z
-			.object({
-				id: z.string(),
-				requiereAutorizacion: z.boolean(),
-				horas: z.number().nullable(),
-				creditos: z.number().nullable(),
-				registroDesdeNivelId: z.string().nullable(),
-				registroPracticasAdelantadas: z.boolean(),
-				registroMultiple: z.boolean(),
-				mallaCurricularId: z.string(),
+		practicaComunitariaRequiereAutorizacion: z.boolean().nullable(),
+		practicaComunitariaHoras: z.number().nullable(),
+		practicaComunitariaCreditos: z.number().nullable(),
+		practicaComunitariaRegistroDesdeNivel: z.number().int().nullable(),
+		practicaComunitariaRegistroPracticasAdelantadas: z.boolean().nullable(),
+		practicaComunitariaRegistroMultiple: z.boolean().nullable(),
 
-				createdAt: z.string().datetime(),
-				updatedAt: z.string().datetime(),
-			})
-			.nullable(),
-		practicaPreProfesional: z
-			.object({
-				id: z.string(),
-				requiereAutorizacion: z.boolean(),
-				horas: z.number().nullable(),
-				creditos: z.number().nullable(),
-				registroDesdeNivelId: z.string().nullable(),
-				registroPracticasAdelantadas: z.boolean(),
-				mallaCurricularId: z.string(),
-
-				createdAt: z.string().datetime(),
-				updatedAt: z.string().datetime(),
-			})
-			.nullable(),
+		practicaPreProfesionalRequiereAutorizacion: z.boolean().nullable(),
+		practicaPreProfesionalHoras: z.number().nullable(),
+		practicaPreProfesionalCreditos: z.number().nullable(),
+		practicaPreProfesionalRegistroDesdeNivel: z.number().int().nullable(),
+		practicaPreProfesionalRegistroPracticasAdelantadas: z.boolean().nullable(),
 
 		createdAt: z.string().datetime(),
 		updatedAt: z.string().datetime(),
@@ -267,7 +214,7 @@ export class MallaCurricularClass {
 				data: mallaSchema,
 				message: z.string(),
 			}),
-			`/api/mallas-curriculares/${params.id}`,
+			this.apiUrl + `/api/mallas-curriculares/${params.id}`,
 			{
 				method: "PATCH",
 				headers: {

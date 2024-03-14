@@ -54,14 +54,9 @@ export const baseNivelMallaSchema = z.object<
 export const nivelMallaSchema = baseNivelMallaSchema
 	.extend<ZodInferSchema<Pick<NivelMallaFromAPI, ExtraFields>>>({
 		malla: z.lazy(() =>
-			baseMallaSchema
-				.omit({
-					practicaPreProfesional: true,
-					practicaComunitaria: true,
-				})
-				.extend({
-					modalidad: modalidadSchema,
-				}),
+			baseMallaSchema.extend({
+				modalidad: modalidadSchema,
+			}),
 		),
 		enUso: z.boolean(),
 	})
