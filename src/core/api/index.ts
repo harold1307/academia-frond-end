@@ -281,6 +281,13 @@ export class APIClass {
 		return new admCostosClass(this._apiUrl, this._fetcher);
 	}
 
+	get requisitosMatriculacion() {
+		return new RequisitoMatriculacionClass(this._apiUrl, this._fetcher);
+	}
+
+	get subPeriodosLectivos() {
+		return new SubPeriodoLectivoClass(this._apiUrl, this._fetcher);
+	}
 }
 
 export class APIError extends Error {

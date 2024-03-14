@@ -386,18 +386,6 @@ export class PeriodoLectivoClass {
 		return res;
 	}
 
-	async getByIdSubPeriodoLectivo({ periodoLectivoId }: string) {
-		const res = await this.fetcher(
-			z.object({
-				data: z.any(),
-				message: z.string(),
-			}),
-			this.apiUrl + `/api/periodos-lectivos/${periodoLectivoId}/`,
-		);
-
-		return res;
-	}
-
 	// cronogramas de matriculacion
 	async createCronogramaMatriculacion({
 		periodoLectivoId,
