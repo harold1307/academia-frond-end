@@ -51,6 +51,13 @@ export const ROUTES = {
 		materias: (sectionId: string) =>
 			ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma`,
 	},
+	talentoHumano: {
+		path: "/talentohumano",
+		modeloCampos: (modeloDeContratoId: string) =>
+			`/${modeloDeContratoId}/campos`,
+		estudiantes: (asesorId: string) => `/${asesorId}/estudiantes`,
+		plazas: (departamentosId: string) => `/${departamentosId}/plazas`,
+	},
 	periodo: {
 		path: "/periodos",
 		cortes: "/periodos?seccion=cortes",
