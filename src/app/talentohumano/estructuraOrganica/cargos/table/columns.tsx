@@ -82,7 +82,7 @@ function Asignados({ nombres }: { nombres: string[] }) {
 	return (
 		<div className='w-full rounded border p-2'>
 			<h2>Personas:</h2>
-			{nombres.map(nombre=><p className="w-full">{nombre}</p>)}
+			{nombres.map(nombre=><p className="w-full" key={nombre}>{nombre}</p>)}
 		</div>
 	);
 }

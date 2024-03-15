@@ -123,7 +123,7 @@ function UpdateEspeciesTableModal(props: { especies: any }) {
 									render={({ field }) => {
 										switch (f.inputType) {
 											case "custom-select": {
-												let options = f.options;
+												const options = f.options;
 
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
