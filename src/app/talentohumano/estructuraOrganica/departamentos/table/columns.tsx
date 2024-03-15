@@ -86,7 +86,7 @@ function Asignados({ nombres }: { nombres: string[] }) {
 	return (
 		<div className='w-full p-2'>
 			{nombres.map(nombre => (
-				<p className='w-full'>{nombre}</p>
+				<p className='w-full' key={nombre}>{nombre}</p>
 			))}
 		</div>
 	);
