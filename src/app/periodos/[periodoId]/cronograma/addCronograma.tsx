@@ -33,7 +33,7 @@ import {
 import { API } from "@/core/api-client";
 import { cn } from "@/utils";
 import { NIVELES_PREFIXES, type Field } from "@/utils/forms";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Checkbox } from "@/app/_components/ui/checkbox";
@@ -52,34 +52,12 @@ export const cronogramaParams = {
 	update: "actualizarCronograma",
 } as const;
 
-type CreateCortesInput = Omit<
-	MallaCurricular,
-	| "id"
-	| "createdAt"
-	| "registroPracticasDesde"
-	| "registroVinculacionDesde"
-	| "registroProyectosDesde"
-> & {
-	registroPracticasDesde: (typeof NIVELES_PREFIXES)[number];
-	registroVinculacionDesde: (typeof NIVELES_PREFIXES)[number];
-	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
-};
 
-type CreateCortesOutput = Omit<
-	MallaCurricular,
-	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	fechaAprobacion: string;
-	fechaLimiteVigencia: string;
-};
-
-const createCortesSchema: z.ZodType<
-	CreateCortesOutput,
-	z.ZodTypeDef,
-	CreateCortesInput
-> = z.object({});
-
-export default function AddCronograma() {
+export default function AddCronograma({
+	periodoLectivoId,
+}: {
+	periodoLectivoId: string;
+}) {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 
@@ -87,8 +65,11 @@ export default function AddCronograma() {
 		form,
 		mutation: { mutate, isPending },
 	} = useMutateModule({
-		mutationFn: async data => {
-			return API.periodos.create(data);
+		mutationFn: async ({ data, periodoLectivoId }) => {
+			return API.periodos.createCronogramaMatriculacion({
+				data,
+				periodoLectivoId,
+			});
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -115,7 +96,7 @@ export default function AddCronograma() {
 		isLoading: sedesAreLoading,
 		refetch: fetchSedes,
 	} = useQuery({
-		queryKey: ["sedes"],
+		queryKey: ["sedeId"],
 		queryFn: () => {
 			return API.sedes.getMany();
 		},
@@ -127,24 +108,12 @@ export default function AddCronograma() {
 		isLoading: modalidadAreLoading,
 		refetch: fetchModalidad,
 	} = useQuery({
-		queryKey: ["modalidad"],
+		queryKey: ["modalidadId"],
 		queryFn: () => {
 			return API.modalidades.getMany();
 		},
 		enabled: false,
 	});
-
-	/* const {
-		data: niveles,
-		isLoading: nivelesAreLoading,
-		refetch: fetchNiveles,
-	} = useQuery({
-		queryKey: ["niveles"],
-		queryFn: () => {
-			return API.nivelesMalla.getMany();
-		},
-		enabled: false,
-	}); */
 
 	const { niveles } = form.watch();
 
@@ -163,7 +132,9 @@ export default function AddCronograma() {
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => mutate(data))}
+							onSubmit={form.handleSubmit(data =>
+								mutate({ data, periodoLectivoId }),
+							)}
 							className='space-y-8'
 						>
 							{fields.map(f => (
@@ -243,7 +214,7 @@ export default function AddCronograma() {
 													);
 												} else if (f.options === "custom") {
 													switch (f.name) {
-														case "modalidad": {
+														case "modalidadId": {
 															options = modalidad?.data.map(m => ({
 																label: m.nombre,
 																value: m.id,
@@ -252,7 +223,7 @@ export default function AddCronograma() {
 															loading = modalidadAreLoading;
 															break;
 														}
-														case "programa": {
+														case "programaId": {
 															options = programas?.data.map(p => ({
 																label: p.nombre,
 																value: p.id,
@@ -260,7 +231,7 @@ export default function AddCronograma() {
 
 															loading = programasAreLoading;
 														}
-														case "sede": {
+														case "sedeId": {
 															options = sede?.data.map(s => ({
 																label: s.nombre,
 																value: s.id,
@@ -280,13 +251,13 @@ export default function AddCronograma() {
 															defaultValue={field.value as string}
 															disabled={field.disabled}
 															onOpenChange={() => {
-																if (f.name === "modalidad" && !modalidad) {
+																if (f.name === "modalidadId" && !modalidad) {
 																	fetchModalidad();
 																}
-																if (f.name === "programa" && !programas) {
+																if (f.name === "programaId" && !programas) {
 																	fetchProgramas();
 																}
-																if (f.name === "sede" && !sede) {
+																if (f.name === "sedeId" && !sede) {
 																	fetchSedes();
 																}
 															}}
@@ -320,52 +291,6 @@ export default function AddCronograma() {
 																		: "No hay resultados"}
 															</SelectContent>
 														</Select>
-													</FormItem>
-												);
-											}
-											case "custom-text-area": {
-												return (
-													<FormItem className='grid grid-cols-12 items-start gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Textarea
-																className='col-span-9 resize-none'
-																{...field}
-																value={field.value as string}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-											case "checkbox": {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<Checkbox
-																checked={field.value as boolean}
-																onCheckedChange={field.onChange}
-															/>
-														</FormControl>
-													</FormItem>
-												);
-											}
-											case "toggle": {
-												return (
-													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
-														<FormLabel className='col-span-3 text-end'>
-															{f.label}
-														</FormLabel>
-														<FormControl>
-															<ToggleSwitch
-																checked={field.value as boolean}
-																onCheckedChange={field.onChange}
-															/>
-														</FormControl>
 													</FormItem>
 												);
 											}
@@ -423,19 +348,19 @@ export default function AddCronograma() {
 
 const fields = [
 	{
-		name: "sede",
+		name: "sedeId",
 		inputType: "custom-select",
 		options: "custom",
 		label: "Sede",
 	},
 	{
-		name: "programa",
+		name: "programaId",
 		inputType: "custom-select",
 		options: "custom",
 		label: "Programa",
 	},
 	{
-		name: "modalidad",
+		name: "modalidadId",
 		inputType: "custom-select",
 		options: "custom",
 		label: "Modalidad",
@@ -446,6 +371,6 @@ const fields = [
 		options: "niveles",
 		label: "Nivel",
 	},
-	{ name: "inicio", inputType: "custom-date", label: "Fecha Inicio" },
-	{ name: "fin", inputType: "custom-date", label: "Fecha Fin" },
+	{ name: "fechaInicio", inputType: "custom-date", label: "Fecha Inicio" },
+	{ name: "fechaFin", inputType: "custom-date", label: "Fecha Fin" },
 ];

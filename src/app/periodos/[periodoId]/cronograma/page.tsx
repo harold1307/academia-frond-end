@@ -20,7 +20,7 @@ export default async function CronogramaPage({ params }: any) {
 		<>
 			<div className='mt-4'>
 				<React.Suspense fallback={"Cargando tabla..."}>
-					<AddCronograma />
+					<AddCronograma periodoLectivoId={params.periodoId} />
 					<CronogramaTable cronograma={cronograma.data} />
 				</React.Suspense>
 			</div>
