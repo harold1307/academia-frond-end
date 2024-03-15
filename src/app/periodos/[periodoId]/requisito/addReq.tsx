@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TipoDuracion, type MallaCurricular } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
 import React from "react";
@@ -45,46 +45,25 @@ import {
 } from "../../../_components/ui/popover";
 import { Textarea } from "../../../_components/ui/textarea";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
+import { useMutateModule } from "@/hooks/use-mutate-module";
 
 export const reqParams = {
 	add: "agregarCorte",
 	update: "actualizarCorte",
 } as const;
 
-type CreateReqInput = Omit<
-	MallaCurricular,
-	| "id"
-	| "createdAt"
-	| "registroPracticasDesde"
-	| "registroVinculacionDesde"
-	| "registroProyectosDesde"
-> & {
-	registroPracticasDesde: (typeof NIVELES_PREFIXES)[number];
-	registroVinculacionDesde: (typeof NIVELES_PREFIXES)[number];
-	registroProyectosDesde: (typeof NIVELES_PREFIXES)[number];
-};
-
-type CreateReqOutput = Omit<
-	MallaCurricular,
-	"id" | "createdAt" | "fechaAprobacion" | "fechaLimiteVigencia"
-> & {
-	fechaAprobacion: string;
-	fechaLimiteVigencia: string;
-};
-
-const createReqSchema: z.ZodType<
-	CreateReqOutput,
-	z.ZodTypeDef,
-	CreateReqInput
-> = z.object({});
+const createReqSchema: z.ZodType<z.ZodTypeDef> = z.object({});
 
 export default function AddReq() {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 
-	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
-		mutationFn: async (data: createReqSchema) => {
-			return API.periodos.create(data);
+	const {
+		form,
+		mutation: { mutate, isPending },
+	} = useMutateModule({
+		mutationFn: async data => {
+			return API.periodos.createRequisitoMatriculacion(data);
 		},
 		onError: console.error,
 		onSuccess: response => {
@@ -94,12 +73,43 @@ export default function AddReq() {
 		},
 	});
 
-	const form = useForm({
-		resolver: zodResolver(createReqSchema),
-		defaultValues: {},
-		disabled: isSubmitting,
-		shouldUnregister: true,
+	const {
+		data: programas,
+		isLoading: programasAreLoading,
+		refetch: fetchProgramas,
+	} = useQuery({
+		queryKey: ["cortes"],
+		queryFn: () => {
+			return API.programas.getMany();
+		},
+		enabled: false,
 	});
+
+	const {
+		data: sede,
+		isLoading: sedesAreLoading,
+		refetch: fetchSedes,
+	} = useQuery({
+		queryKey: ["sedes"],
+		queryFn: () => {
+			return API.sedes.getMany();
+		},
+		enabled: false,
+	});
+
+	const {
+		data: modalidad,
+		isLoading: modalidadAreLoading,
+		refetch: fetchModalidad,
+	} = useQuery({
+		queryKey: ["modalidad"],
+		queryFn: () => {
+			return API.modalidades.getMany();
+		},
+		enabled: false,
+	});
+
+	const { niveles } = form.watch();
 
 	return (
 		<section className='my-4'>
@@ -118,18 +128,14 @@ export default function AddReq() {
 					</DialogHeader>
 					<Form {...form}>
 						<form
-							onSubmit={form.handleSubmit(data => onSubmit(data))}
+							onSubmit={form.handleSubmit(data => mutate(data))}
 							className='space-y-8'
 						>
 							{fields.map(f => (
 								<FormField
 									control={form.control}
 									name={f.name}
-									key={
-										f.name.includes("Desde")
-											? f.name + form.watch().niveles
-											: f.name
-									}
+									key={f.name}
 									render={({ field }) => {
 										switch (f.inputType) {
 											case "custom-date": {
@@ -180,23 +186,55 @@ export default function AddReq() {
 												);
 											}
 											case "custom-select": {
-												const options =
-													f.options === "niveles"
-														? NIVELES_PREFIXES.slice(
-																0,
-																form.getValues().niveles,
-															).map(
-																v =>
-																	({
-																		value: v,
-																		label: `${v} NIVEL`,
-																	}) satisfies {
-																		label: string;
-																		value: string;
-																	},
-															)
-														: f.options;
+												let options:
+													| { label: string; value: string }[]
+													| string[]
+													| undefined = Array.isArray(f.options)
+													? f.options
+													: undefined;
 
+												let loading;
+
+												if (f.options === "niveles") {
+													options = NIVELES_PREFIXES.slice(0, niveles).map(
+														(v, idx) =>
+															({
+																value: `${idx + 1}`,
+																label: `${v} NIVEL`,
+															}) satisfies {
+																label: string;
+																value: string;
+															},
+													);
+												} else if (f.options === "custom") {
+													switch (f.name) {
+														case "modalidad": {
+															options = modalidad?.data.map(m => ({
+																label: m.nombre,
+																value: m.id,
+															}));
+
+															loading = modalidadAreLoading;
+															break;
+														}
+														case "programa": {
+															options = programas?.data.map(p => ({
+																label: p.nombre,
+																value: p.id,
+															}));
+
+															loading = programasAreLoading;
+														}
+														case "sede": {
+															options = sede?.data.map(s => ({
+																label: s.nombre,
+																value: s.id,
+															}));
+
+															loading = sedesAreLoading;
+														}
+													}
+												}
 												return (
 													<FormItem className='grid grid-cols-12 items-center gap-4 space-y-0'>
 														<FormLabel className='col-span-3 text-end'>
@@ -206,6 +244,17 @@ export default function AddReq() {
 															onValueChange={field.onChange}
 															defaultValue={field.value as string}
 															disabled={field.disabled}
+															onOpenChange={() => {
+																if (f.name === "modalidad" && !modalidad) {
+																	fetchModalidad();
+																}
+																if (f.name === "programa" && !programas) {
+																	fetchProgramas();
+																}
+																if (f.name === "sede" && !sede) {
+																	fetchSedes();
+																}
+															}}
 														>
 															<FormControl>
 																<SelectTrigger className='col-span-9'>
@@ -216,17 +265,24 @@ export default function AddReq() {
 																</SelectTrigger>
 															</FormControl>
 															<SelectContent>
-																{options?.map(o =>
-																	typeof o === "string" ? (
-																		<SelectItem value={o} key={o}>
-																			{o}
-																		</SelectItem>
-																	) : (
-																		<SelectItem value={o.value} key={o.value}>
-																			{o.label}
-																		</SelectItem>
-																	),
-																)}
+																{loading
+																	? "Cargando opciones..."
+																	: options?.length
+																		? options?.map(o =>
+																				typeof o === "string" ? (
+																					<SelectItem value={o} key={o}>
+																						{o}
+																					</SelectItem>
+																				) : (
+																					<SelectItem
+																						value={o.value}
+																						key={o.value}
+																					>
+																						{o.label}
+																					</SelectItem>
+																				),
+																			)
+																		: "No hay resultados"}
 															</SelectContent>
 														</Select>
 													</FormItem>
@@ -310,11 +366,11 @@ export default function AddReq() {
 								/>
 							))}
 							<DialogFooter>
-								<Button disabled={isSubmitting} type='submit' variant='success'>
+								<Button disabled={isPending} type='submit' variant='success'>
 									Guardar
 								</Button>
 								<Button
-									disabled={isSubmitting}
+									disabled={isPending}
 									variant='destructive'
 									type='button'
 									onClick={() => setOpen(false)}
@@ -343,10 +399,30 @@ const fields = [
 		placeholder: "",
 		label: "Nombre",
 	},
-	{ name: "sede", inputType: "text", label: "Sede" },
-	{ name: "programa", inputType: "text", label: "Programa" },
-	{ name: "modalidad", inputType: "text", label: "Modalidad" },
-	{ name: "nivel", inputType: "text", label: "Nivel" },
+	{
+		name: "sede",
+		inputType: "custom-select",
+		options: "custom",
+		label: "Sede",
+	},
+	{
+		name: "programa",
+		inputType: "custom-select",
+		options: "custom",
+		label: "Programa",
+	},
+	{
+		name: "modalidad",
+		inputType: "custom-select",
+		options: "custom",
+		label: "Modalidad",
+	},
+	{
+		name: "niveles",
+		inputType: "custom-select",
+		options: "niveles",
+		label: "Nivel",
+	},
 	{
 		name: "obligatorio",
 		inputType: "toggle",

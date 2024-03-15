@@ -1,5 +1,5 @@
 import { APIserver } from "@/core/api-server";
-import MallaCurricularTable from ".";
+import MallaCurricularTable, { DeleteMalla, UpdateMalla } from ".";
 import type { MallaCurricularTableItem } from "./columns";
 
 export default async function MallaCurricularTableServer({
@@ -22,8 +22,8 @@ export default async function MallaCurricularTableServer({
 			creditos: 0,
 			totalHoras:
 				0 +
-				(malla.practicaPreProfesional?.horas || 0) +
-				(malla.practicaComunitaria?.horas || 0),
+				(malla.practicaPreProfesionalHoras || 0) +
+				(malla.practicaComunitariaHoras || 0),
 			modulos: 0,
 			materias: 0,
 			horasMaterias: 0,
@@ -63,8 +63,8 @@ export default async function MallaCurricularTableServer({
 			alumnos: 0,
 			egresan: false,
 			graduan: false,
-			horasPracticasComunitarias: malla.practicaComunitaria?.horas || 0,
-			horasPracticasPreprofesionales: malla.practicaPreProfesional?.horas || 0,
+			horasPracticasComunitarias: malla.practicaComunitariaHoras ?? 0,
+			horasPracticasPreprofesionales: malla.practicaComunitariaHoras ?? 0,
 			niveles: malla.niveles.length,
 			horasProyectoIntegrador: 0,
 			tituloObtenido: malla.tituloObtenido?.nombre || "",
@@ -76,6 +76,10 @@ export default async function MallaCurricularTableServer({
 	});
 
 	return (
-		<MallaCurricularTable mallas={tableData} programaName={programaName} />
+		<>
+			<MallaCurricularTable mallas={tableData} programaName={programaName} />
+			<DeleteMalla mallas={tableData} programaName={programaName} />
+			<UpdateMalla mallas={mallas.data} />
+		</>
 	);
 }

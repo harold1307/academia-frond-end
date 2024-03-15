@@ -132,6 +132,31 @@ export function UpdateProgramaModal({
 		[searchParams],
 	);
 
+	React.useEffect(() => {
+		const selectedPrograma = programasEnVariante.find(
+			i => i.id === programasParamsId,
+		);
+
+		if (modalidadId === undefined && selectedPrograma?.modalidadId) {
+			form.setValue("modalidadId", selectedPrograma.modalidadId);
+		}
+
+		if (programaId === undefined && selectedPrograma?.programaId) {
+			form.setValue("programaId", selectedPrograma.programaId);
+		}
+
+		if (mallaId === undefined && selectedPrograma?.mallaId) {
+			form.setValue("mallaId", selectedPrograma.mallaId);
+		}
+	}, [
+		modalidadId,
+		programaId,
+		mallaId,
+		programasParamsId,
+		form,
+		programasEnVariante,
+	]);
+
 	if (!programasParamsId) return null;
 
 	const selectedPrograma = programasEnVariante.find(
@@ -145,18 +170,6 @@ export function UpdateProgramaModal({
 				redirectTo={() => replaceDelete(programasEnVarianteParams.update)}
 			/>
 		);
-	}
-
-	if (modalidadId === undefined && selectedPrograma.modalidadId) {
-		form.setValue("modalidadId", selectedPrograma.modalidadId);
-	}
-
-	if (programaId === undefined && selectedPrograma.programaId) {
-		form.setValue("programaId", selectedPrograma.programaId);
-	}
-
-	if (mallaId === undefined && selectedPrograma.mallaId) {
-		form.setValue("mallaId", selectedPrograma.mallaId);
 	}
 
 	return (

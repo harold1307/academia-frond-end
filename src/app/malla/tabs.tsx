@@ -1,5 +1,6 @@
 import { ROUTES } from "@/core/routes";
 import { ActiveTab } from "../_components/ui/active-tab";
+import { Separator } from "../_components/ui/separator";
 
 export const mallaSeccionParams = {
 	mallas: "mallas",
@@ -45,6 +46,7 @@ export default function MallaPageTabs({
 					</li>
 				))}
 			</ul>
+			<Separator />
 		</div>
 	);
 }

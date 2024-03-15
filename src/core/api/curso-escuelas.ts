@@ -2,7 +2,11 @@ import type { CursoEscuela } from "@prisma/client";
 import { z } from "zod";
 import type { ZodFetcher } from "zod-fetch";
 
-import type { ReplaceDateToString, ZodInferSchema } from "@/utils/types";
+import type {
+	NonNullableObject,
+	ReplaceDateToString,
+	ZodInferSchema,
+} from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { AsignaturaEnCursoEscuelaFromAPI } from "./asignaturas-curso-escuelas";
 import {
@@ -55,6 +59,10 @@ export type UpdateCursoEscuela = Partial<
 	>
 >;
 
+export type CursoEscuelaQueryFilter = Partial<
+	NonNullableObject<Omit<CursoEscuelaFromAPI, "enUso">>
+>;
+
 export const cursoEscuelaSchema = z
 	.object<ZodInferSchema<CursoEscuelaFromAPI>>({
 		id: z.string().uuid(),
@@ -104,7 +112,13 @@ const cursoEscuelaWithProgramasSchema = cursoEscuelaSchema.extend<
 				enUso: true,
 			}),
 			modalidad: modalidadSchema.omit({ enUso: true }).nullable(),
-			malla: baseMallaSchema.nullable(),
+			malla: baseMallaSchema
+				.omit({
+					practicaPreProfesional: true,
+					practicaComunitaria: true,
+					enUso: true,
+				})
+				.nullable(),
 		})
 		.array(),
 });
@@ -159,13 +173,25 @@ export class CursoEscuelaClass {
 		return res.json();
 	}
 
-	async getMany(_: void): Promise<APIResponse<CursoEscuelaFromAPI[]>> {
+	async getMany(
+		params?: GetManyCursoEscuelasParams,
+	): Promise<APIResponse<CursoEscuelaFromAPI[]>> {
+		const { filters } = params || {};
+
+		const searchParams = new URLSearchParams();
+
+		Object.entries(filters || {}).forEach(([k, v]) => {
+			if (v !== undefined) {
+				searchParams.set(k, `${v}`);
+			}
+		});
+
 		const res = this.fetcher(
 			z.object({
 				data: cursoEscuelaSchema.array(),
 				message: z.string(),
 			}),
-			this.apiUrl + "/api/curso-escuelas",
+			this.apiUrl + `/api/curso-escuelas?${searchParams.toString()}`,
 		);
 
 		return res;
@@ -268,4 +294,7 @@ export class CursoEscuelaClass {
 type CreateProgramaEnCursoEscuelaParams = {
 	cursoEscuelaId: string;
 	data: Omit<CreateProgramaEnCursoEscuela, "cursoEscuelaId">;
+};
+type GetManyCursoEscuelasParams = {
+	filters?: CursoEscuelaQueryFilter;
 };

@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import DeleteModal from "@/app/_components/modals/delete-modal";
 import ModalFallback from "@/app/_components/modals/modal-fallback";
+import { DataTable } from "@/app/_components/table";
 import { Button } from "@/app/_components/ui/button";
 import {
 	Dialog,
@@ -27,12 +28,17 @@ import { useMutateModule } from "@/hooks/use-mutate-module";
 import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { sedeParams } from "../add-sede";
 import { columns, type SedeTableItem } from "./columns";
-import { DataTable } from "./data-table";
 
 export default function SedeTable({ sedes }: { sedes: SedeTableItem[] }) {
 	return (
 		<section>
-			<DataTable columns={columns} data={sedes} />
+			<DataTable<typeof columns, SedeTableItem[]>
+				columns={columns}
+				data={sedes}
+				hideColumns={{
+					id: false,
+				}}
+			/>
 		</section>
 	);
 }

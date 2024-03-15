@@ -52,7 +52,7 @@ export default function AddCurso() {
 				onSubmit={form.handleSubmit(data => mutation.mutate(data))}
 				title='Adicionar curso'
 				withTrigger
-				triggerLabel='Adicionar curso'
+				triggerLabel='Agregar'
 			>
 				{fields.map(f => (
 					<FormField

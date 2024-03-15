@@ -12,29 +12,27 @@ import { Button } from "./_components/ui/button";
 import KeyIcon from "./_components/ui/icons/key";
 import LogoutIcon from "./_components/ui/icons/logout";
 import SelectGlobalPeriodo from "./select-global-periodo";
+import { formatDate } from "@/utils";
 
 export default function UserSession() {
 	const { instance, inProgress } = useMsal();
 	const activeAccount = useAccount();
 	const router = useRouter();
-	const [clock, setClock] = useState<any>(formatAMPM(new Date()));
+	const [clock, setClock] = useState<any>("0:00 AM");
 
 	function formatAMPM(date: any) {
-		let hours = date.getHours();
-		let minutes = date.getMinutes();
-		const ampm = hours >= 12 ? "PM" : "AM";
-		hours = hours % 12;
-		hours = hours ? hours : 12; // the hour '0' should be '12'
-		minutes = minutes < 10 ? "0" + minutes : minutes;
-		const strTime = hours + ":" + minutes + " " + ampm;
-		return strTime;
+		return formatDate(date, {
+			hour: "numeric",
+			minute: "numeric",
+			hour12: true,
+		});
 	}
 
 	useEffect(() => {
-		setTimeout(() => {
+		setInterval(() => {
 			setClock(formatAMPM(new Date()));
 		}, 1000);
-	}, [clock]);
+	}, []);
 
 	return (
 		<>

@@ -1,6 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, GripHorizontal, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
 import { Button } from "@/app/_components/ui/button";
@@ -12,9 +11,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { ROUTES } from "@/core/routes";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 import { formatDate } from "@/utils";
 import { mallaParams } from "../add-malla";
-import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
 
 export type MallaCurricularTableItem = {
 	id: string;
@@ -199,7 +198,7 @@ function Actions(props: { mallaId: string; showDelete: boolean }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-				// onClick={() => replaceSet(mallaParams.update, props.mallaId)}
+					onClick={() => replaceSet(mallaParams.update, props.mallaId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
@@ -226,14 +225,16 @@ function Actions(props: { mallaId: string; showDelete: boolean }) {
 					<GripHorizontal className='mr-2 h-4 w-4' />
 					<span>Modulos</span>
 				</DropdownMenuItem>
-				<DropdownMenuSeparator />
 				{props.showDelete && (
-					<DropdownMenuItem
-						onClick={() => replaceSet(mallaParams.delete, props.mallaId)}
-					>
-						<X className='mr-2 h-4 w-4' />
-						<span>Eliminar</span>
-					</DropdownMenuItem>
+					<>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem
+							onClick={() => replaceSet(mallaParams.delete, props.mallaId)}
+						>
+							<X className='mr-2 h-4 w-4' />
+							<span>Eliminar</span>
+						</DropdownMenuItem>
+					</>
 				)}
 			</DropdownMenuContent>
 		</DropdownMenu>

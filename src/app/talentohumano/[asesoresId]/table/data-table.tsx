@@ -16,18 +16,19 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, MallaCurricularTableItem } from "./columns";
+import {
+	type estudiantesColumns,
+	type EstudiantesTableItem,
+} from "./columns";
 
 interface DataTableProps {
-	columns: typeof columns;
-	data: MallaCurricularTableItem[];
+	columns: typeof estudiantesColumns;
+	data: EstudiantesTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({
-			id: false,
-		});
+		React.useState<VisibilityState>({});
 	const table = useReactTable({
 		data,
 		columns,
@@ -38,15 +39,26 @@ export function DataTable({ columns, data }: DataTableProps) {
 		},
 	});
 
+	React.useEffect(() => {
+		table.setColumnVisibility({
+			id: true,
+		});
+	}, [table]);
+
 	return (
-		<div className='rounded-md border'>
+		<div>
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map(headerGroup => (
 						<TableRow key={headerGroup.id}>
-							{headerGroup.headers.map(header => {
+							{headerGroup.headers.map((header, index) => {
 								return (
-									<TableHead key={header.id}>
+									<TableHead
+										key={header.id}
+										className={`${index === 0 ? "rounded-l-md border-l-2 text-start" : ""} 
+										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
+										relative w-2 py-0 font-light`}
+									>
 										{header.isPlaceholder
 											? null
 											: flexRender(
@@ -59,15 +71,20 @@ export function DataTable({ columns, data }: DataTableProps) {
 						</TableRow>
 					))}
 				</TableHeader>
-				<TableBody>
+				<TableBody
+				// className="before:content-['space'] before:leading-8 before:text-transparent"
+				>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map(row => (
 							<TableRow
 								key={row.id}
 								data-state={row.getIsSelected() && "selected"}
 							>
-								{row.getVisibleCells().map(cell => (
-									<TableCell key={cell.id}>
+								{row.getVisibleCells().map((cell, index) => (
+									<TableCell
+										key={cell.id}
+										className={`${index === 0 ? "mx-4 px-4 text-start" : ""} h-8`}
+									>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}

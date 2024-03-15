@@ -72,9 +72,7 @@ export class GrupoClass {
 		return res;
 	}
 
-	async create(
-		data: Omit<GrupoFromAPI, "enUso" | "createdAt" | "updatedAt" | "id">,
-	): Promise<SimpleAPIResponse> {
+	async create(data: CreateGrupo): Promise<SimpleAPIResponse> {
 		const res = await fetch(this.apiUrl + `/api/grupos`, {
 			method: "POST",
 			headers: {

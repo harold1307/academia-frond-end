@@ -1,5 +1,4 @@
 "use client";
-
 import {
 	flexRender,
 	getCoreRowModel,
@@ -16,18 +15,19 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/app/_components/ui/table";
-import type { columns, CursoEscuelaTableItem } from "./columns";
+import type {
+	PlazasDepartamentosColumns,
+	PlazasDepartamentosTableItem,
+} from "./columns";
 
 interface DataTableProps {
-	columns: typeof columns;
-	data: CursoEscuelaTableItem[];
+	columns: typeof PlazasDepartamentosColumns;
+	data: PlazasDepartamentosTableItem[];
 }
 
 export function DataTable({ columns, data }: DataTableProps) {
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({
-			id: false,
-		});
+		React.useState<VisibilityState>({});
 	const table = useReactTable({
 		data,
 		columns,
@@ -37,6 +37,12 @@ export function DataTable({ columns, data }: DataTableProps) {
 			columnVisibility,
 		},
 	});
+
+	React.useEffect(() => {
+		table.setColumnVisibility({
+			id: false,
+		});
+	}, [table]);
 
 	return (
 		<div>
@@ -48,13 +54,9 @@ export function DataTable({ columns, data }: DataTableProps) {
 								return (
 									<TableHead
 										key={header.id}
-										className={`${
-											index === 0 ? "rounded-l-md border-l-2" : ""
-										} ${
-											index === headerGroup.headers.length - 1
-												? " rounded-r-md border-r-2"
-												: ""
-										} whitespace-nowrap`}
+										className={`${index === 0 ? "rounded-l-md border-l-2 text-start" : ""}
+										${index === headerGroup.headers.length - 1 ? " rounded-r-md border-r-2" : ""} 
+										relative w-2 py-0 font-light`}
 									>
 										{header.isPlaceholder
 											? null
@@ -73,20 +75,11 @@ export function DataTable({ columns, data }: DataTableProps) {
 				>
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map(row => (
-							<TableRow
-								key={row.id}
-								data-state={row.getIsSelected() && "selected"}
-							>
+							<TableRow key={row.id}>
 								{row.getVisibleCells().map((cell, index) => (
 									<TableCell
 										key={cell.id}
-										className={`${index === 1 ? "w-5/12" : ""} ${
-											index === 0
-												? "w-2/12 text-left"
-												: index === row.getVisibleCells().length - 1
-													? "flex items-end justify-end text-right"
-													: " "
-										}`}
+										className={`${index === 0 ? "mx-4 px-4 text-start" : ""}`}
 									>
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>

@@ -29,12 +29,12 @@ export const columns = [
 		cell: ({ row }) => {
 			const id = row.getValue("id") as string;
 
-			return <Actions periodoId={id} />;
+			return <Actions corteId={id} />;
 		},
 	}),
 ];
 
-function Actions(props: { periodoId: string }) {
+function Actions(props: { corteId: string }) {
 	const { replaceSet } = useMutateSearchParams();
 
 	return (
@@ -44,12 +44,14 @@ function Actions(props: { periodoId: string }) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
 				<DropdownMenuItem
-					onClick={() => replaceSet(cortesParams.update, props.periodoId)}
+					onClick={() => replaceSet(cortesParams.update, props.corteId)}
 				>
 					<FileSignature className='mr-2 h-4 w-4' />
 					<span>Editar</span>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => replaceSet(cortesParams.delete, props.corteId)}
+				>
 					<XCircle className='mr-2 h-4 w-4' />
 					<span>Eliminar</span>
 				</DropdownMenuItem>

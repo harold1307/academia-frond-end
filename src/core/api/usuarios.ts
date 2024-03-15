@@ -188,7 +188,7 @@ export type InscripcionFromAPI = ReplaceDateToString<
 			| "niveles"
 			| "modulos"
 		>;
-		sesion: Omit<NivelAcademicoFromAPI, "sesion">;
+		sesion: Omit<NivelAcademicoFromAPI, "sesion" | "nivelMalla">;
 	}
 >;
 
