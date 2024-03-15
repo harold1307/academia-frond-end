@@ -9,7 +9,11 @@ import type {
 } from "@/utils/types";
 import { APIError, type APIResponse, type SimpleAPIResponse } from ".";
 import type { CreateMateriaEnHorario } from "./materias-horario";
-import type { CreateMateriaEnNivelAcademico } from "./materias-niveles-academicos";
+import {
+	materiaEnNivelAcademicoSchema,
+	type CreateMateriaEnNivelAcademico,
+	type MateriaEnNivelAcademicoFromAPI,
+} from "./materias-niveles-academicos";
 import { baseNivelMallaSchema, type NivelMallaFromAPI } from "./niveles-malla";
 import { sesionSchema, type SesionFromAPI } from "./sesiones";
 // import type { CreateAsignaturaEnNivelAcademico } from "./asignaturas-niveles-academicos";
@@ -20,6 +24,10 @@ export type NivelAcademicoFromAPI = ReplaceDateToString<
 		nivelMalla: Omit<NivelMallaFromAPI, "enUso" | "malla">;
 	}
 >;
+
+export type NivelAcademicoWithMateriasFromAPI = NivelAcademicoFromAPI & {
+	materias: MateriaEnNivelAcademicoFromAPI[];
+};
 
 type UpdateNivelAcademicoParams = {
 	id: string;
@@ -121,6 +129,16 @@ export const nivelAcademicoSchema = baseNivelAcademicoSchema
 	})
 	.strict();
 
+export const nivelAcademicoWithMateriasSchema = baseNivelAcademicoSchema.extend<
+	ZodInferSchema<
+		Pick<NivelAcademicoWithMateriasFromAPI, ExtraFields | "materias">
+	>
+>({
+	sesion: sesionSchema,
+	nivelMalla: baseNivelMallaSchema,
+	materias: materiaEnNivelAcademicoSchema.array(),
+});
+
 export class NivelAcademicoClass {
 	constructor(
 		private apiUrl: string,
@@ -219,6 +237,19 @@ export class NivelAcademicoClass {
 		}
 
 		return res.json();
+	}
+	async getByIdWithMaterias(
+		id: string,
+	): Promise<APIResponse<NivelAcademicoWithMateriasFromAPI | null>> {
+		const res = this.fetcher(
+			z.object({
+				data: nivelAcademicoWithMateriasSchema.nullable(),
+				message: z.string(),
+			}),
+			this.apiUrl + `/api/niveles-academicos/${id}/materias`,
+		);
+
+		return res;
 	}
 
 	async createMateriaEnHorario({
