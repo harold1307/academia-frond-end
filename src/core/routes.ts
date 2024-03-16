@@ -41,8 +41,8 @@ export const ROUTES = {
 	},
 	niveles: {
 		path: "/niveles",
-		detalleHorario: (horarioId: string) =>
-			ROUTES.niveles.path + `/${horarioId}`,
+		materias: (programaId: string) =>
+			ROUTES.niveles.path + `/materias`,
 	},
 	periodoEvaluacion: {
 		path: "/periodosevaluacion",
