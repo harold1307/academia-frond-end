@@ -1,3 +1,4 @@
+"use client";
 import {
 	Dialog,
 	DialogContent,
@@ -45,12 +46,18 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { reqParams } from "../addReq";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
+import { type RequisitoMatriculacionFromAPI } from "@/core/api/requisitos-matriculacion";
+import { NIVELES_PREFIXES } from "@/utils/forms";
 
-export default function RequisitoTable({ mallas }) {
+export default function RequisitoTable({
+	requisitos,
+}: {
+	requisitos: RequisitoMatriculacionFromAPI[];
+}) {
 	return (
 		<section>
-			<DataTable columns={columns} data={mallas} />
-			<UpdateRequisito requisito={mallas} />
+			<DataTable columns={columns} data={requisitos} />
+			<UpdateRequisito requisitos={requisitos} />
 		</section>
 	);
 }
@@ -66,9 +73,8 @@ function UpdateRequisito(props) {
 
 	const { mutate: onSubmit, isPending: isSubmitting } = useMutation({
 		mutationFn: async ({ data, id }) => {
-			return API.cronograma.update({ cronograma: { data, id } });
+			return API.requisitosMatriculacion.update({ data, id });
 		},
-		onError: console.error,
 		onSuccess: response => {
 			console.log({ response });
 			router.replace(ROUTES.periodo.cronograma(props.id));

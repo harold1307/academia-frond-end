@@ -1,8 +1,7 @@
 import React from "react";
-import TraduccionTable from "./table";
-import { notFound } from "next/navigation";
-import { APIserver } from "@/core/api-server";
+
 import AddTrad from "./addTraduccion";
+import TraduccionTable from "./table";
 
 export const dynamic = "force-dynamic";
 

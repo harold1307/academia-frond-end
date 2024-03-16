@@ -39,6 +39,13 @@ export const ROUTES = {
 		detalleHorario: (horarioId: string) =>
 			ROUTES.admHorarios.path + `/${horarioId}`,
 	},
+	admCostos: {
+		path: "/adm_costos",
+		costos: () => ROUTES.admCostos.path + "?seccion=grupoCostos",
+		especies: () => ROUTES.admCostos.path + "?seccion=especiesValoradas",
+		solicitudes: () => ROUTES.admCostos.path + "?seccion=solicitudes",
+		programa: () => ROUTES.admCostos.path + "?seccion=programa",
+	},
 	niveles: {
 		path: "/niveles",
 		materias: (programaId: string) =>
@@ -48,6 +55,13 @@ export const ROUTES = {
 		path: "/periodosevaluacion",
 		materias: (sectionId: string) =>
 			ROUTES.periodoEvaluacion.path + `?section=${sectionId}/cronograma`,
+	},
+	talentoHumano: {
+		path: "/talentohumano",
+		modeloCampos: (modeloDeContratoId: string) =>
+			`/${modeloDeContratoId}/campos`,
+		estudiantes: (asesorId: string) => `/${asesorId}/estudiantes`,
+		plazas: (departamentosId: string) => `/${departamentosId}/plazas`,
 	},
 	periodo: {
 		path: "/periodos",

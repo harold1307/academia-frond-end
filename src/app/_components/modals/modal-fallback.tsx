@@ -11,24 +11,29 @@ import { Button } from "../ui/button";
 
 type ModalFallbackProps = {
 	redirectTo: () => void;
-	action: "update" | "delete";
+	action: "update" | "delete" | "clonar";
 };
+
+const config: Record<ModalFallbackProps["action"], string> = {
+	update: "Actualizar",
+	delete: "Eliminar",
+	clonar: "Clonar",
+} as const;
 
 export default function ModalFallback({
 	redirectTo,
 	action,
 }: ModalFallbackProps) {
+	const actionTitle = config[action];
+
 	return (
 		<Dialog defaultOpen={true} onOpenChange={redirectTo}>
 			<DialogContent className='max-h-[80%] max-w-xs sm:max-w-[425px] md:max-w-2xl'>
 				<DialogHeader>
-					<DialogTitle>
-						{action === "update" ? "Actualizar" : "Eliminar"} modulo
-					</DialogTitle>
+					<DialogTitle>{actionTitle} modulo</DialogTitle>
 					<DialogDescription>
-						No se ha encontrado el modulo a{" "}
-						{action === "update" ? "actualizar" : "eliminar"}, por favor intente
-						de nuevo.
+						No se ha encontrado el modulo a {actionTitle.toLowerCase()}, por
+						favor intente de nuevo.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>

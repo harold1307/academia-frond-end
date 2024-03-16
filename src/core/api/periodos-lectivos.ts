@@ -212,7 +212,6 @@ export class PeriodoLectivoClass {
 		data,
 		id,
 	}: UpdatePeriodoLectivoParams): Promise<APIResponse<PeriodoLectivoFromAPI>> {
-		console.log(data);
 		const res = this.fetcher(
 			z.object({
 				data: periodoLectivoSchema,
@@ -411,6 +410,7 @@ export class PeriodoLectivoClass {
 
 		return res.json();
 	}
+
 	async getByIdWithCronogramasMatriculacion(
 		id: string,
 	): Promise<APIResponse<PeriodoLectivoWithCronogramasMatriculacion | null>> {

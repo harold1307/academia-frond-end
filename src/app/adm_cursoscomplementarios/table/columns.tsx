@@ -1,6 +1,15 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import {
+	FileSignature,
+	Folder,
+	FolderOpen,
+	Repeat2,
+	StretchHorizontal,
+	X,
+} from "lucide-react";
 
 import StatusButtonTooltip from "@/app/_components/table/status-button-tooltip";
+import { Button } from "@/app/_components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,18 +17,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
-import { formatDate } from "@/utils";
-import { Button } from "@/app/_components/ui/button";
-import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
-import { cursosEscuelaParams } from "../add-curso-escuela";
-import {
-	FileSignature,
-	Folder,
-	FolderOpen,
-	StretchHorizontal,
-	X,
-} from "lucide-react";
 import { ROUTES } from "@/core/routes";
+import { useMutateSearchParams } from "@/hooks/use-mutate-search-params";
+import { formatDate } from "@/utils";
+import { cursosEscuelaParams } from "../add-curso-escuela";
 
 export type CursoEscuelaTableItem = {
 	id: string;
@@ -269,6 +270,12 @@ function Actions({
 				<Button>Acciones</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-56'>
+				<DropdownMenuItem
+					onClick={() => replaceSet(cursosEscuelaParams.clone, cursoId)}
+				>
+					<Repeat2 className='mr-2 h-4 w-4' />
+					<span>Clonar curso</span>
+				</DropdownMenuItem>
 				<DropdownMenuItem
 					onClick={() => replaceSet(cursosEscuelaParams.update, cursoId)}
 				>

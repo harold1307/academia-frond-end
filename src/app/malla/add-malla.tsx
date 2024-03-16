@@ -1,9 +1,9 @@
 "use client";
 import { TipoDuracion } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon, PlusCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { FieldPath } from "react-hook-form";
 import { z } from "zod";
 
@@ -30,11 +30,7 @@ import {
 	SelectValue,
 } from "@/app/_components/ui/select";
 import { API } from "@/core/api-client";
-import type {
-	CreateMallaCurricular,
-	CreatePracticaComunitariaEnMalla,
-	CreatePracticaPreProfesionalEnMalla,
-} from "@/core/api/mallas-curriculares";
+import type { CreateMallaCurricular } from "@/core/api/mallas-curriculares";
 import { useMutateModule } from "@/hooks/use-mutate-module";
 import { cn } from "@/utils";
 import {
@@ -42,7 +38,7 @@ import {
 	assertReferenceInput,
 	type Field,
 } from "@/utils/forms";
-import type { ZodInferSchema } from "@/utils/types";
+import type { ReplaceNullableToOptional, ZodInferSchema } from "@/utils/types";
 import { Button } from "../_components/ui/button";
 import { Calendar } from "../_components/ui/calendar";
 import { Checkbox } from "../_components/ui/checkbox";
@@ -54,6 +50,7 @@ import {
 } from "../_components/ui/popover";
 import { Textarea } from "../_components/ui/textarea";
 import { ASIGNATURA_KEYS } from "../asignatura/query-keys";
+import { MALLA_KEYS } from "./query-keys";
 
 export const mallaParams = {
 	update: "actualizarMalla",
@@ -62,99 +59,72 @@ export const mallaParams = {
 
 const createMallaSchema = z.object<
 	ZodInferSchema<
-		Omit<
-			CreateMallaCurricular,
-			| "programaId"
-			| "tituloObtenidoId"
-			| "codigo"
-			| "cantidadArrastres"
-			| "porcentajeMinimoPasarNivel"
-			| "maximoMateriasAdelantar"
-			| "perfilEgreso"
-			| "observaciones"
-			| "tipoDuracion"
-			| "practicasComunitarias"
-			| "practicasPreProfesionales"
-		> & {
-			tipoDuracion?: TipoDuracion | null;
-			tituloObtenidoId?: string | null;
-			codigo?: string | null;
-			cantidadArrastres?: number | null;
-			porcentajeMinimoPasarNivel?: number | null;
-			maximoMateriasAdelantar?: number | null;
-			perfilEgreso?: string | null;
-			observaciones?: string | null;
-			practicasComunitarias?:
-				| (Omit<
-						CreatePracticaComunitariaEnMalla,
-						"horas" | "creditos" | "registroDesdeNivel"
-				  > & {
-						horas?: number | null;
-						creditos?: number | null;
-						registroDesdeNivel?: number | null;
-				  })
-				| null;
-			practicasPreProfesionales?:
-				| (Omit<
-						CreatePracticaPreProfesionalEnMalla,
-						"horas" | "creditos" | "registroDesdeNivel"
-				  > & {
-						horas?: number | null;
-						creditos?: number | null;
-						registroDesdeNivel?: number | null;
-				  })
-				| null;
-			"reference-practicasPreProfesionales": boolean;
-			"reference-pppLigadasAMaterias"?: boolean;
-			"reference-practicasComunitarias": boolean;
-			"reference-pcLigadasAMaterias"?: boolean;
-			"reference-calculoAvanceNivel": boolean;
-			"reference-puedeAdelantarMaterias": boolean;
-		}
+		ReplaceNullableToOptional<
+			Omit<
+				CreateMallaCurricular,
+				| "programaId"
+				| "tituloObtenidoId"
+				| "codigo"
+				| "cantidadArrastres"
+				| "porcentajeMinimoPasarNivel"
+				| "maximoMateriasAdelantar"
+				| "perfilEgreso"
+				| "observaciones"
+				| "tipoDuracion"
+				| "practicaComunitaria"
+				| "practicasPreProfesionales"
+			> & {
+				tipoDuracion?: TipoDuracion | null;
+				tituloObtenidoId?: string | null;
+				codigo?: string | null;
+				cantidadArrastres?: number | null;
+				porcentajeMinimoPasarNivel?: number | null;
+				maximoMateriasAdelantar?: number | null;
+				perfilEgreso?: string | null;
+				observaciones?: string | null;
+				"reference-practicasPreProfesionales": boolean;
+				"reference-pppLigadasAMaterias"?: boolean;
+				"reference-practicasComunitarias": boolean;
+				"reference-pcLigadasAMaterias"?: boolean;
+				"reference-calculoAvanceNivel": boolean;
+				"reference-puedeAdelantarMaterias": boolean;
+			}
+		>
 	>
 >({
 	modalidadId: z.string(),
-	tituloObtenidoId: z.string().nullable().optional(),
+	tituloObtenidoId: z.string().optional(),
 	tipoDuracion: z
 		.enum(["ANOS", "CREDITOS", "HORAS", "SEMESTRES"] as const)
-		.nullable()
 		.optional(),
-	codigo: z.string().nullable().optional(),
+	codigo: z.string().optional(),
 	fechaAprobacion: z.string().datetime(),
 	fechaLimiteVigencia: z.string().datetime(),
 	cantidadOtrasMateriasMatricula: z.number(),
 	limiteSeleccionMateriaPorAdministrativo: z.boolean(),
-	cantidadArrastres: z.number().nullable().optional(),
-	porcentajeMinimoPasarNivel: z.number().nullable().optional(),
-	maximoMateriasAdelantar: z.number().nullable().optional(),
+	cantidadArrastres: z.number().optional(),
+	porcentajeMinimoPasarNivel: z.number().optional(),
+	maximoMateriasAdelantar: z.number().optional(),
 	automatriculaModulos: z.boolean(),
 	plantillasSilabo: z.boolean(),
 	modeloPlanificacion: z.boolean(),
-	perfilEgreso: z.string().nullable().optional(),
-	observaciones: z.string().nullable().optional(),
+	perfilEgreso: z.string().optional(),
+	observaciones: z.string().optional(),
 
 	niveles: z.number({ coerce: true }),
-	practicasComunitarias: z
-		.object({
-			requiereAutorizacion: z.boolean(),
-			creditos: z.number().nullable().optional(),
-			horas: z.number().nullable().optional(),
-			registroDesdeNivel: z.number().min(0).max(10).nullable().optional(),
-			registroPracticasAdelantadas: z.boolean(),
-			registroMultiple: z.boolean(),
-		})
-		.nullable()
-		.optional(),
-	practicasPreProfesionales: z
-		.object({
-			requiereAutorizacion: z.boolean(),
-			creditos: z.number().nullable().optional(),
-			horas: z.number().nullable().optional(),
-			registroDesdeNivel: z.number().min(0).max(10).nullable().optional(),
-			registroPracticasAdelantadas: z.boolean(),
-		})
-		.nullable()
-		.optional(),
+
+	practicaComunitariaRequiereAutorizacion: z.boolean().optional(),
+	practicaComunitariaHoras: z.number().optional(),
+	practicaComunitariaCreditos: z.number().optional(),
+	practicaComunitariaRegistroDesdeNivel: z.number().int().optional(),
+	practicaComunitariaRegistroPracticasAdelantadas: z.boolean().optional(),
+	practicaComunitariaRegistroMultiple: z.boolean().optional(),
+
+	practicaPreProfesionalRequiereAutorizacion: z.boolean().optional(),
+	practicaPreProfesionalHoras: z.number().optional(),
+	practicaPreProfesionalCreditos: z.number().optional(),
+	practicaPreProfesionalRegistroDesdeNivel: z.number().int().optional(),
+	practicaPreProfesionalRegistroPracticasAdelantadas: z.boolean().optional(),
 
 	"reference-practicasPreProfesionales": z.boolean(),
 	"reference-pppLigadasAMaterias": z.boolean().optional(),
@@ -174,6 +144,7 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 		setOpen,
 	} = useMutateModule({
 		schema: createMallaSchema,
+		invalidateQueryKey: MALLA_KEYS.all,
 		mutationFn: async ({
 			tipoDuracion,
 			codigo,
@@ -183,8 +154,20 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 			perfilEgreso,
 			observaciones,
 			tituloObtenidoId,
-			practicasComunitarias,
-			practicasPreProfesionales,
+
+			practicaComunitariaCreditos,
+			practicaComunitariaHoras,
+			practicaComunitariaRegistroDesdeNivel,
+			practicaComunitariaRegistroMultiple,
+			practicaComunitariaRegistroPracticasAdelantadas,
+			practicaComunitariaRequiereAutorizacion,
+
+			practicaPreProfesionalCreditos,
+			practicaPreProfesionalHoras,
+			practicaPreProfesionalRegistroDesdeNivel,
+			practicaPreProfesionalRegistroPracticasAdelantadas,
+			practicaPreProfesionalRequiereAutorizacion,
+
 			...data
 		}) => {
 			if (!programaId) return;
@@ -193,53 +176,73 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 				programaId,
 				data: {
 					...data,
-					tipoDuracion: tipoDuracion || null,
-					codigo: codigo || null,
+					tipoDuracion: tipoDuracion ?? null,
+					codigo: codigo ?? null,
 					cantidadArrastres: cantidadArrastres ?? null,
 					porcentajeMinimoPasarNivel: porcentajeMinimoPasarNivel ?? null,
 					maximoMateriasAdelantar: maximoMateriasAdelantar ?? null,
-					perfilEgreso: perfilEgreso || null,
-					observaciones: observaciones || null,
-					tituloObtenidoId: tituloObtenidoId || null,
-					practicasComunitarias: data["reference-practicasComunitarias"]
+					perfilEgreso: perfilEgreso ?? null,
+					observaciones: observaciones ?? null,
+					tituloObtenidoId: tituloObtenidoId ?? null,
+					...(data["reference-practicasComunitarias"]
 						? {
-								...practicasComunitarias,
-								requiereAutorizacion:
-									practicasComunitarias?.requiereAutorizacion || false,
-								creditos: data["reference-pcLigadasAMaterias"]
+								practicaComunitariaRequiereAutorizacion:
+									practicaComunitariaRequiereAutorizacion ?? false,
+								practicaComunitariaCreditos: data[
+									"reference-pcLigadasAMaterias"
+								]
 									? null
-									: practicasComunitarias?.creditos || null,
-								horas: data["reference-pcLigadasAMaterias"]
+									: practicaComunitariaCreditos ?? null,
+								practicaComunitariaHoras: data["reference-pcLigadasAMaterias"]
 									? null
-									: practicasComunitarias?.creditos || null,
-								registroDesdeNivel: data["reference-pcLigadasAMaterias"]
+									: practicaComunitariaHoras ?? null,
+								practicaComunitariaRegistroDesdeNivel: data[
+									"reference-pcLigadasAMaterias"
+								]
 									? null
-									: practicasComunitarias?.creditos || null,
-								registroPracticasAdelantadas:
-									practicasComunitarias?.registroPracticasAdelantadas || false,
-								registroMultiple:
-									practicasComunitarias?.registroMultiple || false,
+									: practicaComunitariaRegistroDesdeNivel ?? null,
+								practicaComunitariaRegistroPracticasAdelantadas:
+									practicaComunitariaRegistroPracticasAdelantadas ?? false,
+								practicaComunitariaRegistroMultiple:
+									practicaComunitariaRegistroMultiple ?? false,
 							}
-						: null,
-					practicasPreProfesionales: data["reference-practicasPreProfesionales"]
+						: {
+								practicaComunitariaRequiereAutorizacion: null,
+								practicaComunitariaHoras: null,
+								practicaComunitariaCreditos: null,
+								practicaComunitariaRegistroDesdeNivel: null,
+								practicaComunitariaRegistroPracticasAdelantadas: null,
+								practicaComunitariaRegistroMultiple: null,
+							}),
+					...(data["reference-practicasPreProfesionales"]
 						? {
-								...practicasPreProfesionales,
-								requiereAutorizacion:
-									practicasPreProfesionales?.requiereAutorizacion || false,
-								creditos: data["reference-pppLigadasAMaterias"]
+								practicaPreProfesionalRequiereAutorizacion:
+									practicaPreProfesionalRequiereAutorizacion ?? false,
+								practicaPreProfesionalCreditos: data[
+									"reference-pppLigadasAMaterias"
+								]
 									? null
-									: practicasPreProfesionales?.creditos || null,
-								horas: data["reference-pppLigadasAMaterias"]
+									: practicaPreProfesionalCreditos ?? null,
+								practicaPreProfesionalHoras: data[
+									"reference-pppLigadasAMaterias"
+								]
 									? null
-									: practicasPreProfesionales?.creditos || null,
-								registroDesdeNivel: data["reference-pppLigadasAMaterias"]
+									: practicaPreProfesionalHoras ?? null,
+								practicaPreProfesionalRegistroDesdeNivel: data[
+									"reference-pppLigadasAMaterias"
+								]
 									? null
-									: practicasPreProfesionales?.creditos || null,
-								registroPracticasAdelantadas:
-									practicasPreProfesionales?.registroPracticasAdelantadas ||
-									false,
+									: practicaPreProfesionalRegistroDesdeNivel ?? null,
+								practicaPreProfesionalRegistroPracticasAdelantadas:
+									practicaPreProfesionalRegistroPracticasAdelantadas ?? false,
 							}
-						: null,
+						: {
+								practicaPreProfesionalCreditos: null,
+								practicaPreProfesionalHoras: null,
+								practicaPreProfesionalRegistroDesdeNivel: null,
+								practicaPreProfesionalRegistroPracticasAdelantadas: null,
+								practicaPreProfesionalRequiereAutorizacion: null,
+							}),
 				},
 			});
 		},
@@ -261,6 +264,10 @@ export default function AddMalla({ programaId }: { programaId?: string }) {
 				"reference-puedeAdelantarMaterias": false,
 				perfilEgreso: "",
 				observaciones: "",
+				practicaComunitariaHoras: 0,
+				practicaComunitariaCreditos: 0,
+				practicaPreProfesionalHoras: 0,
+				practicaPreProfesionalCreditos: 0,
 			},
 			shouldUnregister: true,
 		},
@@ -727,7 +734,7 @@ const practicasPreProfesionalesFields = [
 		label: "Realizan practicas preprofesionales",
 	},
 	{
-		name: "practicasPreProfesionales.requiereAutorizacion",
+		name: "practicaPreProfesionalRequiereAutorizacion",
 		inputType: "checkbox",
 		label: "Requiere autorizacion para iniciar practicas",
 		dependsOn: "reference-practicasPreProfesionales",
@@ -739,19 +746,19 @@ const practicasPreProfesionalesFields = [
 		dependsOn: "reference-practicasPreProfesionales",
 	},
 	{
-		name: "practicasPreProfesionales.horas",
+		name: "practicaPreProfesionalHoras",
 		inputType: "number",
 		label: "Horas de practicas preprofesionales",
 		dependsOn: "reference-pppLigadasAMaterias",
 	},
 	{
-		name: "practicasPreProfesionales.creditos",
+		name: "practicaPreProfesionalCreditos",
 		inputType: "number",
 		label: "Creditos de practicas preprofesionales",
 		dependsOn: "reference-pppLigadasAMaterias",
 	},
 	{
-		name: "practicasPreProfesionales.registroDesdeNivel",
+		name: "practicaPreProfesionalRegistroDesdeNivel",
 		inputType: "custom-select",
 		placeholder: "------------",
 		label: "Registro de practicas preprofesionales desde",
@@ -759,7 +766,7 @@ const practicasPreProfesionalesFields = [
 		dependsOn: "reference-pppLigadasAMaterias",
 	},
 	{
-		name: "practicasPreProfesionales.registroPracticasAdelantadas",
+		name: "practicaPreProfesionalRegistroPracticasAdelantadas",
 		inputType: "checkbox",
 		label: "Registro de practicas preprofesionales adelantadas",
 		dependsOn: "reference-practicasPreProfesionales",
@@ -773,7 +780,7 @@ const practicasComunitariasFields = [
 		label: "Realizan practicas comunitarias",
 	},
 	{
-		name: "practicasComunitarias.requiereAutorizacion",
+		name: "practicaComunitariaRequiereAutorizacion",
 		inputType: "checkbox",
 		label: "Requiere autorizacion para iniciar practicas",
 		dependsOn: "reference-practicasComunitarias",
@@ -785,19 +792,19 @@ const practicasComunitariasFields = [
 		dependsOn: "reference-practicasComunitarias",
 	},
 	{
-		name: "practicasComunitarias.horas",
+		name: "practicaComunitariaHoras",
 		inputType: "number",
 		label: "Horas de practicas comunitarias",
 		dependsOn: "reference-pcLigadasAMaterias",
 	},
 	{
-		name: "practicasComunitarias.creditos",
+		name: "practicaComunitariaCreditos",
 		inputType: "number",
 		label: "Creditos de practicas comunitarias",
 		dependsOn: "reference-pcLigadasAMaterias",
 	},
 	{
-		name: "practicasComunitarias.registroDesdeNivel",
+		name: "practicaComunitariaRegistroDesdeNivel",
 		inputType: "custom-select",
 		placeholder: "------------",
 		label: "Registro de practicas comunitarias desde",
@@ -805,13 +812,13 @@ const practicasComunitariasFields = [
 		dependsOn: "reference-pcLigadasAMaterias",
 	},
 	{
-		name: "practicasComunitarias.registroPracticasAdelantadas",
+		name: "practicaComunitariaRegistroPracticasAdelantadas",
 		inputType: "checkbox",
 		label: "Registro de practicas comunitarias adelantadas",
 		dependsOn: "reference-practicasComunitarias",
 	},
 	{
-		name: "practicasComunitarias.registroMultiple",
+		name: "practicaComunitariaRegistroMultiple",
 		inputType: "checkbox",
 		label: "Puede registrarse en multiples practicas comunitarias",
 		dependsOn: "reference-practicasComunitarias",

@@ -152,9 +152,19 @@ export const columns = [
 		header: "Costos por sesiòn",
 		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
 	}),
-	helper.accessor("calculoCosto.estudiantesEligenOpcionPago", {
+	helper.accessor("calculoCosto", {
 		header: "Plan de costos",
-		cell: ({ getValue }) => (getValue() ? "SI" : "NO"),
+		cell: ({ row }) => {
+			const calculo = row.getValue("calculoCosto");
+			return (
+				<span>
+					{calculo.estudiantesEligenOpcionPago ||
+					calculo.cronogramaFechasOpcionPago
+						? "SI"
+						: "NO"}
+				</span>
+			);
+		},
 	}),
 	helper.accessor("estado", {
 		header: "Activo",

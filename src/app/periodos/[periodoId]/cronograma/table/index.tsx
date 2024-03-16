@@ -1,3 +1,4 @@
+"use client";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import {
@@ -45,12 +46,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import { cn } from "@/utils";
 import { ToggleSwitch } from "@/app/_components/ui/toggle";
+import { type periodoLectivoWithCronogramasMatriculacion } from "@/core/api/periodos-lectivos";
 
-export default function CronogramaTable({ mallas }) {
+export default function CronogramaTable({ cronograma }: { cronograma: any }) {
 	return (
 		<section>
-			<DataTable columns={columns} data={mallas} />
-			<UpdateCronograma cronograma={mallas} />
+			<DataTable columns={columns} data={cronograma} />
+			<UpdateCronograma cronograma={cronograma} />
 		</section>
 	);
 }

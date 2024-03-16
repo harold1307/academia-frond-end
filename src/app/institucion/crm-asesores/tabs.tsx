@@ -1,7 +1,7 @@
 import { ActiveTab } from "@/app/_components/ui/active-tab";
 import { Separator } from "@/app/_components/ui/separator";
 import { ROUTES } from "@/core/routes";
-import { seccionParams } from "../tabs";
+import { institucionSeccionParams } from "../tabs";
 
 export const subSeccionParams = {
 	centrosInformacion: "centros-informacion",
@@ -13,23 +13,23 @@ export const subSeccionParams = {
 
 const tabs = [
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.crmAsesores}&subSeccion=${subSeccionParams.centrosInformacion}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.crmAsesores}&subSeccion=${subSeccionParams.centrosInformacion}`,
 		label: "Centros de informacion",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.crmAsesores}&subSeccion=${subSeccionParams.responsablesCrm}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.crmAsesores}&subSeccion=${subSeccionParams.responsablesCrm}`,
 		label: "Responsables de CRM",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.crmAsesores}&subSeccion=${subSeccionParams.asesoresCrm}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.crmAsesores}&subSeccion=${subSeccionParams.asesoresCrm}`,
 		label: "Asesores de CRM",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.crmAsesores}&subSeccion=${subSeccionParams.responsablesAsesoresEstudiante}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.crmAsesores}&subSeccion=${subSeccionParams.responsablesAsesoresEstudiante}`,
 		label: "Responsables de asesores de estudiante",
 	},
 	{
-		href: `${ROUTES.institucion}?seccion=${seccionParams.crmAsesores}&subSeccion=${subSeccionParams.asesoresEstudiante}`,
+		href: `${ROUTES.institucion}?seccion=${institucionSeccionParams.crmAsesores}&subSeccion=${subSeccionParams.asesoresEstudiante}`,
 		label: "Asesores de estudiantes",
 	},
 ];
@@ -50,7 +50,7 @@ export default function CrmAsesoresTabs({
 							href={t.href}
 							isActive={
 								t.href.includes(seccion) &&
-								t.href.includes(seccionParams.crmAsesores)
+								t.href.includes(institucionSeccionParams.crmAsesores)
 							}
 						>
 							{t.label}
