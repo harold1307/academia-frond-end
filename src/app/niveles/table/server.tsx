@@ -15,9 +15,7 @@ export default async function NivelesTableServer({ programaId }: { programaId: s
 	//Fetch programas
 
 	const nivelMalla = await APIserver.nivelesAcademicos.getMany({ filters: { programaId: programaId } })
-	const nivel = await APIserver.materiasNivelesAcademicos.getMany()
 
-	console.log(nivel)
 	const tabledata = nivelMalla.data.map(e => {
 		const obj = {
 			inicioFin: dateFormat(e.fechaInicio) + " " + dateFormat(e.fechaFin),

@@ -10,6 +10,9 @@ import {
 import { createColumnHelper } from "@tanstack/react-table";
 import { FileSignature, Lock, Mail, Plus, Repeat2 } from "lucide-react";
 import Link from "next/link";
+import { useMutateModule } from "@/hooks/use-mutate-module";
+import { FormField } from "@/app/_components/ui/form";
+import { ToggleSwitch } from "@/app/_components/ui/toggle";
 
 export type NivelesAcademicosSchema = {
 	id: string;
@@ -90,12 +93,27 @@ export const nivelesAcademicosColumns = [
 	}),
 	helper.accessor("seleccionMaterias", {
 		header: "Seleccion de materias",
+		cell: ({ row }) => {
+			const valor = row.getValue("seleccionMaterias") as boolean;
+
+			return <ToggleTable valor={valor} />;
+		},
 	}),
 	helper.accessor("seleccionHorarios", {
 		header: "Otros horarios",
+		cell: ({ row }) => {
+			const valor = row.getValue("seleccionHorarios") as boolean;
+
+			return <ToggleTable valor={valor} />;
+		},
 	}),
 	helper.accessor("seleccionModalidad", {
 		header: "Otras modalidades",
+		cell: ({ row }) => {
+			const valor = row.getValue("seleccionModalidad") as boolean;
+
+			return <ToggleTable valor={valor} />;
+		},
 	}),
 	helper.accessor("matriculacion", {
 		header: "Matriculación",
@@ -121,6 +139,40 @@ export const nivelesAcademicosColumns = [
 		},
 	}),
 ];
+
+const ToggleTable = ({ valor }: { valor: boolean }) => {
+	const {
+		mutation: { mutate, isPending },
+		form,
+	} = useMutateModule({
+		mutationFn: async data => {
+			//return APIServer.nivelesAcademicos.update(data);
+		},
+		onError: console.error,
+		onSuccess: response => {
+			console.log({ response });
+		},
+	});
+
+	return (
+		<span>
+			<FormField
+				control={form.control}
+				name='activo'
+				key={"activo"}
+				render={({ field }) => {
+					return (
+						<ToggleSwitch
+							checked={field.value as boolean}
+							defaultChecked={valor as boolean}
+							onCheckedChange={field.onChange}
+						/>
+					);
+				}}
+			/>
+		</span>
+	);
+};
 
 export const horariosParams = {
 	mensaje: "message",

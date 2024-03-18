@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { createColumnHelper } from "@tanstack/react-table";
-import { FileSignature, Lock, Mail, Plus, Repeat2 } from "lucide-react";
+import { Check, FileSignature, Lock, Mail, Pencil, Plus, PlusCircle, Repeat2, X, } from "lucide-react";
 import Link from "next/link";
 
 export type MateriasSchema = {
@@ -33,6 +33,19 @@ export const materiasColumns = [
     helper.accessor("id", {}),
     helper.accessor("asignatura", {
         header: "Asignatura",
+        cell: ({ row }) => {
+            const asignatura: string = row.getValue("asignatura");
+            return <div>
+                <h1>{asignatura}</h1>
+                <h2 className="text-gray-500">nivel - modelo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa </h2>
+                <section className="flex flex-row justify-center gap-x-2">
+                    <button className="w-16 border-2 rounded-lg border-green-700">LMS-P</button>
+                    <button className="w-16 border-2 rounded-lg border-blue-950">VC</button>
+                    <button className="w-16 border-2 rounded-lg border-blue-950">VP</button>
+                    <button className="w-16 border-2 rounded-lg border-amber-500">Ciclo 1</button>
+                </section>
+            </div>
+        }
     }),
     helper.accessor("planificacion", {
         header: "Planificacion",
@@ -59,9 +72,36 @@ export const materiasColumns = [
     helper.accessor("inicioFin", {
         header: "Inicio / Fin",
     }),
+    helper.accessor("aula", {
+        header: "Aula",
+    }),
     helper.accessor("profesores", {
         header: "Profesor(es)",
+        cell: ({ row }) => {
+            const profesores = row.getValue("profesores") as string;
+            return <div className="flex flex-col gap-y-1 items-start py-4">
+                <p>{profesores}</p>
+                <p className=" text-gray-500">TEORIA - 13-11-2023 AL 14-01-2024 - 0.0HRS</p>
+                <section className="flex flex-row gap-x-3 px-2">
+                    <button className="border-2 rounded-lg border-red-600">
+                        <X className="text-red-600" />
+                    </button>
+                    <button className="" >
+                        <Pencil />
+                    </button>
+                    <button className="">
+                        <Check />
+                    </button>
+                    <button className="text-green-700">LMS</button>
+                </section>
+                <button className="w-28 p-1 flex flex-row justify-evenly items-center border-2 rounded">
+                    <PlusCircle />
+                    <p>Profesor</p>
+                </button>
+            </div >
+        }
     }),
+    //reemplazar plusCircle por mutatemodal
     helper.display({
         id: "actions",
         cell: ({ row }) => {
@@ -148,3 +188,12 @@ function Actions({ id }: { id: string }) {
         </DropdownMenu>
     );
 }
+
+// helper.accessor("activo", {
+//     header: "Activo",
+//     cell: ({ row }) => {
+//         const valor = row.getValue("activo") as boolean;
+
+//         return <ToggleTable valor={valor} />;
+//     },
+// }),

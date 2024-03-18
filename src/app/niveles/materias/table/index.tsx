@@ -43,7 +43,7 @@ export default function MateriasTable({ data }: MateriasTableProps) {
     }, [data]);
 
     return (
-        <section className=''>
+        <section className='asd'>
             <DataTable columns={materiasColumns} data={horarios} />
         </section>
     );

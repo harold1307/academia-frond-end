@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/app/_components/ui/button";
 import MateriasTableServer from "./table/server";
+import { Printer } from "lucide-react";
 
 export default function HorarioIdPage() {
     return (
@@ -21,10 +22,10 @@ export default function HorarioIdPage() {
                         <Button>Materias</Button>
                     </li>
                     <li>
-                        <Button>Imprimir</Button>
+                        <Button><Printer /></Button>
                     </li>
                     <li>
-                        <Button>Limpiar</Button>
+                        <Button>Acciones</Button>
                     </li>
                 </ul>
             </div>
