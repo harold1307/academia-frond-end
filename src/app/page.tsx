@@ -57,6 +57,10 @@ const modulos = [
 		label: "Criterios y actividades",
 		href: ROUTES.criterioActividad.path,
 	},
+	{
+		label: "Criterios y actividades del docente",
+		href: ROUTES.criterioActividadDocente.path,
+	},
 	// {
 	// 	label: "Mis Horarios",
 	// 	href: ROUTES.horarios.path
