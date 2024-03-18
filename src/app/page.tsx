@@ -1,8 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { ROUTES } from "@/core/routes";
 import { getServerAuthSession } from "@/server/auth";
-import Image from "next/image";
 import FileUpload from "./_components/ui/icons/file-up";
 import LupaIcon from "./_components/ui/icons/lupa";
 import PdfIcon from "./_components/ui/icons/pdf";
@@ -53,6 +53,10 @@ const modulos = [
 		label: "adm. costos",
 		href: ROUTES.admCostos.path,
 	},
+	{
+		label: "Criterios y actividades",
+		href: ROUTES.criterioActividad.path,
+	},
 	// {
 	// 	label: "Mis Horarios",
 	// 	href: ROUTES.horarios.path
@@ -102,11 +106,11 @@ export default async function Home() {
 							<h3 className='my-4 text-3xl font-semibold'>Rodriguez Ana</h3>
 							<p className='text-gray-300'>Nº Identificador 90010064</p>
 							<ul className='my-2 list-disc pl-6'>
-								<li className='text-balance w-full'>Nº Estudiante: 16310</li>
-								<li className='text-balance w-full'>
+								<li className='w-full text-balance'>Nº Estudiante: 16310</li>
+								<li className='w-full text-balance'>
 									Correo institucional: anarodriguez@iste.edu.ec
 								</li>
-								<li className='text-balance w-full'>
+								<li className='w-full text-balance'>
 									Correo Personal: iste.tecnologia.gmail.com
 								</li>
 							</ul>

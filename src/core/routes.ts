@@ -80,4 +80,7 @@ export const ROUTES = {
 		documentos: (crmId: string) => ROUTES.crm.path + `/${crmId}/documentos`,
 		depositos: (crmId: string) => ROUTES.crm.path + `/${crmId}/depositos`,
 	},
+	criterioActividad: {
+		path: "/adm_criteriosactividades",
+	},
 } as const;
