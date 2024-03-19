@@ -61,11 +61,15 @@ const modulos = [
 		label: "Criterios y actividades del docente",
 		href: ROUTES.criterioActividadDocente.path,
 	},
+	{
+		label: "Apertura de ingreso de notas",
+		href: ROUTES.aperturaIngresoNotas.path,
+	},
 	// {
 	// 	label: "Mis Horarios",
 	// 	href: ROUTES.horarios.path
 	// }
-];
+] as const;
 
 export const dynamic = "force-dynamic";
 

@@ -86,4 +86,7 @@ export const ROUTES = {
 	criterioActividadDocente: {
 		path: "/adm_criteriosactividadesdocente",
 	},
+	aperturaIngresoNotas: {
+		path: "/adm_aperturaingresonotas",
+	},
 } as const;
